@@ -44,78 +44,19 @@
             transition: 0.3s;
         }
 
-        .cart-bar:hover {
-            background: var(--dorado-claro);
-            transform: translateX(-50%) scale(1.02);
-        }
-
-        .cart-btn-text {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-        }
-
-        /* Ajuste para que el total resalte */
-        #cart-total {
-            font-size: 1.2rem;
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-        .btn-main { background: var(--dorado); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
-        .btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; display: block; text-align: center; text-decoration: none; margin-top: 15px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
-        /* Para que el texto largo se vea bien */
-        #modal-desc { white-space: pre-line; }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>DECANTCIAS</h1>
-    <p>Elegancia en cada gota</p>
-</header>
-
-<div class="container">
-    <div class="grid" id="main-grid"></div>
-</div>
-
-<div id="productModal" class="modal">
-    <div class="modal-content">
-        <button class="close-btn" onclick="closeModals()">✕</button>
-        <div class="carousel">
-            <button class="nav-btn" onclick="changeImg(-1)">❮</button>
-            <img id="modal-img" src="">
-            <button class="nav-btn" onclick="changeImg(1)">❯</button>
+        .<div class="cart-bar" onclick="openCart()">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 1.5rem;">🛒</div>
+        <div style="text-align: left; line-height: 1.2;">
+            <strong id="cart-count">0</strong> productos<br>
+            <small style="opacity: 0.9; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Ver carrito</small>
         </div>
-        <h2 id="modal-title" style="margin: 10px 0; font-family: 'Playfair Display', serif;"></h2>
-        <div id="modal-price" style="font-size: 1.5rem; color: var(--dorado-claro); font-weight: bold;"></div>
-        <div class="unidero">
-            <button class="btn-qty" onclick="updateQty(-1)">-</button>
-            <span id="prod-qty" style="font-weight: bold; font-size: 1.2rem;">1</span>
-            <button class="btn-qty" onclick="updateQty(1)">+</button>
-        </div>
-        <p id="modal-desc" style="font-size: 0.85rem; color: #666; margin-bottom: 15px; text-align: left;"></p>
-        <button onclick="addToCart()" class="btn-main">Añadir al Carrito</button>
+    </div>
+    <div style="text-align: right;">
+        <span style="font-size: 0.8rem; opacity: 0.9;">Total:</span><br>
+        <strong id="cart-total" style="font-size: 1.2rem;">$0</strong>
     </div>
 </div>
-
-<div id="cartModal" class="modal">
-    <div class="modal-content">
-        <button class="close-btn" onclick="closeModals()">✕</button>
-        <h2 style="font-family: 'Playfair Display', serif;">Tu Pedido</h2>
-        <div id="cart-list"></div>
-        <div style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 10px;">
-            Total: <strong id="modal-total">$0</strong>
-        </div>
-        <a href="#" onclick="sendWhatsApp()" class="btn-whatsapp">Confirmar por WhatsApp</a>
-    </div>
-</div>
-
-<div class="cart-bar" onclick="openCart()">
-    <div><strong id="cart-count">0</strong> productos</div>
-    <div>Total: <strong id="cart-total">$0</strong></div>
 </div>
 
 <script>
@@ -229,6 +170,7 @@ Aroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como
 </script>
 </body>
 </html>
+
 
 
 
