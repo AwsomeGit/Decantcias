@@ -141,9 +141,29 @@
 </div>
 
 <script>
+    <script>
     const products = [
-        { id: 1, name: "Lattafa Asad", price: 60000, imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"] },
-        { id: 2, name: "Khamrah", price: 65000, imgs: ["img/khamrah.jpg"] }
+        { 
+            id: 1, 
+            name: "Lattafa Asad", 
+            price: 60000, 
+            imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"],
+            desc: "Fragancia avainillada con notas picantes de pimienta y piña. Un aroma potente y masculino."
+        },
+        { 
+            id: 2, 
+            name: "Lattafa Khamrah", 
+            price: 65000, 
+            imgs: ["img/khamrah.jpg"],
+            desc: "Dulce y lujoso con notas de canela, dátiles y un fondo de praliné irresistible."
+        },
+        { 
+            id: 3, 
+            name: "Khamrah Qahwa", 
+            price: 70000, 
+            imgs: ["img/khamrahqahwa.jpg", "img/khamrahqahwa2.jpg", "img/khamrahqahwa3.jpg"],
+            desc: "La versión más intensa de Khamrah con una nota de café árabe tostado. Cálida y sofisticada."
+        }
     ];
 
     let cart = [];
@@ -151,7 +171,7 @@
     let currentImgIdx = 0;
     let currentQty = 1;
 
-    // Iniciar Grid
+    // Pintar Grid de productos
     const grid = document.getElementById('main-grid');
     products.forEach(p => {
         grid.innerHTML += `
@@ -176,6 +196,10 @@
         document.getElementById('modal-title').innerText = currentProduct.name;
         document.getElementById('modal-price').innerText = `$${currentProduct.price.toLocaleString()}`;
         document.getElementById('prod-qty').innerText = currentQty;
+        // Si tienes el elemento modal-desc en tu HTML:
+        if(document.getElementById('modal-desc')) {
+            document.getElementById('modal-desc').innerText = currentProduct.desc;
+        }
     }
 
     function updateQty(val) {
@@ -201,14 +225,14 @@
         document.getElementById('cart-count').innerText = cart.length;
         
         const list = document.getElementById('cart-list');
-        list.innerHTML = cart.length === 0 ? '<p>No hay productos aún.</p>' : 
+        list.innerHTML = cart.length === 0 ? '<p>Tu carrito está vacío</p>' : 
             cart.map(item => `
                 <div class="cart-item">
                     <div>
                         <strong>${item.qty}x ${item.name}</strong><br>
                         <small>$${(item.price * item.qty).toLocaleString()}</small>
                     </div>
-                    <button onclick="removeFromCart(${item.cartId})" style="color:#ff4d4d; background:none; border:none; cursor:pointer; font-size:1.2rem; padding: 5px 10px;">✕</button>
+                    <button onclick="removeFromCart(${item.cartId})" style="color:red; background:none; border:none; cursor:pointer;">✕</button>
                 </div>
             `).join('');
     }
@@ -219,25 +243,26 @@
     }
 
     function openCart() { document.getElementById('cartModal').style.display = 'block'; }
-    
     function closeModals() { 
         document.getElementById('productModal').style.display = 'none'; 
         document.getElementById('cartModal').style.display = 'none'; 
     }
 
     function sendWhatsApp() {
-        if(cart.length === 0) return alert("El carrito está vacío.");
-        let msg = "✨ *Pedido de Decantcias* ✨\n\n";
+        if(cart.length === 0) return alert("Carrito vacío");
+        let msg = "✨ *Pedido Decantcias* ✨\n\n";
         cart.forEach(i => msg += `• ${i.qty}x ${i.name} ($${(i.price * i.qty).toLocaleString()})\n`);
         const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-        msg += `\n*Total final: $${total.toLocaleString()}*`;
+        msg += `\n*Total: $${total.toLocaleString()}*`;
         window.open(`https://wa.me/5493517883411?text=${encodeURIComponent(msg)}`);
     }
 
-    // Cerrar con click afuera del cuadro blanco
     window.onclick = function(event) {
         if (event.target.className === 'modal') closeModals();
     }
 </script>
+    }
+</script>
 </body>
 </html>
+
