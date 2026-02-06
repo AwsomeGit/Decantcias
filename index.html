@@ -1,96 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Decantcias | Perfumería Árabe</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --dorado: #8a6d3b;
-      --dorado-claro: #bc9c22;
-      --fondo: #fdfaf6;
-      --blanco: #ffffff;
-    }
+    body { font-family: 'Poppins', sans-serif; background: #fdfaf6; margin: 0; padding-bottom: 100px; }
+    header { background: white; padding: 30px; text-align: center; border-bottom: 1px solid #eee; }
+    h1 { font-family: 'Playfair Display', serif; color: #8a6d3b; font-size: 2.5rem; margin: 0; }
+    .container { max-width: 1000px; margin: 20px auto; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .card { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; }
+    .card img { width: 100%; height: 200px; object-fit: contain; }
+    .price { font-weight: bold; color: #bc9c22; font-size: 1.2rem; margin: 10px 0; }
+    .btn-add { background: #8a6d3b; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 25px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+    .btn-confirm { background: #25D366; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; }
+  </style>
+</head>
+<body>
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--fondo);
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
+<header>
+  <h1>DECANTCIAS</h1>
+  <p>Elegancia en cada gota</p>
+</header>
 
-    /* Encabezado */
-    header {
-      background-color: var(--blanco);
-      padding: 40px 20px;
-      text-align: center;
-      border-bottom: 1px solid #eee;
-    }
+<div class="container">
+  <div class="grid" id="grid"></div>
+</div>
 
-    header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 3rem;
-      margin: 0;
-      color: var(--dorado);
-      letter-spacing: 2px;
-    }
+<div class="cart-bar">
+  <div>Total: $<span id="total">0</span></div>
+  <a href="#" class="btn-confirm" id="ws-link">Pedir por WhatsApp</a>
+</div>
 
-    header p {
-      font-style: italic;
-      color: #666;
-      margin-top: 5px;
-    }
+<script>
+  const products = [
+    { id: 1, name: "Lattafa Asad", price: 60000, img: "https://via.placeholder.com/300?text=Asad" },
+    { id: 2, name: "Khamrah", price: 65000, img: "https://via.placeholder.com/300?text=Khamrah" },
+    { id: 3, name: "Yara Candy", price: 52000, img: "https://via.placeholder.com/300?text=Yara" }
+  ];
 
-    /* Contenedor de Productos */
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
+  let cart = [];
+  const grid = document.getElementById('grid');
 
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-    }
+  products.forEach(p => {
+    grid.innerHTML += `
+      <div class="card">
+        <img src="${p.img}">
+        <h3>${p.name}</h3>
+        <div class="price">$${p.price}</div>
+        <button class="btn-add" onclick="add(${p.id})">Agregar</button>
+      </div>
+    `;
+  });
 
-    /* Tarjeta de Producto */
-    .card {
-      background: var(--blanco);
-      border-radius: 20px;
-      padding: 25px;
-      text-align: center;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-      border: 1px solid #f0f0f0;
-      transition: transform 0.3s ease;
-    }
+  function add(id) {
+    const p = products.find(x => x.id === id);
+    cart.push(p);
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    document.getElementById('total').innerText = total;
 
-    .card:hover {
-      transform: translateY(-10px);
-      border-color: var(--dorado-claro);
-    }
-
-    .card img {
-      width: 100%;
-      height: 250px;
-      object-fit: contain;
-      margin-bottom: 20px;
-    }
-
-    .card h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      margin: 10px 0;
-    }
-
-    .card .price {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--dorado-claro);
-      margin-bottom: 20px;
-    }
-
-    .btn
+    let msg = "Hola Decantcias! Quiero:\n";
+    cart.forEach(i => msg += `- ${i.name} ($${i.price})\n`);
+    msg += "\nTotal: $" + total;
+    document.getElementById('ws-link').href = `https://wa.me/5493517883411?text=${encodeURIComponent(msg)}`;
+  }
+</script>
+</body>
+</html>
