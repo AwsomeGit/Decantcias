@@ -16,22 +16,20 @@
         .card:hover { transform: translateY(-5px); }
         .card img { width: 100%; height: 280px; object-fit: contain; border-radius: 15px; }
         .price { font-weight: 600; color: var(--dorado-claro); font-size: 1.2rem; margin-top: 10px; }
-        
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); }
         .modal-content { background: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 40px 25px 25px; width: 85%; max-width: 450px; border-radius: 25px; text-align: center; max-height: 85vh; overflow-y: auto; }
         .close-btn { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; border: none; font-weight: bold; }
-        
         .carousel { position: relative; width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
         .carousel img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .nav-btn { background: rgba(0,0,0,0.05); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
-        
         .unidero { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 15px; }
         .btn-qty { background: var(--dorado); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
-        
         .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); z-index: 1000; border-radius: 25px 25px 0 0; cursor: pointer; }
         .btn-main { background: var(--dorado); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
         .btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; display: block; text-align: center; text-decoration: none; margin-top: 15px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
+        /* Para que el texto largo se vea bien */
+        #modal-desc { white-space: pre-line; }
     </style>
 </head>
 <body>
@@ -103,15 +101,7 @@
             name: "Khamrah Qahwa", 
             price: 70000, 
             imgs: ["img/khamrahqhawa.jpg", "img/khamrahqahwa2.jpg", "img/khamrahqhawa3.jpg"],
-            desc: `Khamrah Qahwa de Lattafa (2023) es una fragancia árabe unisex, oriental y especiada, destacada por una nota intensa de café cremoso mezclada con praliné, canela y vainilla. Es una versión más intensa y "gourmand" del Khamrah original, ideal para climas fríos, noches de otoño/invierno, con alta duración (12+ horas) y una estela seductora y cálida.
-
-Características Principales:
-• Familia Olfativa: Oriental Especiada Gourmand.
-• Notas de Salida: Canela, cardamomo y jengibre.
-• Notas de Corazón: Praliné, frutas confitadas y flores blancas.
-• Notas de Fondo: Café, vainilla, haba tonka, benjuí y almizcle.
-
-Aroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como protagonista, evocando una cafetería de lujo.`
+            desc: `Khamrah Qahwa de Lattafa (2023) es una fragancia árabe unisex, oriental y especiada, destacada por una nota intensa de café cremoso mezclada con praliné, canela y vainilla. Es una versión más intensa y "gourmand" del Khamrah original, ideal para climas fríos, noches de otoño/invierno, con alta duración (12+ horas) y una estela seductora y cálida.\n\nCaracterísticas Principales:\n• Familia Olfativa: Oriental Especiada Gourmand.\n• Notas de Salida: Canela, cardamomo y jengibre.\n• Notas de Corazón: Praliné, frutas confitadas y flores blancas.\n• Notas de Fondo: Café, vainilla, haba tonka, benjuí y almizcle.\n\nAroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como protagonista, evocando una cafetería de lujo.`
         }
     ];
 
@@ -188,4 +178,3 @@ Aroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como
 </script>
 </body>
 </html>
-
