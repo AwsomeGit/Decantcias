@@ -6,67 +6,73 @@
   <title>Decantcias | Perfumería Árabe</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Poppins', sans-serif; background: #fdfaf6; margin: 0; padding-bottom: 100px; }
+    :root { --dorado: #8a6d3b; --dorado-claro: #bc9c22; --fondo: #fdfaf6; }
+    body { font-family: 'Poppins', sans-serif; background: var(--fondo); margin: 0; padding-bottom: 100px; }
+    
     header { background: white; padding: 30px; text-align: center; border-bottom: 1px solid #eee; }
-    h1 { font-family: 'Playfair Display', serif; color: #8a6d3b; font-size: 2.5rem; margin: 0; }
-    .container { max-width: 1000px; margin: 20px auto; padding: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-    .card { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; }
-    .card img { width: 100%; height: 200px; object-fit: contain; }
-    .price { font-weight: bold; color: #bc9c22; font-size: 1.2rem; margin: 10px 0; }
-    .btn-add { background: #8a6d3b; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
-    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 25px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-    .btn-confirm { background: #25D366; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; }
+    h1 { font-family: 'Playfair Display', serif; color: var(--dorado); font-size: 2.5rem; margin: 0; }
+
+    .container { max-width: 1100px; margin: 20px auto; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+    
+    /* Tarjeta de Producto */
+    .card { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
+    .card:hover { transform: translateY(-5px); }
+    .card img { width: 100%; height: 250px; object-fit: contain; border-radius: 10px; }
+    
+    /* Modal de Detalle de Producto */
+    .modal-detail { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); overflow-y: auto; }
+    .detail-content { background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 600px; border-radius: 20px; position: relative; }
+    
+    /* Carrusel */
+    .carousel-container { position: relative; text-align: center; }
+    .carousel-img { width: 100%; height: 350px; object-fit: contain; border-radius: 15px; }
+    .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.3); color: white; border: none; padding: 10px; cursor: pointer; border-radius: 50%; }
+    .prev { left: 10px; } .next { right: 10px; }
+
+    .desc-text { color: #666; line-height: 1.6; margin: 20px 0; }
+
+    /* Barra de Carrito */
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 100; }
+    .btn-action { background: var(--dorado); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    .close { position: absolute; right: 20px; top: 15px; font-size: 30px; cursor: pointer; z-index: 10; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>DECANTCIAS</h1>
-  <p>Elegancia en cada gota</p>
-</header>
+<header><h1>DECANTCIAS</h1></header>
 
 <div class="container">
-  <div class="grid" id="grid"></div>
+  <div class="grid" id="main-grid"></div>
+</div>
+
+<div id="productModal" class="modal-detail">
+  <div class="detail-content">
+    <span class="close" onclick="closeDetail()">&times;</span>
+    <div class="carousel-container">
+      <button class="nav-btn prev" onclick="changeImg(-1)">&#10094;</button>
+      <img id="modal-img" class="carousel-img" src="">
+      <button class="nav-btn next" onclick="changeImg(1)">&#10095;</button>
+    </div>
+    <h2 id="modal-title" style="font-family: 'Playfair Display', serif;"></h2>
+    <div id="modal-price" style="font-size: 1.5rem; color: var(--dorado-claro); font-weight: bold;"></div>
+    <p id="modal-desc" class="desc-text"></p>
+    <button class="btn-action" id="add-from-modal" style="width:100%">Añadir al Carrito</button>
+  </div>
 </div>
 
 <div class="cart-bar">
-  <div>Total: $<span id="total">0</span></div>
-  <a href="#" class="btn-confirm" id="ws-link">Pedir por WhatsApp</a>
+  <div>Total: $<span id="cart-total">0</span></div>
+  <button class="btn-action" onclick="sendWhatsApp()">Confirmar Pedido (WhatsApp)</button>
 </div>
 
 <script>
+  // 1. DATOS DE PRODUCTOS
   const products = [
-    { id: 1, name: "Lattafa Asad", price: 60000, img: "https://via.placeholder.com/300?text=Asad" },
-    { id: 2, name: "Khamrah", price: 65000, img: "https://via.placeholder.com/300?text=Khamrah" },
-    { id: 3, name: "Yara Candy", price: 52000, img: "https://via.placeholder.com/300?text=Yara" }
-  ];
-
-  let cart = [];
-  const grid = document.getElementById('grid');
-
-  products.forEach(p => {
-    grid.innerHTML += `
-      <div class="card">
-        <img src="${p.img}">
-        <h3>${p.name}</h3>
-        <div class="price">$${p.price}</div>
-        <button class="btn-add" onclick="add(${p.id})">Agregar</button>
-      </div>
-    `;
-  });
-
-  function add(id) {
-    const p = products.find(x => x.id === id);
-    cart.push(p);
-    const total = cart.reduce((s, i) => s + i.price, 0);
-    document.getElementById('total').innerText = total;
-
-    let msg = "Hola Decantcias! Quiero:\n";
-    cart.forEach(i => msg += `- ${i.name} ($${i.price})\n`);
-    msg += "\nTotal: $" + total;
-    document.getElementById('ws-link').href = `https://wa.me/5493517883411?text=${encodeURIComponent(msg)}`;
-  }
-</script>
-</body>
-</html>
+    { 
+      id: 1, 
+      name: "Lattafa Asad", 
+      price: 60000, 
+      imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"],
+      desc: "Lattafa Asad es una fragancia avainillada que abre con notas pic
