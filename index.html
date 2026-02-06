@@ -24,7 +24,45 @@
         .nav-btn { background: rgba(0,0,0,0.05); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
         .unidero { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 15px; }
         .btn-qty { background: var(--dorado); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); z-index: 1000; border-radius: 25px 25px 0 0; cursor: pointer; }
+        .cart-bar { 
+            position: fixed; 
+            bottom: 20px; /* Elevado del suelo para que parezca un botón flotante */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background: var(--dorado); /* Color dorado para que resalte */
+            color: white; 
+            padding: 15px 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            z-index: 1000; 
+            border-radius: 50px; /* Bordes redondeados tipo botón */
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .cart-bar:hover {
+            background: var(--dorado-claro);
+            transform: translateX(-50%) scale(1.02);
+        }
+
+        .cart-btn-text {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        /* Ajuste para que el total resalte */
+        #cart-total {
+            font-size: 1.2rem;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
         .btn-main { background: var(--dorado); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
         .btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; display: block; text-align: center; text-decoration: none; margin-top: 15px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
@@ -191,5 +229,6 @@ Aroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como
 </script>
 </body>
 </html>
+
 
 
