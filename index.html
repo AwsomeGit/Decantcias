@@ -8,38 +8,77 @@
     <style>
         :root { --dorado: #8a6d3b; --dorado-claro: #bc9c22; --fondo: #fdfaf6; }
         body { font-family: 'Poppins', sans-serif; background: var(--fondo); margin: 0; padding-bottom: 120px; color: #333; }
+        
         header { background: white; padding: 40px 20px; text-align: center; border-bottom: 1px solid #eee; }
         h1 { font-family: 'Playfair Display', serif; color: var(--dorado); font-size: 2.8rem; margin: 0; letter-spacing: 3px; }
+
         .container { max-width: 1100px; margin: 20px auto; padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
         
-        /* Tarjetas */
-        .card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #f0f0f0; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); }
+        .card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #f0f0f0; }
         .card img { width: 100%; height: 280px; object-fit: contain; border-radius: 15px; }
-        .price { font-weight: 600; color: var(--dorado-claro); font-size: 1.2rem; }
-        
-        /* Modales */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); overflow-y: auto; }
-        .modal-content { background: white; margin: 5% auto; padding: 30px; width: 90%; max-width: 450px; border-radius: 25px; position: relative; }
-        
-        /* Unidero y Carrusel */
-        .unidero { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 15px; }
-        .btn-qty { background: var(--dorado); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-        .carousel { position: relative; width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+
+        /* MODALES CORREGIDOS */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); }
+        .modal-content { 
+            background: white; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            padding: 30px; 
+            width: 85%; 
+            max-width: 450px; 
+            border-radius: 25px; 
+            max-height: 85vh; 
+            overflow-y: auto; 
+        }
+
+        /* BOTÓN X CERRAR (Fijo y visible) */
+        .close-btn { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            width: 35px; 
+            height: 35px; 
+            background: #eee; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            font-weight: bold; 
+            z-index: 10000;
+        }
+
+        /* CARRUSEL */
+        .carousel { position: relative; width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; margin: 10px 0; }
         .carousel img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.1); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
+        .nav-btn { background: rgba(0,0,0,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
 
-        /* Lista de Carrito Detallada */
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .btn-del { color: #ff4d4d; background: none; border: none; cursor: pointer; font-size: 0.8rem; }
+        .unidero { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0; background: #f9f9f9; padding: 10px; border-radius: 15px; }
+        .btn-qty { background: var(--dorado); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 18px; }
 
-        /* Barra Inferior */
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); border-radius: 25px 25px 0 0; }
-        .btn-buy { background: #25D366; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; text-decoration: none; }
-        .btn-view-cart { background: var(--dorado); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; }
-        
-        .close { position: absolute; right: 25px; top: 20px; font-size: 30px; cursor: pointer; color: #ccc; }
+        /* BARRA INFERIOR SIEMPRE ARRIBA */
+        .cart-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: white; 
+            padding: 20px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.2); 
+            z-index: 9000; 
+            border-radius: 25px 25px 0 0; 
+        }
+
+        .btn-main { background: var(--dorado); color: white; border: none; padding: 12px 20px; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
+        .btn-whatsapp { background: #25D366; color: white; border: none; padding: 12px 20px; border-radius: 50px; font-weight: 600; cursor: pointer; display: block; text-align: center; text-decoration: none; margin-top: 10px; }
+
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -54,42 +93,43 @@
 </div>
 
 <div id="productModal" class="modal">
-    <div class="modal-content" style="text-align: center;">
-        <span class="close" onclick="closeModals()">&times;</span>
+    <div class="modal-content">
+        <div class="close-btn" onclick="closeModals()">✕</div>
         <div class="carousel">
-            <button class="nav-btn" style="left:0" onclick="changeImg(-1)">&#10094;</button>
+            <button class="nav-btn" onclick="changeImg(-1)">❮</button>
             <img id="modal-img" src="">
-            <button class="nav-btn" style="right:0" onclick="changeImg(1)">&#10095;</button>
+            <button class="nav-btn" onclick="changeImg(1)">❯</button>
         </div>
-        <h2 id="modal-title" style="font-family: 'Playfair Display', serif;"></h2>
-        <div id="modal-price" style="font-size: 1.4rem; color: var(--dorado-claro); font-weight: bold;"></div>
+        <h2 id="modal-title" style="text-align: center; margin: 10px 0;"></h2>
+        <div id="modal-price" style="text-align: center; font-size: 1.5rem; color: var(--dorado-claro); font-weight: bold;"></div>
         
         <div class="unidero">
             <button class="btn-qty" onclick="updateQty(-1)">-</button>
             <span id="prod-qty" style="font-weight: bold; font-size: 1.2rem;">1</span>
             <button class="btn-qty" onclick="updateQty(1)">+</button>
         </div>
-
-        <p id="modal-desc" style="color:#666; font-size: 0.9rem;"></p>
-        <button onclick="addToCart()" class="btn-buy" style="width: 100%; background: var(--dorado);">Añadir al Carrito</button>
+        <p id="modal-desc" style="font-size: 0.9rem; color: #666; text-align: center;"></p>
+        <button onclick="addToCart()" class="btn-main">Añadir al Carrito</button>
     </div>
 </div>
 
 <div id="cartModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModals()">&times;</span>
-        <h2 style="font-family: 'Playfair Display', serif;">Mi Carrito</h2>
-        <div id="cart-list">
-            </div>
-        <div style="margin-top: 20px; text-align: right; font-size: 1.2rem;">
-            Total: <strong id="modal-total">$0</strong>
+        <div class="close-btn" onclick="closeModals()">✕</div>
+        <h2 style="font-family: 'Playfair Display', serif;">Mi Pedido</h2>
+        <div id="cart-list"></div>
+        <div style="margin-top: 20px; text-align: right;">
+            Total: <strong id="modal-total" style="font-size: 1.3rem;">$0</strong>
         </div>
-        <button onclick="sendWhatsApp()" class="btn-buy" style="width: 100%; margin-top: 20px;">Confirmar pedido por WhatsApp</button>
+        <a href="#" onclick="sendWhatsApp()" class="btn-whatsapp">Enviar a WhatsApp</a>
     </div>
 </div>
 
 <div class="cart-bar">
-    <button class="btn-view-cart" onclick="openCart()">🛒 Ver carrito (<span id="cart-count">0</span>)</button>
+    <div onclick="openCart()" style="cursor: pointer;">
+        <span style="font-size: 0.8rem; color: #888;">🛒 Ver Carrito</span><br>
+        <strong id="cart-count">0</strong> productos
+    </div>
     <div style="text-align: right;">
         <span style="font-size: 0.8rem; color: #888;">Total</span><br>
         <strong id="cart-total" style="font-size: 1.2rem;">$0</strong>
@@ -98,8 +138,8 @@
 
 <script>
     const products = [
-        { id: 1, name: "Lattafa Asad", price: 60000, imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"], desc: "Fragancia avainillada con notas picantes de pimienta y piña." },
-        { id: 2, name: "Khamrah", price: 65000, imgs: ["img/khamrah.jpg"], desc: "Dulce y lujoso, con notas de canela, dátiles y praliné." }
+        { id: 1, name: "Lattafa Asad", price: 60000, imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"], desc: "Fragancia avainillada con notas de pimienta y piña." },
+        { id: 2, name: "Khamrah", price: 65000, imgs: ["img/khamrah.jpg"], desc: "Dulce y lujoso con notas de canela y dátiles." }
     ];
 
     let cart = [];
@@ -107,12 +147,11 @@
     let currentImgIdx = 0;
     let currentQty = 1;
 
-    // Pintar Grid
     const grid = document.getElementById('main-grid');
     products.forEach(p => {
         grid.innerHTML += `
             <div class="card" onclick="openProduct(${p.id})">
-                <img src="${p.imgs[0]}" onerror="this.src='https://via.placeholder.com/300?text=Ver+Fotos'">
+                <img src="${p.imgs[0]}" onerror="this.src='https://via.placeholder.com/300?text=Decantcias'">
                 <h3>${p.name}</h3>
                 <div class="price">$${p.price.toLocaleString()}</div>
             </div>
@@ -127,16 +166,16 @@
         document.getElementById('productModal').style.display = 'block';
     }
 
-    function updateQty(val) {
-        currentQty = Math.max(1, currentQty + val);
-        document.getElementById('prod-qty').innerText = currentQty;
-    }
-
     function updateModalUI() {
         document.getElementById('modal-img').src = currentProduct.imgs[currentImgIdx];
         document.getElementById('modal-title').innerText = currentProduct.name;
         document.getElementById('modal-price').innerText = `$${currentProduct.price.toLocaleString()}`;
         document.getElementById('modal-desc').innerText = currentProduct.desc;
+        document.getElementById('prod-qty').innerText = currentQty;
+    }
+
+    function updateQty(val) {
+        currentQty = Math.max(1, currentQty + val);
         document.getElementById('prod-qty').innerText = currentQty;
     }
 
@@ -165,7 +204,7 @@
                         <strong>${item.qty}x ${item.name}</strong><br>
                         <small>$${(item.price * item.qty).toLocaleString()}</small>
                     </div>
-                    <button class="btn-del" onclick="removeFromCart(${item.cartId})">Eliminar</button>
+                    <button onclick="removeFromCart(${item.cartId})" style="color:red; background:none; border:none; cursor:pointer;">✕</button>
                 </div>
             `).join('');
     }
@@ -182,8 +221,8 @@
     }
 
     function sendWhatsApp() {
-        if(cart.length === 0) return alert("Carrito vacío");
-        let msg = "✨ *Pedido Decantcias* ✨\n\n";
+        if(cart.length === 0) return;
+        let msg = "✨ *Pedido de Decantcias* ✨\n\n";
         cart.forEach(i => msg += `• ${i.qty}x ${i.name} ($${(i.price * i.qty).toLocaleString()})\n`);
         const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
         msg += `\n*Total: $${total.toLocaleString()}*`;
@@ -192,5 +231,3 @@
 </script>
 </body>
 </html>
-
-
