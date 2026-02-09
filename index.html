@@ -6,162 +6,46 @@
 <title>Decantcias | Perfumería Árabe</title>
 
 <style>
-:root {
-  --dorado:#8a6d3b;
-  --bg:#fdfaf6;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
 }
 
-body{
-  margin:0;
-  font-family:Arial;
-  background:var(--bg);
-  padding-bottom:120px;
+/* BANNER */
+.top-banner img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    display: block;
 }
 
-/* ===== BANNER ===== */
-.top-banner img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-  display:block;
+/* GRID */
+.container {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 10px;
 }
-
-/* ===== GRID ===== */
-.container{max-width:1100px;margin:20px auto;padding:10px;}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:20px;
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 20px;
 }
-
-.card{
-  background:white;
-  border-radius:15px;
-  padding:10px;
-  text-align:center;
-  box-shadow:0 5px 20px rgba(0,0,0,.1);
-  cursor:pointer;
+.card {
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,.1);
+    cursor: pointer;
 }
-.card img{
-  width:100%;
-  height:200px;
-  object-fit:contain;
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
 }
-.price{
-  color:var(--dorado);
-  font-weight:bold;
-}
-
-/* ===== MODAL ===== */
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  z-index:9999;
-}
-.modal-content{
-  background:white;
-  width:90%;
-  max-width:400px;
-  padding:20px;
-  border-radius:20px;
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-}
-
-.close-btn{
-  position:absolute;
-  right:10px;
-  top:10px;
-  border:none;
-  background:#eee;
-  width:35px;
-  height:35px;
-  border-radius:50%;
-  font-size:18px;
-  cursor:pointer;
-}
-
-/* IMAGENES POPUP */
-.modal-img-box{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-}
-.modal-img-box img{
-  width:230px;
-  height:230px;
-  object-fit:contain;
-}
-.modal-img-box button{
-  border:none;
-  background:#000;
-  color:white;
-  font-size:20px;
-  padding:6px 12px;
-  border-radius:50%;
-  cursor:pointer;
-}
-#img-counter{
-  text-align:center;
-  font-size:12px;
-  opacity:.6;
-}
-
-/* CANTIDAD */
-.qty-box{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin:10px 0;
-}
-.qty-box button{
-  width:30px;
-  height:30px;
-  border:none;
-  border-radius:50%;
-  background:var(--dorado);
-  color:white;
-  font-size:18px;
-  cursor:pointer;
-}
-
-/* BOTONES */
-.btn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:30px;
-  background:var(--dorado);
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:10px;
-}
-.btn-whatsapp{
-  background:#25D366;
-}
-
-/* ===== CARRITO BAR ===== */
-.cart-bar{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:var(--dorado);
-  color:white;
-  padding:12px 20px;
-  border-radius:40px;
-  display:flex;
-  justify-content:space-between;
-  width:90%;
-  max-width:400px;
-  cursor:pointer;
-  box-shadow:0 10px 20px rgba(0,0,0,.4);
+.price {
+    color: goldenrod;
+    font-weight: bold;
 }
 </style>
 </head>
@@ -170,151 +54,31 @@ body{
 
 <!-- BANNER -->
 <div class="top-banner">
-  <img src="img/Banner.png">
+    <img src="img/Banner.png" alt="Decantcias">
 </div>
 
 <div class="container">
-  <div class="grid" id="main-grid"></div>
-</div>
-
-<!-- MODAL PRODUCTO -->
-<div id="productModal" class="modal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeModals()">✕</button>
-
-    <div class="modal-img-box">
-      <button onclick="prevImg()">‹</button>
-      <img id="modal-img">
-      <button onclick="nextImg()">›</button>
-    </div>
-    <div id="img-counter"></div>
-
-    <h2 id="modal-title"></h2>
-    <div id="modal-price" class="price"></div>
-
-    <div class="qty-box">
-      <button onclick="updateQty(-1)">-</button>
-      <span id="prod-qty">1</span>
-      <button onclick="updateQty(1)">+</button>
-    </div>
-
-    <p id="modal-desc"></p>
-    <button class="btn" onclick="addToCart()">Añadir al carrito</button>
-  </div>
-</div>
-
-<!-- MODAL CARRITO -->
-<div id="cartModal" class="modal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeModals()">✕</button>
-    <h2>Tu Pedido</h2>
-    <div id="cart-list"></div>
-    <b>Total: <span id="modal-total">$0</span></b>
-    <button class="btn btn-whatsapp" onclick="sendWhatsApp()">Confirmar por WhatsApp</button>
-  </div>
-</div>
-
-<!-- BARRA CARRITO -->
-<div class="cart-bar" onclick="openCart()">
-  <span>🛒 <b id="cart-count">0</b> productos</span>
-  <b id="cart-total">$0</b>
+    <div class="grid" id="main-grid"></div>
 </div>
 
 <script>
-// ===== PRODUCTOS =====
 const products = [
-{ id:1, name:"Lattafa Asad", price:60000, imgs:["img/asad1.jpg","img/asad2.jpg","img/asad3.jpg"], desc:"Pimienta negra, piña y vainilla" },
-{ id:2, name:"Lattafa Khamrah", price:65000, imgs:["img/khamrah1.jpg","img/khamrah2.jpg","img/khamrah3.jpg"], desc:"Canela, dátiles y praliné" },
-{ id:3, name:"Lattafa Asad Zanzibar", price:0, imgs:["img/asad_z1.jpg","img/asad_z2.jpg","img/asad_z3.jpg"], desc:"" },
-{ id:4, name:"Lattafa Yara Tous", price:0, imgs:["img/yara_t1.jpg","img/yara_t2.jpg","img/yara_t3.jpg"], desc:"" },
-{ id:5, name:"Lattafa Yara Candy", price:0, imgs:["img/yara_c1.jpg","img/yara_c2.jpg","img/yara_c3.jpg"], desc:"" },
-{ id:6, name:"Lattafa Yara Moi", price:0, imgs:["img/yara_m1.jpg","img/yara_m2.jpg","img/yara_m3.jpg"], desc:"" }
+{ id:1, name:"Lattafa Asad", price:60000, imgs:["img/asad.jpg"] },
+{ id:2, name:"Lattafa Khamrah", price:65000, imgs:["img/khamrah.jpg"] },
+{ id:3, name:"Lattafa Yara", price:55000, imgs:["img/yara.jpg"] }
 ];
 
-// ===== GRID =====
 const grid = document.getElementById("main-grid");
-products.forEach(p=>{
-  grid.innerHTML += `
-  <div class="card" onclick="openProduct(${p.id})">
-    <img src="${p.imgs[0]}">
-    <h3>${p.name}</h3>
-    <div class="price">$${p.price.toLocaleString()}</div>
-  </div>`;
+
+products.forEach(p => {
+    grid.innerHTML += `
+        <div class="card">
+            <img src="${p.imgs[0]}">
+            <h3>${p.name}</h3>
+            <div class="price">$${p.price.toLocaleString()}</div>
+        </div>
+    `;
 });
-
-// ===== MODAL =====
-let currentProduct;
-let currentImgIdx=0;
-let currentQty=1;
-let cart=[];
-
-function openProduct(id){
-  currentProduct = products.find(p=>p.id===id);
-  currentImgIdx=0;
-  currentQty=1;
-  showImage();
-  document.getElementById("modal-title").innerText=currentProduct.name;
-  document.getElementById("modal-price").innerText="$"+currentProduct.price.toLocaleString();
-  document.getElementById("modal-desc").innerText=currentProduct.desc;
-  document.getElementById("prod-qty").innerText=currentQty;
-  document.getElementById("productModal").style.display="block";
-}
-
-function showImage(){
-  document.getElementById("modal-img").src=currentProduct.imgs[currentImgIdx];
-  document.getElementById("img-counter").innerText=(currentImgIdx+1)+" / "+currentProduct.imgs.length;
-}
-
-function nextImg(){
-  currentImgIdx=(currentImgIdx+1)%currentProduct.imgs.length;
-  showImage();
-}
-function prevImg(){
-  currentImgIdx=(currentImgIdx-1+currentProduct.imgs.length)%currentProduct.imgs.length;
-  showImage();
-}
-
-function updateQty(v){
-  currentQty=Math.max(1,currentQty+v);
-  document.getElementById("prod-qty").innerText=currentQty;
-}
-
-function closeModals(){
-  document.getElementById("productModal").style.display="none";
-  document.getElementById("cartModal").style.display="none";
-}
-
-// ===== CARRITO =====
-function addToCart(){
-  cart.push({...currentProduct, qty:currentQty});
-  updateCart();
-  closeModals();
-}
-
-function openCart(){
-  document.getElementById("cartModal").style.display="block";
-  updateCart();
-}
-
-function updateCart(){
-  let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  document.getElementById("cart-total").innerText="$"+total.toLocaleString();
-  document.getElementById("modal-total").innerText="$"+total.toLocaleString();
-  document.getElementById("cart-count").innerText=cart.length;
-  document.getElementById("cart-list").innerHTML=cart.map(i=>`${i.qty}x ${i.name}<br>`).join("");
-}
-
-function sendWhatsApp(){
-  let msg="Pedido Decantcias\n\n";
-  cart.forEach(i=>msg+=`${i.qty}x ${i.name}\n`);
-  let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  msg+="\nTotal: $"+total;
-  window.open("https://wa.me/5493517883411?text="+encodeURIComponent(msg));
-}
-
-window.onclick=e=>{
-  if(e.target.className=="modal") closeModals();
-};
 </script>
 
 </body>
