@@ -1,124 +1,159 @@
-body { font-family: 'Poppins', sans-serif; background: var(--fondo); margin: 0; padding-bottom: 140px; color: #333; }
-header { background: white; padding: 40px 20px; text-align: center; border-bottom: 1px solid #eee; }
-h1 { font-family: 'Playfair Display', serif; color: var(--dorado); font-size: 2.8rem; margin: 0; letter-spacing: 3px; }
-        
-.container { max-width: 1100px; margin: 20px auto; padding: 20px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-.card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #f0f0f0; transition: 0.3s; }
-.card:hover { transform: translateY(-5px); }
-.card img { width: 100%; height: 280px; object-fit: contain; border-radius: 15px; }
-.price { font-weight: 600; color: var(--dorado-claro); font-size: 1.2rem; margin-top: 10px; }
-
-        /* MODALES */
-.modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); }
-.modal-content { background: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 40px 25px 25px; width: 85%; max-width: 450px; border-radius: 25px; text-align: center; max-height: 85vh; overflow-y: auto; }
-.close-btn { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; border: none; font-weight: bold; }
-
-.carousel { position: relative; width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
-.carousel img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .nav-btn { background: rgba(0,0,0,0.05); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
-        .nav-btn { background: rgba(0,0,0,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
-
-.unidero { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 15px; }
-.btn-qty { background: var(--dorado); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
-.btn-main { background: var(--dorado); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
-.btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; display: block; text-align: center; text-decoration: none; margin-top: 15px; }
-.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
-
-        #modal-desc { white-space: pre-line; }
-        #modal-desc { white-space: pre-line; text-align: left; font-size: 0.9rem; }
-
-        /* ESTILO DEL CARRITO */
-        /* BARRA CARRITO CORREGIDA */
-.cart-bar { 
-position: fixed; 
-bottom: 25px; 
-left: 50%;
-transform: translateX(-50%);
-width: 90%;
-max-width: 450px;
-            background: var(--dorado); 
-            color: white; 
-            background: #8a6d3b; /* Color sólido para asegurar visibilidad */
-            color: #ffffff !important; /* Blanco forzado */
-padding: 12px 25px; 
-display: flex; 
-justify-content: space-between; 
-align-items: center; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2); 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
-z-index: 1000; 
-border-radius: 50px; 
-cursor: pointer;
-            transition: all 0.3s ease;
-line-height: 1.2;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decantcias | Perfumería Árabe</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+--dorado:#8a6d3b;
+--dorado-claro:#bfa16a;
+--fondo:#faf7f2;
 }
-        .cart-bar:hover { background: var(--dorado-claro); transform: translateX(-50%) translateY(-3px); }
-        .cart-bar * { color: #ffffff !important; } /* Todo el texto dentro será blanco */
+body{font-family:Poppins,sans-serif;background:var(--fondo);margin:0;padding-bottom:140px;color:#333}
+header{background:#fff;padding:30px;text-align:center;border-bottom:1px solid #eee}
+h1{font-family:'Playfair Display',serif;color:var(--dorado);font-size:2.5rem;margin:0;letter-spacing:2px}
+.container{max-width:1100px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:25px}
+.card{background:#fff;padding:15px;border-radius:18px;text-align:center;box-shadow:0 10px 20px rgba(0,0,0,.05);cursor:pointer;transition:.25s;border:1px solid #f0f0f0}
+.card:hover{transform:translateY(-5px)}
+.card img{width:100%;height:240px;object-fit:contain;border-radius:12px}
+.price{font-weight:600;color:var(--dorado-claro);font-size:1.1rem;margin-top:8px}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:9999}
+.modal-content{background:#fff;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:420px;border-radius:20px;padding:20px;max-height:85vh;overflow:auto;text-align:center}
+.close-btn{position:absolute;top:10px;right:10px;width:35px;height:35px;border-radius:50%;border:none;background:#eee;font-size:18px;cursor:pointer}
+.carousel{display:flex;align-items:center;justify-content:center;gap:10px;height:240px;margin-bottom:10px}
+.carousel img{max-width:100%;max-height:100%;object-fit:contain}
+.nav-btn{border:none;background:#eee;width:35px;height:35px;border-radius:50%;font-size:18px;cursor:pointer}
+.qty-box{display:flex;align-items:center;justify-content:center;gap:15px;margin:12px 0;background:#f7f7f7;padding:10px;border-radius:12px}
+.btn-qty{width:32px;height:32px;border:none;border-radius:50%;background:var(--dorado);color:#fff;font-size:18px;cursor:pointer}
+.btn-main{width:100%;padding:12px;border:none;border-radius:40px;background:var(--dorado);color:#fff;font-weight:600;cursor:pointer}
+
+/* CARRITO BAR */
+.cart-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:90%;max-width:420px;background:var(--dorado);color:#fff;padding:12px 20px;border-radius:40px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.3);z-index:999}
+.cart-bar *{color:#fff}
+
+/* CARRITO MODAL */
+.cart-item{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:8px 0;font-size:.9rem}
 </style>
 </head>
 <body>
-@@ -85,7 +86,7 @@ <h2 id="modal-title" style="margin: 10px 0; font-family: 'Playfair Display', ser
+<header>
+<h1>Decantcias</h1>
+<p>Perfumería Árabe Premium</p>
+</header>
+
+<div class="container">
+<div class="grid" id="productGrid"></div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div id="productModal" class="modal">
+<div class="modal-content">
+<button class="close-btn" onclick="closeModals()">✕</button>
+<div class="carousel">
+<button class="nav-btn" onclick="changeImg(-1)">‹</button>
+<img id="modal-img">
+<button class="nav-btn" onclick="changeImg(1)">›</button>
+</div>
+<h2 id="modal-title"></h2>
+<div id="modal-price" class="price"></div>
+<div class="qty-box">
+<button class="btn-qty" onclick="updateQty(-1)">-</button>
+<strong id="prod-qty">1</strong>
 <button class="btn-qty" onclick="updateQty(1)">+</button>
 </div>
+<p id="modal-desc" style="text-align:left;font-size:.85rem;color:#555"></p>
+<button class="btn-main" onclick="addToCart()">Añadir al carrito</button>
+</div>
+</div>
 
-        <p id="modal-desc" style="font-size: 0.85rem; color: #666; margin-bottom: 15px; text-align: left;"></p>
-        <p id="modal-desc" style="color: #666; margin-bottom: 15px;"></p>
-<button onclick="addToCart()" class="btn-main">Añadir al Carrito</button>
+<!-- CART MODAL -->
+<div id="cartModal" class="modal">
+<div class="modal-content">
+<button class="close-btn" onclick="closeModals()">✕</button>
+<h2>Tu pedido</h2>
+<div id="cart-list"></div>
+<h3>Total: <span id="modal-total">$0</span></h3>
+<button class="btn-main" onclick="sendWhatsApp()">Enviar por WhatsApp</button>
 </div>
 </div>
-@@ -107,11 +108,11 @@ <h2 style="font-family: 'Playfair Display', serif;">Tu Pedido</h2>
-<span style="font-size: 1.3rem;">🛒</span>
-<div style="text-align: left;">
-<strong id="cart-count">0</strong> productos<br>
-            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; opacity: 0.9;">Ver carrito</span>
-            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Ver carrito</span>
-</div>
-</div>
-<div style="text-align: right;">
-        <small style="opacity: 0.8;">Total:</small><br>
-        <span style="font-size: 0.75rem;">Total:</span><br>
-<strong id="cart-total" style="font-size: 1.2rem;">$0</strong>
-</div>
-</div>
-@@ -136,20 +137,8 @@ <h2 style="font-family: 'Playfair Display', serif;">Tu Pedido</h2>
-id: 3, 
-name: "Khamrah Qahwa", 
-price: 70000, 
-            imgs: [
-                "img/khamrahqhawa.jpg", 
-                "img/khamrahqahwa2.jpg", 
-                "img/khamraqahwa3.jpg"
-            ],
-            desc: `Khamrah Qahwa de Lattafa (2023) es una fragancia árabe unisex, oriental y especiada, destacada por una nota intensa de café cremoso mezclada con praliné, canela y vainilla. Es una versión más intensa y "gourmand" del Khamrah original, ideal para climas fríos, noches de otoño/invierno, con alta duración (12+ horas) y una estela seductora y cálida.
 
-Características Principales:
-• Familia Olfativa: Oriental Especiada Gourmand.
-• Notas de Salida: Canela, cardamomo y jengibre.
-• Notas de Corazón: Praliné, frutas confitadas y flores blancas.
-• Notas de Fondo: Café, vainilla, haba tonka, benjuí y almizcle.
+<!-- CART BAR -->
+<div class="cart-bar" onclick="openCart()">
+<div>🛒 <strong id="cart-count">0</strong> productos</div>
+<div>$<strong id="cart-total">0</strong></div>
+</div>
 
-Aroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como protagonista, evocando una cafetería de lujo.`
-            imgs: ["img/khamrahqhawa.jpg", "img/khamrahqahwa2.jpg", "img/khamraqahwa3.jpg"],
-            desc: `Khamrah Qahwa de Lattafa (2023) es una fragancia árabe unisex, oriental y especiada, destacada por una nota intensa de café cremoso mezclada con praliné, canela y vainilla. Es una versión más intensa y "gourmand" del Khamrah original, ideal para climas fríos, noches de otoño/invierno, con alta duración (12+ horas) y una estela seductora y cálida.\n\nCaracterísticas Principales:\n• Familia Olfativa: Oriental Especiada Gourmand.\n• Notas de Salida: Canela, cardamomo y jengibre.\n• Notas de Corazón: Praliné, frutas confitadas y flores blancas.\n• Notas de Fondo: Café, vainilla, haba tonka, benjuí y almizcle.\n\nAroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como protagonista, evocando una cafetería de lujo.`
-}
+<script>
+const products=[
+{ id:1,name:"Lattafa Asad",price:60000,imgs:["img/asad1.jpg","img/asad2.jpg","img/asad3.jpg"],desc:"Pimienta negra, piña y vainilla."},
+{ id:2,name:"Lattafa Yara Tous",price:52000,imgs:["img/yaratous1.jpg","img/yaratous2.jpg","img/yaratous3.jpg"],desc:"Floral dulce tropical."},
+{ id:3,name:"Lattafa Yara Candy",price:52000,imgs:["img/yaracandy1.jpg","img/yaracandy2.jpg","img/yaracandy3.jpg"],desc:"Dulce gourmand femenino."},
+{ id:4,name:"Lattafa Yara Moi",price:52000,imgs:["img/yaramoi1.jpg","img/yaramoi2.jpg","img/yaramoi3.jpg"],desc:"Cremoso y floral elegante."},
+{ id:5,name:"Lattafa Qaed Al Fursan",price:50000,imgs:["img/qaed1.jpg","img/qaed2.jpg","img/qaed3.jpg"],desc:"Piña ahumada y madera."},
+{ id:6,name:"Lattafa Eclaire",price:55000,imgs:["img/eclaire1.jpg","img/eclaire2.jpg","img/eclaire3.jpg"],desc:"Vainilla cremosa tipo Bianco Latte."},
+{ id:7,name:"Lattafa Badee Al Oud Sublime",price:70000,imgs:["img/sublime1.jpg","img/sublime2.jpg","img/sublime3.jpg"],desc:"Oud frutal elegante."},
+{ id:8,name:"Lattafa Badee Al Oud Honor & Glory",price:70000,imgs:["img/honor1.jpg","img/honor2.jpg","img/honor3.jpg"],desc:"Piña cremosa y especias."},
+{ id:9,name:"Lattafa Hayaati Black",price:48000,imgs:["img/hayaati1.jpg","img/hayaati2.jpg","img/hayaati3.jpg"],desc:"Dulce masculino moderno."},
+{ id:10,name:"Lattafa Confidential Gold",price:65000,imgs:["img/conf1.jpg","img/conf2.jpg","img/conf3.jpg"],desc:"Dorado elegante oriental."},
+{ id:11,name:"Lattafa Maahir Legacy",price:65000,imgs:["img/maahir1.jpg","img/maahir2.jpg","img/maahir3.jpg"],desc:"Cítrico fresco premium."},
+{ id:12,name:"Lattafa Fakhar Silver",price:50000,imgs:["img/fakhar1.jpg","img/fakhar2.jpg","img/fakhar3.jpg"],desc:"Tipo Y EDP masculino."}
 ];
 
-@@ -180,17 +169,14 @@ <h3>${p.name}</h3>
+const grid=document.getElementById("productGrid");
+products.forEach(p=>{
+const c=document.createElement("div");
+c.className="card";
+c.onclick=()=>openProduct(p.id);
+c.innerHTML=`<img src='${p.imgs[0]}'><h3>${p.name}</h3><div class='price'>$${p.price.toLocaleString()}</div>`;
+grid.appendChild(c);
+});
+
+let currentProduct=null,currentImgIdx=0,currentQty=1,cart=[];
+
+function openProduct(id){
+currentProduct=products.find(p=>p.id===id);
+currentImgIdx=0;currentQty=1;
+document.getElementById("modal-img").src=currentProduct.imgs[0];
+document.getElementById("modal-title").innerText=currentProduct.name;
+document.getElementById("modal-price").innerText="$"+currentProduct.price.toLocaleString();
+document.getElementById("modal-desc").innerText=currentProduct.desc;
+document.getElementById("prod-qty").innerText=currentQty;
+document.getElementById("productModal").style.display="block";
+}
+function changeImg(s){
+currentImgIdx=(currentImgIdx+s+currentProduct.imgs.length)%currentProduct.imgs.length;
+document.getElementById("modal-img").src=currentProduct.imgs[currentImgIdx];
+}
+function updateQty(v){currentQty=Math.max(1,currentQty+v);document.getElementById("prod-qty").innerText=currentQty;}
+function closeModals(){document.getElementById("productModal").style.display="none";document.getElementById("cartModal").style.display="none";}
+
+function addToCart(){cart.push({...currentProduct,qty:currentQty,idc:Date.now()});updateCart();closeModals();}
+
+function updateCart(){
+let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+document.getElementById("cart-total").innerText=total.toLocaleString();
+document.getElementById("modal-total").innerText=total.toLocaleString();
+document.getElementById("cart-count").innerText=cart.length;
+document.getElementById("cart-list").innerHTML=cart.map(i=>`<div class='cart-item'><span>${i.qty}x ${i.name}</span><button onclick='removeItem(${i.idc})'>✕</button></div>`).join("");
+}
+function removeItem(id){cart=cart.filter(i=>i.idc!==id);updateCart();}
+function openCart(){document.getElementById("cartModal").style.display="block";}
+
+function sendWhatsApp(){
+if(!cart.length)return;
+let msg="Pedido Decantcias%0A%0A";
+cart.forEach(i=>msg+=`${i.qty}x ${i.name}%0A`);
+let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+msg+=`%0ATotal: $${total}`;
+window.open(`https://wa.me/5493517883411?text=${msg}`);
 }
 
-function updateQty(val) { currentQty = Math.max(1, currentQty + val); document.getElementById('prod-qty').innerText = currentQty; }
-    
-function changeImg(s) { 
-currentImgIdx = (currentImgIdx + s + currentProduct.imgs.length) % currentProduct.imgs.length;
-document.getElementById('modal-img').src = currentProduct.imgs[currentImgIdx]; 
-}
-
-function closeModals() { 
-document.getElementById('productModal').style.display = 'none'; 
-document.getElementById('cartModal').style.display = 'none'; 
-}
-
-function openCart() { document.getElementById('cartModal').style.display = 'block'; updateGlobalCart(); }
-
-function addToCart() {
+window.onclick=e=>{if(e.target.className==="modal")closeModals();};
+</script>
+</body>
+</html>
