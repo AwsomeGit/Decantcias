@@ -11,16 +11,14 @@
 
         /* ===== BANNER TOP ===== */
 .top-banner {
-    width: 100%;
-    background: #000; /* relleno elegante si sobra espacio */
-    border-bottom: 1px solid #eee;
+    background: #fff;
 }
 
 .top-banner img {
-    width: 100%;        /* 👈 se estira horizontal al máximo */
-    height: 180px;       /* 👈 altura chica */
-    object-fit: contain; /* 👈 NO recorta */
-    display: block;
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    object-position: center;
 }
 
         /* Contenedor general */
@@ -226,6 +224,7 @@ window.onclick = (e) => { if (e.target.className === 'modal') closeModals(); }
 
 </body>
 </html>
+
 
 
 
