@@ -31,9 +31,16 @@ body {
 
 .top-banner img {
     width: 100%;
-    height: auto;       /* 🔥 deja altura real */
-    max-height: 400px;   /* limita tamaño */
+    height: 140px;       /* 🔥 igual al tamaño de la foto que mostraste */
     object-fit: cover;
+    object-position: center;
+}
+
+/* Celular */
+@media (max-width: 768px) {
+    .top-banner img {
+        height: 110px;
+    }
 }
 
 /* Responsive */
@@ -375,6 +382,7 @@ window.onclick=e=>{if(e.target.className=="modal")closeModals();}
 
 </body>
 </html>
+
 
 
 
