@@ -1,95 +1,274 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decantcias | Perfumería Árabe</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        :root { --dorado: #8a6d3b; --dorado-claro: #bc9c22; --fondo: #fdfaf6; }
-        body { font-family: 'Poppins', sans-serif; background: var(--fondo); margin: 0; padding-bottom: 140px; color: #333; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decantcias | Perfumería Árabe</title>
 
-        /* ===== BANNER TOP ===== */
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --dorado: #8a6d3b;
+    --dorado-claro: #bc9c22;
+    --fondo: #fdfaf6;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--fondo);
+    margin: 0;
+    padding-bottom: 140px;
+    color: #333;
+}
+
+/* ===== BANNER TOP ===== */
 .top-banner {
-    background: #fff;
+    width: 100%;
+    overflow: hidden;
+    background: #000; /* si la imagen no carga */
 }
 
 .top-banner img {
     width: 100%;
-    max-height: 180px;
+    height: 220px; /* ALTURA DEL BANNER */
     object-fit: cover;
     object-position: center;
+    display: block;
 }
 
-        /* Contenedor general */
-        .container { max-width: 1100px; margin: 20px auto; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        .card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #f0f0f0; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); }
-        .card img { width: 100%; height: 280px; object-fit: contain; border-radius: 15px; }
-        .price { font-weight: 600; color: var(--dorado-claro); font-size: 1.2rem; margin-top: 10px; }
+/* Responsive banner */
+@media (max-width: 768px) {
+    .top-banner img {
+        height: 150px;
+    }
+}
 
-        /* MODALES */
-        .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); }
-        .modal-content { background: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 40px 25px 25px; width: 85%; max-width: 450px; border-radius: 25px; text-align: center; max-height: 85vh; overflow-y: auto; }
-        .close-btn { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; border: none; font-weight: bold; }
+/* ===== CONTENEDOR ===== */
+.container {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 20px;
+}
 
-        .carousel { position: relative; width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
-        .carousel img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .nav-btn { background: rgba(0,0,0,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
 
-        .unidero { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 15px; }
-        .btn-qty { background: var(--dorado); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
-        .btn-main { background: var(--dorado); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
-        .btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; display: block; text-align: center; text-decoration: none; margin-top: 15px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
+/* ===== TARJETAS ===== */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    cursor: pointer;
+    border: 1px solid #f0f0f0;
+    transition: 0.3s;
+}
 
-        #modal-desc { white-space: pre-line; text-align: left; font-size: 0.9rem; }
+.card:hover {
+    transform: translateY(-5px);
+}
 
-        /* BARRA CARRITO */
-        .cart-bar { 
-            position: fixed; 
-            bottom: 25px; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 450px;
-            background: #8a6d3b;
-            color: #ffffff !important;
-            padding: 12px 25px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
-            z-index: 1000; 
-            border-radius: 50px; 
-            cursor: pointer;
-            line-height: 1.2;
-        }
-        .cart-bar * { color: #ffffff !important; }
-    </style>
+.card img {
+    width: 100%;
+    height: 280px;
+    object-fit: contain;
+    border-radius: 15px;
+}
+
+.price {
+    font-weight: 600;
+    color: var(--dorado-claro);
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+/* ===== MODALES ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 40px 25px 25px;
+    width: 85%;
+    max-width: 450px;
+    border-radius: 25px;
+    text-align: center;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    border: none;
+    font-weight: bold;
+}
+
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.carousel img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.nav-btn {
+    background: rgba(0,0,0,0.1);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* ===== CANTIDAD ===== */
+.unidero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 15px 0;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.btn-qty {
+    background: var(--dorado);
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.btn-main {
+    background: var(--dorado);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 15px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+#modal-desc {
+    white-space: pre-line;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+/* ===== BARRA CARRITO ===== */
+.cart-bar {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 450px;
+    background: var(--dorado);
+    color: white;
+    padding: 12px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    z-index: 1000;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.cart-bar * {
+    color: white !important;
+}
+</style>
 </head>
+
 <body>
 
 <!-- ===== BANNER DECANTCIAS ===== -->
 <div class="top-banner">
-    <img src="img/Banner.png?v=1"> " alt="Decantcias Perfumería Árabe">
+    <img src="img/Banner.png?v=5" alt="Decantcias Perfumería Árabe">
 </div>
 
 <div class="container">
     <div class="grid" id="main-grid"></div>
 </div>
 
-<!-- MODAL PRODUCTO -->
+<!-- ===== MODAL PRODUCTO ===== -->
 <div id="productModal" class="modal">
     <div class="modal-content">
         <button class="close-btn" onclick="closeModals()">✕</button>
+
         <div class="carousel">
             <button class="nav-btn" onclick="changeImg(-1)">❮</button>
-            <img id="modal-img" src="">
+            <img id="modal-img">
             <button class="nav-btn" onclick="changeImg(1)">❯</button>
         </div>
-        <h2 id="modal-title" style="margin: 10px 0; font-family: 'Playfair Display', serif;"></h2>
+
+        <h2 id="modal-title" style="font-family: 'Playfair Display', serif;"></h2>
         <div id="modal-price" style="font-size: 1.5rem; color: var(--dorado-claro); font-weight: bold;"></div>
 
         <div class="unidero">
@@ -98,12 +277,12 @@
             <button class="btn-qty" onclick="updateQty(1)">+</button>
         </div>
 
-        <p id="modal-desc" style="color: #666; margin-bottom: 15px;"></p>
+        <p id="modal-desc"></p>
         <button onclick="addToCart()" class="btn-main">Añadir al Carrito</button>
     </div>
 </div>
 
-<!-- MODAL CARRITO -->
+<!-- ===== MODAL CARRITO ===== -->
 <div id="cartModal" class="modal">
     <div class="modal-content">
         <button class="close-btn" onclick="closeModals()">✕</button>
@@ -112,123 +291,86 @@
         <div style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 10px;">
             Total: <strong id="modal-total">$0</strong>
         </div>
-        <a href="#" onclick="sendWhatsApp()" class="btn-whatsapp">Confirmar por WhatsApp</a>
+        <a onclick="sendWhatsApp()" class="btn-whatsapp">Confirmar por WhatsApp</a>
     </div>
 </div>
 
-<!-- BARRA CARRITO -->
+<!-- ===== BARRA CARRITO ===== -->
 <div class="cart-bar" onclick="openCart()">
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 1.3rem;">🛒</span>
-        <div style="text-align: left;">
-            <strong id="cart-count">0</strong> productos<br>
-            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Ver carrito</span>
-        </div>
+    <div>
+        🛒 <strong id="cart-count">0</strong> productos<br>
+        <span style="font-size: 0.8rem;">Ver carrito</span>
     </div>
-    <div style="text-align: right;">
-        <span style="font-size: 0.75rem;">Total:</span><br>
-        <strong id="cart-total" style="font-size: 1.2rem;">$0</strong>
+    <div>
+        Total:<br>
+        <strong id="cart-total">$0</strong>
     </div>
 </div>
 
 <script>
 const products = [
-    { 
-        id: 1, 
-        name: "Lattafa Asad", 
-        price: 60000, 
-        imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"],
-        desc: "Fragancia potente con notas de pimienta negra, piña y vainilla."
-    },
-    { 
-        id: 2, 
-        name: "Lattafa Khamrah", 
-        price: 65000, 
-        imgs: ["img/khamrah.jpg", "img/khamrah2.jpg", "img/khamrah3.jpg"], 
-        desc: "Dulce y lujoso con canela, dátiles y praliné."
-    },
-    { 
-        id: 3, 
-        name: "Khamrah Qahwa", 
-        price: 70000, 
-        imgs: ["img/khamrahqhawa.jpg", "img/khamrahqahwa2.jpg", "img/khamraqahwa3.jpg"],
-        desc: `Fragancia intensa con café, praliné, canela y vainilla.`
-    }
+{ id:1, name:"Lattafa Asad", price:60000, imgs:["img/asad.jpg"], desc:"Notas de pimienta negra, piña y vainilla." },
+{ id:2, name:"Lattafa Khamrah", price:65000, imgs:["img/khamrah.jpg"], desc:"Canela, dátiles y praliné. Dulce y lujoso." },
+{ id:3, name:"Khamrah Qahwa", price:70000, imgs:["img/khamrahqahwa.jpg"], desc:"Café, praliné, canela y vainilla intensa." }
 ];
 
-let cart = [];
-let currentProduct = null;
-let currentImgIdx = 0;
-let currentQty = 1;
+let cart=[], currentProduct=null, currentImgIdx=0, currentQty=1;
 
-const grid = document.getElementById('main-grid');
-products.forEach(p => {
-    grid.innerHTML += `
-        <div class="card" onclick="openProduct(${p.id})">
-            <img src="${p.imgs[0]}" onerror="this.src='https://via.placeholder.com/300?text=Decantcias'">
-            <h3>${p.name}</h3>
-            <div class="price">$${p.price.toLocaleString()}</div>
-        </div>`;
+const grid=document.getElementById("main-grid");
+products.forEach(p=>{
+grid.innerHTML+=`
+<div class="card" onclick="openProduct(${p.id})">
+<img src="${p.imgs[0]}" onerror="this.src='https://via.placeholder.com/300'">
+<h3>${p.name}</h3>
+<div class="price">$${p.price.toLocaleString()}</div>
+</div>`;
 });
 
-function openProduct(id) {
-    currentProduct = products.find(p => p.id === id);
-    currentImgIdx = 0; currentQty = 1;
-    document.getElementById('modal-img').src = currentProduct.imgs[0];
-    document.getElementById('modal-title').innerText = currentProduct.name;
-    document.getElementById('modal-price').innerText = `$${currentProduct.price.toLocaleString()}`;
-    document.getElementById('prod-qty').innerText = currentQty;
-    document.getElementById('modal-desc').innerText = currentProduct.desc;
-    document.getElementById('productModal').style.display = 'block';
+function openProduct(id){
+currentProduct=products.find(p=>p.id===id);
+currentQty=1; currentImgIdx=0;
+document.getElementById("modal-img").src=currentProduct.imgs[0];
+document.getElementById("modal-title").innerText=currentProduct.name;
+document.getElementById("modal-price").innerText="$"+currentProduct.price.toLocaleString();
+document.getElementById("prod-qty").innerText=currentQty;
+document.getElementById("modal-desc").innerText=currentProduct.desc;
+document.getElementById("productModal").style.display="block";
 }
 
-function updateQty(val) { currentQty = Math.max(1, currentQty + val); document.getElementById('prod-qty').innerText = currentQty; }
-function changeImg(s) { 
-    currentImgIdx = (currentImgIdx + s + currentProduct.imgs.length) % currentProduct.imgs.length;
-    document.getElementById('modal-img').src = currentProduct.imgs[currentImgIdx]; 
-}
-function closeModals() { document.getElementById('productModal').style.display = 'none'; document.getElementById('cartModal').style.display = 'none'; }
-function openCart() { document.getElementById('cartModal').style.display = 'block'; updateGlobalCart(); }
+function updateQty(v){currentQty=Math.max(1,currentQty+v);document.getElementById("prod-qty").innerText=currentQty;}
+function closeModals(){document.getElementById("productModal").style.display="none";document.getElementById("cartModal").style.display="none";}
+function openCart(){document.getElementById("cartModal").style.display="block";updateCart();}
 
-function addToCart() {
-    cart.push({ ...currentProduct, qty: currentQty, cartId: Date.now() });
-    updateGlobalCart();
-    closeModals();
+function addToCart(){
+cart.push({...currentProduct,qty:currentQty,idc:Date.now()});
+updateCart(); closeModals();
 }
 
-function updateGlobalCart() {
-    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    document.getElementById('cart-total').innerText = `$${total.toLocaleString()}`;
-    document.getElementById('modal-total').innerText = `$${total.toLocaleString()}`;
-    document.getElementById('cart-count').innerText = cart.length;
-    const list = document.getElementById('cart-list');
-    list.innerHTML = cart.length === 0 ? '<p>Vacío</p>' : cart.map(item => `
-        <div class="cart-item">
-            <div><strong>${item.qty}x ${item.name}</strong></div>
-            <button onclick="event.stopPropagation(); removeFromCart(${item.cartId})" style="color:red; background:none; border:none; cursor:pointer;">✕</button>
-        </div>`).join('');
+function updateCart(){
+let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+document.getElementById("cart-total").innerText="$"+total.toLocaleString();
+document.getElementById("modal-total").innerText="$"+total.toLocaleString();
+document.getElementById("cart-count").innerText=cart.length;
+document.getElementById("cart-list").innerHTML=cart.map(i=>`
+<div class="cart-item">
+<div>${i.qty}x ${i.name}</div>
+<button onclick="remove(${i.idc})">✕</button>
+</div>`).join("");
 }
 
-function removeFromCart(id) { cart = cart.filter(i => i.cartId !== id); updateGlobalCart(); }
+function remove(id){cart=cart.filter(i=>i.idc!==id);updateCart();}
 
-function sendWhatsApp() {
-    if(cart.length === 0) return;
-    let msg = "✨ Pedido Decantcias ✨\n\n";
-    cart.forEach(i => msg += `• ${i.qty}x ${i.name}\n`);
-    msg += `\nTotal: $${cart.reduce((s, i) => s + (i.price * i.qty), 0).toLocaleString()}`;
-    window.open(`https://wa.me/5493517883411?text=${encodeURIComponent(msg)}`);
+function sendWhatsApp(){
+if(cart.length==0)return;
+let msg="Pedido Decantcias\n\n";
+cart.forEach(i=>msg+=`${i.qty}x ${i.name}\n`);
+let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+msg+="\nTotal: $"+total;
+window.open("https://wa.me/5493517883411?text="+encodeURIComponent(msg));
 }
 
-window.onclick = (e) => { if (e.target.className === 'modal') closeModals(); }
+window.onclick=e=>{if(e.target.className=="modal")closeModals();}
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
