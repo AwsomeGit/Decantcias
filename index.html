@@ -1,52 +1,35 @@
-<style>
-:root { --dorado: #8a6d3b; --dorado-claro: #bc9c22; --fondo: #fdfaf6; }
 body { font-family: 'Poppins', sans-serif; background: var(--fondo); margin: 0; padding-bottom: 140px; color: #333; }
-        header { background: white; padding: 40px 20px; text-align: center; border-bottom: 1px solid #eee; }
-        h1 { font-family: 'Playfair Display', serif; color: var(--dorado); font-size: 2.8rem; margin: 0; letter-spacing: 3px; }
+header { background: white; padding: 40px 20px; text-align: center; border-bottom: 1px solid #eee; }
+h1 { font-family: 'Playfair Display', serif; color: var(--dorado); font-size: 2.8rem; margin: 0; letter-spacing: 3px; }
         
-
-        /* ===== BANNER TOP ===== */
-        .top-banner {
-            width: 100%;
-            background: #fdfaf6;
-            border-bottom: 1px solid #eee;
-        }
-        .top-banner img {
-            width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-            display: block;
-        }
-
-        /* Contenedor general */
 .container { max-width: 1100px; margin: 20px auto; padding: 20px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
 .card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #f0f0f0; transition: 0.3s; }
 .card:hover { transform: translateY(-5px); }
 .card img { width: 100%; height: 280px; object-fit: contain; border-radius: 15px; }
 .price { font-weight: 600; color: var(--dorado-claro); font-size: 1.2rem; margin-top: 10px; }
-        
 
-/* MODALES */
+        /* MODALES */
 .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); }
 .modal-content { background: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 40px 25px 25px; width: 85%; max-width: 450px; border-radius: 25px; text-align: center; max-height: 85vh; overflow-y: auto; }
 .close-btn { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; border: none; font-weight: bold; }
-        
 
 .carousel { position: relative; width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
 .carousel img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.nav-btn { background: rgba(0,0,0,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
-        
+        .nav-btn { background: rgba(0,0,0,0.05); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
+        .nav-btn { background: rgba(0,0,0,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
 
 .unidero { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 15px; }
 .btn-qty { background: var(--dorado); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
 .btn-main { background: var(--dorado); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
-@@ -35,16 +47,16 @@
+.btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 600; cursor: pointer; display: block; text-align: center; text-decoration: none; margin-top: 15px; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
 
-#modal-desc { white-space: pre-line; text-align: left; font-size: 0.9rem; }
+        #modal-desc { white-space: pre-line; }
+        #modal-desc { white-space: pre-line; text-align: left; font-size: 0.9rem; }
 
+        /* ESTILO DEL CARRITO */
         /* BARRA CARRITO CORREGIDA */
-        /* BARRA CARRITO */
 .cart-bar { 
 position: fixed; 
 bottom: 25px; 
@@ -54,248 +37,88 @@ left: 50%;
 transform: translateX(-50%);
 width: 90%;
 max-width: 450px;
+            background: var(--dorado); 
+            color: white; 
             background: #8a6d3b; /* Color sólido para asegurar visibilidad */
             color: #ffffff !important; /* Blanco forzado */
-            background: #8a6d3b;
-            color: #ffffff !important;
 padding: 12px 25px; 
 display: flex; 
 justify-content: space-between; 
-@@ -55,20 +67,21 @@
+align-items: center; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2); 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
+z-index: 1000; 
+border-radius: 50px; 
 cursor: pointer;
+            transition: all 0.3s ease;
 line-height: 1.2;
 }
+        .cart-bar:hover { background: var(--dorado-claro); transform: translateX(-50%) translateY(-3px); }
         .cart-bar * { color: #ffffff !important; } /* Todo el texto dentro será blanco */
-        .cart-bar * { color: #ffffff !important; }
 </style>
 </head>
 <body>
-
-<header>
-    <h1>DECANTCIAS</h1>
-    <p>Elegancia en cada gota</p>
-</header>
-<!-- ===== BANNER DECANTCIAS ===== -->
-<div class="top-banner">
-    <img src="img/DECANTCIAS_BANNER.png" alt="Decantcias Perfumería Árabe">
+@@ -85,7 +86,7 @@ <h2 id="modal-title" style="margin: 10px 0; font-family: 'Playfair Display', ser
+<button class="btn-qty" onclick="updateQty(1)">+</button>
 </div>
 
-<div class="container">
-<div class="grid" id="main-grid"></div>
-</div>
-
-<!-- MODAL PRODUCTO -->
-<div id="productModal" class="modal">
-<div class="modal-content">
-<button class="close-btn" onclick="closeModals()">✕</button>
-@@ -79,7 +92,7 @@ <h1>DECANTCIAS</h1>
-</div>
-<h2 id="modal-title" style="margin: 10px 0; font-family: 'Playfair Display', serif;"></h2>
-<div id="modal-price" style="font-size: 1.5rem; color: var(--dorado-claro); font-weight: bold;"></div>
-        
-
-<div class="unidero">
-<button class="btn-qty" onclick="updateQty(-1)">-</button>
-<span id="prod-qty" style="font-weight: bold; font-size: 1.2rem;">1</span>
-@@ -91,6 +104,7 @@ <h2 id="modal-title" style="margin: 10px 0; font-family: 'Playfair Display', ser
+        <p id="modal-desc" style="font-size: 0.85rem; color: #666; margin-bottom: 15px; text-align: left;"></p>
+        <p id="modal-desc" style="color: #666; margin-bottom: 15px;"></p>
+<button onclick="addToCart()" class="btn-main">Añadir al Carrito</button>
 </div>
 </div>
-
-<!-- MODAL CARRITO -->
-<div id="cartModal" class="modal">
-<div class="modal-content">
-<button class="close-btn" onclick="closeModals()">✕</button>
-@@ -103,6 +117,7 @@ <h2 style="font-family: 'Playfair Display', serif;">Tu Pedido</h2>
-</div>
-</div>
-
-<!-- BARRA CARRITO -->
-<div class="cart-bar" onclick="openCart()">
-<div style="display: flex; align-items: center; gap: 10px;">
+@@ -107,11 +108,11 @@ <h2 style="font-family: 'Playfair Display', serif;">Tu Pedido</h2>
 <span style="font-size: 1.3rem;">🛒</span>
-@@ -118,97 +133,95 @@ <h2 style="font-family: 'Playfair Display', serif;">Tu Pedido</h2>
+<div style="text-align: left;">
+<strong id="cart-count">0</strong> productos<br>
+            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; opacity: 0.9;">Ver carrito</span>
+            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Ver carrito</span>
 </div>
+</div>
+<div style="text-align: right;">
+        <small style="opacity: 0.8;">Total:</small><br>
+        <span style="font-size: 0.75rem;">Total:</span><br>
+<strong id="cart-total" style="font-size: 1.2rem;">$0</strong>
+</div>
+</div>
+@@ -136,20 +137,8 @@ <h2 style="font-family: 'Playfair Display', serif;">Tu Pedido</h2>
+id: 3, 
+name: "Khamrah Qahwa", 
+price: 70000, 
+            imgs: [
+                "img/khamrahqhawa.jpg", 
+                "img/khamrahqahwa2.jpg", 
+                "img/khamraqahwa3.jpg"
+            ],
+            desc: `Khamrah Qahwa de Lattafa (2023) es una fragancia árabe unisex, oriental y especiada, destacada por una nota intensa de café cremoso mezclada con praliné, canela y vainilla. Es una versión más intensa y "gourmand" del Khamrah original, ideal para climas fríos, noches de otoño/invierno, con alta duración (12+ horas) y una estela seductora y cálida.
 
-<script>
-    const products = [
-        { 
-            id: 1, 
-            name: "Lattafa Asad", 
-            price: 60000, 
-            imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"],
-            desc: "Fragancia potente con notas de pimienta negra, piña y vainilla."
-        },
-        { 
-            id: 2, 
-            name: "Lattafa Khamrah", 
-            price: 65000, 
-            imgs: ["img/khamrah.jpg", "img/khamrah2.jpg", "img/khamrah3.jpg"], 
-            desc: "Dulce y lujoso con canela, dátiles y praliné."
-        },
-        { 
-            id: 3, 
-            name: "Khamrah Qahwa", 
-            price: 70000, 
+Características Principales:
+• Familia Olfativa: Oriental Especiada Gourmand.
+• Notas de Salida: Canela, cardamomo y jengibre.
+• Notas de Corazón: Praliné, frutas confitadas y flores blancas.
+• Notas de Fondo: Café, vainilla, haba tonka, benjuí y almizcle.
+
+Aroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como protagonista, evocando una cafetería de lujo.`
             imgs: ["img/khamrahqhawa.jpg", "img/khamrahqahwa2.jpg", "img/khamraqahwa3.jpg"],
             desc: `Khamrah Qahwa de Lattafa (2023) es una fragancia árabe unisex, oriental y especiada, destacada por una nota intensa de café cremoso mezclada con praliné, canela y vainilla. Es una versión más intensa y "gourmand" del Khamrah original, ideal para climas fríos, noches de otoño/invierno, con alta duración (12+ horas) y una estela seductora y cálida.\n\nCaracterísticas Principales:\n• Familia Olfativa: Oriental Especiada Gourmand.\n• Notas de Salida: Canela, cardamomo y jengibre.\n• Notas de Corazón: Praliné, frutas confitadas y flores blancas.\n• Notas de Fondo: Café, vainilla, haba tonka, benjuí y almizcle.\n\nAroma: Comienza especiado y evoluciona hacia un dulzor cremoso con el café como protagonista, evocando una cafetería de lujo.`
-        }
-    ];
-
-    let cart = [];
-    let currentProduct = null;
-    let currentImgIdx = 0;
-    let currentQty = 1;
-
-    const grid = document.getElementById('main-grid');
-    products.forEach(p => {
-        grid.innerHTML += `
-            <div class="card" onclick="openProduct(${p.id})">
-                <img src="${p.imgs[0]}" onerror="this.src='https://via.placeholder.com/300?text=Decantcias'">
-                <h3>${p.name}</h3>
-                <div class="price">$${p.price.toLocaleString()}</div>
-            </div>`;
-    });
-
-    function openProduct(id) {
-        currentProduct = products.find(p => p.id === id);
-        currentImgIdx = 0; currentQty = 1;
-        document.getElementById('modal-img').src = currentProduct.imgs[0];
-        document.getElementById('modal-title').innerText = currentProduct.name;
-        document.getElementById('modal-price').innerText = `$${currentProduct.price.toLocaleString()}`;
-        document.getElementById('prod-qty').innerText = currentQty;
-        document.getElementById('modal-desc').innerText = currentProduct.desc;
-        document.getElementById('productModal').style.display = 'block';
-    }
-
-    function updateQty(val) { currentQty = Math.max(1, currentQty + val); document.getElementById('prod-qty').innerText = currentQty; }
-    function changeImg(s) { 
-        currentImgIdx = (currentImgIdx + s + currentProduct.imgs.length) % currentProduct.imgs.length;
-        document.getElementById('modal-img').src = currentProduct.imgs[currentImgIdx]; 
-    }
-    function closeModals() { 
-        document.getElementById('productModal').style.display = 'none'; 
-        document.getElementById('cartModal').style.display = 'none'; 
-    }
-    function openCart() { document.getElementById('cartModal').style.display = 'block'; updateGlobalCart(); }
-
-    function addToCart() {
-        cart.push({ ...currentProduct, qty: currentQty, cartId: Date.now() });
-        updateGlobalCart();
-        closeModals();
-    }
-
-    function updateGlobalCart() {
-        const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-        document.getElementById('cart-total').innerText = `$${total.toLocaleString()}`;
-        document.getElementById('modal-total').innerText = `$${total.toLocaleString()}`;
-        document.getElementById('cart-count').innerText = cart.length;
-        const list = document.getElementById('cart-list');
-        list.innerHTML = cart.length === 0 ? '<p>Vacío</p>' : cart.map(item => `
-            <div class="cart-item">
-                <div><strong>${item.qty}x ${item.name}</strong></div>
-                <button onclick="event.stopPropagation(); removeFromCart(${item.cartId})" style="color:red; background:none; border:none; cursor:pointer;">✕</button>
-            </div>`).join('');
-const products = [
-    { 
-        id: 1, 
-        name: "Lattafa Asad", 
-        price: 60000, 
-        imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"],
-        desc: "Fragancia potente con notas de pimienta negra, piña y vainilla."
-    },
-    { 
-        id: 2, 
-        name: "Lattafa Khamrah", 
-        price: 65000, 
-        imgs: ["img/khamrah.jpg", "img/khamrah2.jpg", "img/khamrah3.jpg"], 
-        desc: "Dulce y lujoso con canela, dátiles y praliné."
-    },
-    { 
-        id: 3, 
-        name: "Khamrah Qahwa", 
-        price: 70000, 
-        imgs: ["img/khamrahqhawa.jpg", "img/khamrahqahwa2.jpg", "img/khamraqahwa3.jpg"],
-        desc: `Fragancia intensa con café, praliné, canela y vainilla.`
 }
-
-    function removeFromCart(id) { cart = cart.filter(i => i.cartId !== id); updateGlobalCart(); }
-
-    function sendWhatsApp() {
-        if(cart.length === 0) return;
-        let msg = "✨ *Pedido Decantcias* ✨\n\n";
-        cart.forEach(i => msg += `• ${i.qty}x ${i.name} ($${(i.price * i.qty).toLocaleString()})\n`);
-        msg += `\n*Total: $${cart.reduce((s, i) => s + (i.price * i.qty), 0).toLocaleString()}*`;
-        window.open(`https://wa.me/5493517883411?text=${encodeURIComponent(msg)}`);
-    }
-
-    window.onclick = (e) => { if (e.target.className === 'modal') closeModals(); }
 ];
 
-let cart = [];
-let currentProduct = null;
-let currentImgIdx = 0;
-let currentQty = 1;
-
-const grid = document.getElementById('main-grid');
-products.forEach(p => {
-    grid.innerHTML += `
-        <div class="card" onclick="openProduct(${p.id})">
-            <img src="${p.imgs[0]}" onerror="this.src='https://via.placeholder.com/300?text=Decantcias'">
-            <h3>${p.name}</h3>
-            <div class="price">$${p.price.toLocaleString()}</div>
-        </div>`;
-});
-
-function openProduct(id) {
-    currentProduct = products.find(p => p.id === id);
-    currentImgIdx = 0; currentQty = 1;
-    document.getElementById('modal-img').src = currentProduct.imgs[0];
-    document.getElementById('modal-title').innerText = currentProduct.name;
-    document.getElementById('modal-price').innerText = `$${currentProduct.price.toLocaleString()}`;
-    document.getElementById('prod-qty').innerText = currentQty;
-    document.getElementById('modal-desc').innerText = currentProduct.desc;
-    document.getElementById('productModal').style.display = 'block';
+@@ -180,17 +169,14 @@ <h3>${p.name}</h3>
 }
 
 function updateQty(val) { currentQty = Math.max(1, currentQty + val); document.getElementById('prod-qty').innerText = currentQty; }
+    
 function changeImg(s) { 
-    currentImgIdx = (currentImgIdx + s + currentProduct.imgs.length) % currentProduct.imgs.length;
-    document.getElementById('modal-img').src = currentProduct.imgs[currentImgIdx]; 
+currentImgIdx = (currentImgIdx + s + currentProduct.imgs.length) % currentProduct.imgs.length;
+document.getElementById('modal-img').src = currentProduct.imgs[currentImgIdx]; 
 }
-function closeModals() { document.getElementById('productModal').style.display = 'none'; document.getElementById('cartModal').style.display = 'none'; }
+
+function closeModals() { 
+document.getElementById('productModal').style.display = 'none'; 
+document.getElementById('cartModal').style.display = 'none'; 
+}
+
 function openCart() { document.getElementById('cartModal').style.display = 'block'; updateGlobalCart(); }
 
 function addToCart() {
-    cart.push({ ...currentProduct, qty: currentQty, cartId: Date.now() });
-    updateGlobalCart();
-    closeModals();
-}
-
-function updateGlobalCart() {
-    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    document.getElementById('cart-total').innerText = `$${total.toLocaleString()}`;
-    document.getElementById('modal-total').innerText = `$${total.toLocaleString()}`;
-    document.getElementById('cart-count').innerText = cart.length;
-    const list = document.getElementById('cart-list');
-    list.innerHTML = cart.length === 0 ? '<p>Vacío</p>' : cart.map(item => `
-        <div class="cart-item">
-            <div><strong>${item.qty}x ${item.name}</strong></div>
-            <button onclick="event.stopPropagation(); removeFromCart(${item.cartId})" style="color:red; background:none; border:none; cursor:pointer;">✕</button>
-        </div>`).join('');
-}
-
-function removeFromCart(id) { cart = cart.filter(i => i.cartId !== id); updateGlobalCart(); }
-
-function sendWhatsApp() {
-    if(cart.length === 0) return;
-    let msg = "✨ Pedido Decantcias ✨\n\n";
-    cart.forEach(i => msg += `• ${i.qty}x ${i.name}\n`);
-    msg += `\nTotal: $${cart.reduce((s, i) => s + (i.price * i.qty), 0).toLocaleString()}`;
-    window.open(`https://wa.me/5493517883411?text=${encodeURIComponent(msg)}`);
-}
-
-window.onclick = (e) => { if (e.target.className === 'modal') closeModals(); }
-</script>
-
-</body>
-</html>
