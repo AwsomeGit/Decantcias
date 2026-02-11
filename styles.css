@@ -12,12 +12,19 @@ body {
 }
 
 .product {
-  background: #1a1a1a;
-  padding: 10px;
+  background: white;
+  padding: 15px;
   border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
 }
 
-.product img {
-  width: 100%;
+.img-box {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+}
+
+.product-img {
+  width: 120px;
   border-radius: 8px;
 }
