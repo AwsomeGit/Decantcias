@@ -15,9 +15,9 @@ async function loadProducts() {
         if (cols.length < 5) return null;
         return {
             id: index,
-            name: `${cols[0]} ${cols[1]}`.replace(/"/g, ''),
+            name: `${cols[0]} ${cols[1]}`.replace(/"/g, '').trim(),
             price: parseInt(cols[2]?.replace(/[^0-9]/g, '')) || 0,
-            desc: cols[7]?.replace(/"/g, '') || "Sin descripción",
+            desc: cols[7]?.replace(/"/g, '').trim() || "Fragancia exclusiva.",
             img: cols[8]?.trim() || 'https://via.placeholder.com/200'
         };
     }).filter(p => p !== null);
@@ -25,8 +25,7 @@ async function loadProducts() {
 }
 
 function renderGrid() {
-    const grid = document.getElementById('main-grid');
-    grid.innerHTML = products.map(p => `
+    document.getElementById('main-grid').innerHTML = products.map(p => `
         <div class="card" onclick="openModal(${p.id})">
             <img src="${p.img}">
             <h3>${p.name}</h3>
