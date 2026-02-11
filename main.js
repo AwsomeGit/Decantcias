@@ -7,24 +7,30 @@ async function loadData() {
     try {
         const res = await fetch(sheetURL);
         const data = await res.text();
-        // Regex para separar por comas ignorando las que están dentro de comillas
-        const rows = data.split('\n').slice(1);
-        
+
+        const rows = data.split(/\r?\n/).slice(1);
+
         products = rows.map((row, index) => {
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (cols.length < 5) return null;
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g,'').trim());
+
+            if (!cols[0] || !cols[1]) return null;
+
             return {
                 id: index,
-                marca: cols[0]?.replace(/"/g, '').trim(),
-                nombre: cols[1]?.replace(/"/g, '').trim(),
-                precio: cols[2]?.replace(/[^0-9]/g, '') || "0",
-                desc: cols[7]?.replace(/"/g, '').trim() || "Fragancia exclusiva.",
-                foto: cols[8]?.trim() || "https://via.placeholder.com/300"
+                marca: cols[0],
+                nombre: cols[1],
+                precio: cols[2] ? cols[2].replace(/[^0-9]/g,'') : "0",
+                desc: cols[3] || "Fragancia exclusiva.",
+                foto: cols[4] || "https://via.placeholder.com/300"
             };
-        }).filter(p => p !== null);
-        
+        }).filter(Boolean);
+
+        console.log("Productos cargados:", products);
         renderUI();
-    } catch (e) { console.error("Error cargando Excel:", e); }
+
+    } catch (e) {
+        console.error("ERROR Google Sheet:", e);
+    }
 }
 
 function renderUI() {
@@ -34,20 +40,22 @@ function renderUI() {
             <img src="${p.foto}">
             <h3>${p.marca}</h3>
             <p style="color:#888">${p.nombre}</p>
-            <div class="price-tag" style="font-size:1.1rem">$${parseInt(p.precio).toLocaleString()}</div>
+            <div class="price-tag">$${Number(p.precio).toLocaleString()}</div>
         </div>
     `).join('');
 }
 
 function openModal(id) {
     const p = products.find(prod => prod.id === id);
+    if (!p) return;
+
     currentQty = 1;
     document.getElementById('modal-img').src = p.foto;
     document.getElementById('modal-title').innerText = p.marca + " " + p.nombre;
-    document.getElementById('modal-price').innerText = "$" + parseInt(p.precio).toLocaleString();
+    document.getElementById('modal-price').innerText = "$" + Number(p.precio).toLocaleString();
     document.getElementById('modal-desc').innerText = p.desc;
     document.getElementById('prod-qty').innerText = currentQty;
-    document.getElementById('productModal').style.display = 'block';
+    document.getElementById('productModal').style.display = 'flex';
 }
 
 function updateQty(v) {
@@ -59,6 +67,8 @@ function closeModals() {
     document.getElementById('productModal').style.display = 'none';
 }
 
-window.onclick = (e) => { if (e.target.className === 'modal') closeModals(); };
+window.onclick = (e) => {
+    if (e.target.id === 'productModal') closeModals();
+};
 
 loadData();
