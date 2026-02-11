@@ -1,20 +1,38 @@
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
+const sheetURL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
 async function cargarPerfumes() {
-  const res = await fetch(sheetURL);
-  const csv = await res.text();
+  try {
+    const res = await fetch(sheetURL, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
 
-  const rows = csv.split("\n");
-  const headers = rows.shift().split(";"); // 👈 IMPORTANTE
+    const csvRaw = await res.text();
+    const csv = csvRaw.replace(/\r/g, "").trim(); // limpia CRLF
 
-  const perfumes = rows.map(row => {
-    const cols = row.split(";");
-    let obj = {};
-    headers.forEach((h, i) => obj[h.trim()] = cols[i]?.trim());
-    return obj;
-  });
+    const lines = csv.split("\n").filter(Boolean);
+    if (lines.length < 2) throw new Error("CSV vacío o sin filas.");
 
-  mostrarPerfumes(perfumes);
+    // Detecta delimitador según la primera línea (headers)
+    const firstLine = lines[0];
+    const delim = firstLine.includes(";") ? ";" : ",";
+
+    const headers = lines.shift().split(delim).map(h => h.trim());
+
+    const perfumes = lines.map(line => {
+      const cols = line.split(delim).map(c => (c ?? "").trim());
+      const obj = {};
+      headers.forEach((h, i) => (obj[h] = cols[i] ?? ""));
+      return obj;
+    });
+
+    console.log("Delim:", delim);
+    console.log("Headers:", headers);
+    console.log("Rows:", perfumes.length, perfumes[0]);
+
+    mostrarPerfumes(perfumes);
+  } catch (e) {
+    console.error("Error cargando perfumes:", e);
+  }
 }
 
 function mostrarPerfumes(perfumes) {
@@ -24,18 +42,18 @@ function mostrarPerfumes(perfumes) {
   container.innerHTML = "";
 
   perfumes.forEach(p => {
-    let imgs = (p.imagenURL || "")
+    const imgs = (p.imagenURL || p.imagenUrl || p.imagen || "")
       .split("|")
-      .map(i => i.trim())
-      .filter(i => i !== "");
+      .map(s => s.trim())
+      .filter(Boolean);
 
-    let imgHTML = imgs[0] ? `<img src="${imgs[0]}">` : "";
+    const imgHTML = imgs[0] ? `<img src="${imgs[0]}" alt="${p.nombre || ""}">` : "";
 
     container.innerHTML += `
       <div class="product">
         ${imgHTML}
-        <h3>${p.nombre}</h3>
-        <p>${p.descripcion}</p>
+        <h3>${p.nombre || ""}</h3>
+        <p>${p.descripcion || ""}</p>
         <b>$${Number(p.precio || 0).toLocaleString("es-AR")}</b>
       </div>
     `;
