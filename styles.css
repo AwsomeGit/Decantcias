@@ -56,5 +56,6 @@ body {
 .product b{
   font-size:16px;
 }
-
+.switch input:checked + .slider { background:#111; }
+.switch input:checked + .slider:before { transform: translateX(20px); }
 
