@@ -1,9 +1,8 @@
 const sheetURL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/gviz/tq?tqx=out:csv&gid=751988153";
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
 function driveToDirect(url) {
   if (!url) return "";
-  // /file/d/<ID>/view -> uc?export=view&id=<ID>
   const m = url.match(/\/file\/d\/([^/]+)\//);
   if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
   return url;
@@ -11,20 +10,18 @@ function driveToDirect(url) {
 
 async function cargarPerfumes() {
   const container = document.getElementById("products");
-  if (!container) return console.error("No existe #products");
+  if (!container) return;
 
   try {
     const res = await fetch(sheetURL, { cache: "no-store" });
+    console.log("CSV status:", res.status, res.url);
     if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
 
     const csvText = await res.text();
+    console.log("CSV head:", csvText.slice(0, 200));
 
-    const parsed = Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true,
-    });
-
-    if (parsed.errors?.length) console.error("CSV parse errors:", parsed.errors);
+    const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+    if (parsed.errors?.length) console.error("Parse errors:", parsed.errors);
 
     const data = (parsed.data || []).map(row => {
       const clean = {};
@@ -52,13 +49,8 @@ function mostrarPerfumes(perfumes) {
     const precioRaw = (p.precio || p.Precio || "").toString();
     const imagenRaw = p.imagenURL || p.imagenUrl || p.imagen || "";
 
-    // precio: convierte "$58.000" o "58.000" a número
     const precioNum = Number(
-      precioRaw
-        .replace(/\$/g, "")
-        .replace(/\./g, "")
-        .replace(",", ".")
-        .trim()
+      precioRaw.replace(/\$/g, "").replace(/\./g, "").replace(",", ".").trim()
     );
     const precioOk = Number.isFinite(precioNum) ? precioNum : 0;
 
