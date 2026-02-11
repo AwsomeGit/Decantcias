@@ -1,9 +1,13 @@
-const gid = "751988153";
-
-// Opción A (recomendada): gviz CSV (más estable para fetch)
 const sheetURL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/gviz/tq?tqx=out:csv&gid=" +
-  gid;
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/gviz/tq?tqx=out:csv&gid=751988153";
+
+function driveToDirect(url) {
+  if (!url) return "";
+  // /file/d/<ID>/view -> uc?export=view&id=<ID>
+  const m = url.match(/\/file\/d\/([^/]+)\//);
+  if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  return url;
+}
 
 async function cargarPerfumes() {
   const container = document.getElementById("products");
@@ -18,14 +22,10 @@ async function cargarPerfumes() {
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
-      dynamicTyping: false,
     });
 
-    if (parsed.errors?.length) {
-      console.error("CSV parse errors:", parsed.errors);
-    }
+    if (parsed.errors?.length) console.error("CSV parse errors:", parsed.errors);
 
-    // Limpia BOM en el primer header si aparece
     const data = (parsed.data || []).map(row => {
       const clean = {};
       for (const k in row) {
@@ -46,27 +46,28 @@ function mostrarPerfumes(perfumes) {
   const container = document.getElementById("products");
   container.innerHTML = "";
 
-  if (!perfumes.length) {
-    container.innerHTML = `<p style="padding:12px">No hay productos para mostrar.</p>`;
-    return;
-  }
-
   perfumes.forEach(p => {
-    // Ajustá estos nombres si en tu sheet están distinto (ej: Imagen, imagenUrl, etc.)
-    const imagenField = p.imagenURL || p.imagenUrl || p.imagen || "";
     const nombre = p.nombre || p.Nombre || "";
     const descripcion = p.descripcion || p.Descripcion || "";
-    const precioRaw = p.precio || p.Precio || "0";
+    const precioRaw = (p.precio || p.Precio || "").toString();
+    const imagenRaw = p.imagenURL || p.imagenUrl || p.imagen || "";
 
-    const imgs = imagenField
+    // precio: convierte "$58.000" o "58.000" a número
+    const precioNum = Number(
+      precioRaw
+        .replace(/\$/g, "")
+        .replace(/\./g, "")
+        .replace(",", ".")
+        .trim()
+    );
+    const precioOk = Number.isFinite(precioNum) ? precioNum : 0;
+
+    const imgs = imagenRaw
       .split("|")
-      .map(s => s.trim())
+      .map(s => driveToDirect(s.trim()))
       .filter(Boolean);
 
     const imgHTML = imgs[0] ? `<img src="${imgs[0]}" alt="${nombre}">` : "";
-
-    const precioNum = Number(String(precioRaw).replace(/\./g, "").replace(",", "."));
-    const precioOk = Number.isFinite(precioNum) ? precioNum : 0;
 
     container.innerHTML += `
       <div class="product">
