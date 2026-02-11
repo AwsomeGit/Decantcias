@@ -12,29 +12,27 @@ async function getProducts() {
     try {
         const response = await fetch(sheetURL);
         const data = await response.text();
-        
-        // Dividimos el texto del Excel en filas
         const rows = data.split('\n').slice(1); 
 
         products = rows.map((row, index) => {
-            // Esta línea mágica separa las columnas sin romperse si hay comas en la descripción
+            // Separador inteligente para no romper con las comas de la descripción
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             
-            if (cols.length < 3) return null;
+            if (cols.length < 4) return null;
 
-            // ASIGNACIÓN DE COLUMNAS (A=0, B=1, C=2, etc.)
-            const marca = cols[0]?.trim();      // Columna A
-            const nombre = cols[1]?.trim();     // Columna B
-            const precioStr = cols[2]?.replace(/[^0-9]/g, ""); // Columna C (Precio)
-            const descripcion = cols[9]?.trim(); // Columna J (Tu nueva descripción)
-            const tamano = cols[5]?.trim();      // Columna F (Tamaño)
-            const fotoLink = cols[10]?.trim();   // Columna K (Link de foto)
+            // Ajuste según tu nuevo CSV de la hoja "WEB":
+            // Col A (0): Marca | Col B (1): Nombre | Col C (2): Precio | Col G (6): Tamaño | Col H (7): Descripción | Col I (8): Foto
+            const marca = cols[0]?.replace(/"/g, "").trim();
+            const nombre = cols[1]?.replace(/"/g, "").trim();
+            const precioStr = cols[2]?.replace(/[^0-9]/g, ""); 
+            const tamano = cols[6]?.trim();
+            const descripcion = cols[7]?.replace(/"/g, "").trim();
+            const fotoLink = cols[8]?.trim();
 
             return {
                 id: index + 1,
                 name: `${marca} ${nombre}`,
                 price: parseInt(precioStr) || 0,
-                // Si no hay foto en el Excel, pone una imagen gris por defecto
                 imgs: [fotoLink || 'https://via.placeholder.com/300?text=Decantcias'], 
                 desc: descripcion || `Tamaño: ${tamano}ml`,
             };
