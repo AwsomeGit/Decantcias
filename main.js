@@ -96,7 +96,8 @@ function cacheDom() {
   el.addBtn = document.getElementById("addToCartBtn");
   el.cartCount = document.getElementById("cartCount");
 
-  el.decPriceLabel = document.querySelector(".decant-price");
+  el.decPriceLabel = document.querySelector(".decant-price"); // label a la derecha
+  el.perfumeLabel = document.querySelector(".qty-row span");  // label a la izquierda (Perfume x ml)
 }
 
 // ------------------------
@@ -127,26 +128,23 @@ async function cargarPerfumes() {
         .map(s => driveToDirect(s.trim()))
         .filter(Boolean);
 
-    return {
-  marca: getField(clean, ["marca", "Marca"]),
-  nombre: getField(clean, ["nombre", "Nombre"]),
-  descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
-  stock: toNumber(getField(clean, ["stock", "Stock"])),
-  precio: toNumber(getField(clean, ["precio", "Precio"])),
-  precioDecant: toNumber(
-    getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"])
-  ),
-  ml: toNumber(getField(clean, ["ml", "ML", "Ml"])),   // 👈 NUEVO
-  imgs,
-  raw: clean,
-};
-
+      return {
+        marca: getField(clean, ["marca", "Marca"]),
+        nombre: getField(clean, ["nombre", "Nombre"]),
+        descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
+        stock: toNumber(getField(clean, ["stock", "Stock"])),
+        precio: toNumber(getField(clean, ["precio", "Precio"])),
+        precioDecant: toNumber(
+          getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"])
+        ),
+        ml: toNumber(getField(clean, ["ml", "ML", "Ml"])), // 👈 NUEVO (desde sheet)
+        imgs,
+        raw: clean,
+      };
     });
 
     renderGrid(PRODUCTS);
     updateCartBadge();
-
-    // Cablea modal SI está el HTML. Si falta algo, no rompe el catálogo.
     wireModalEvents();
   } catch (e) {
     console.error("Error cargando perfumes:", e);
@@ -175,7 +173,6 @@ function renderGrid(items) {
 // Modal
 // ------------------------
 function openModal(index) {
-  // Si no existe modal, no hacemos nada
   if (!el.overlay) return;
 
   ACTIVE = PRODUCTS[index];
@@ -188,8 +185,17 @@ function openModal(index) {
   el.desc.textContent = ACTIVE.descripcion || "";
   el.price.textContent = moneyAR(ACTIVE.precio);
 
+  // Label: Perfume (X ml)
+  if (el.perfumeLabel) {
+    const ml = ACTIVE.ml || 0;
+    el.perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
+  }
+
+  // Decant: "Decant 5ML $X" (precio desde sheet)
   const dPrice = ACTIVE.precioDecant || 0;
-  if (el.decPriceLabel) el.decPriceLabel.textContent = `Decant ${moneyAR(dPrice)}`;
+  if (el.decPriceLabel) {
+    el.decPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
+  }
 
   el.qtyVal.textContent = String(qtyBottle);
   el.decToggle.checked = false;
@@ -240,6 +246,7 @@ function addToCart() {
       type: "bottle",
       marca: ACTIVE.marca,
       nombre: ACTIVE.nombre,
+      ml: ACTIVE.ml || 0,
       unitPrice: ACTIVE.precio,
       qty: qtyBottle,
     });
@@ -250,6 +257,7 @@ function addToCart() {
       type: "decant",
       marca: ACTIVE.marca,
       nombre: ACTIVE.nombre,
+      ml: 5, // decant fijo 5ml
       unitPrice: ACTIVE.precioDecant || 0,
       qty: qtyDecant,
     });
