@@ -2,39 +2,36 @@ const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2V
 
 async function cargarPerfumes() {
   const res = await fetch(sheetURL);
-  const data = await res.text();
+  const csv = await res.text();
 
-  const filas = data.split("\n").slice(1); // sin encabezado
-  const perfumes = filas.map(fila => {
-    const [id, nombre, precio, imagenes, descripcion] = fila.split(",");
-    return {
-      id,
-      nombre,
-      precio,
-      imagenes: imagenes?.split("|"), // separador de imágenes
-      descripcion
-    };
+  const rows = csv.split("\n");
+  const headers = rows.shift().split(",");
+
+  const perfumes = rows.map(row => {
+    const cols = row.split(",");
+    let obj = {};
+    headers.forEach((h, i) => obj[h.trim()] = cols[i]?.trim());
+    return obj;
   });
 
   mostrarPerfumes(perfumes);
 }
 
 function mostrarPerfumes(perfumes) {
-  const contenedor = document.getElementById("productos");
-  contenedor.innerHTML = "";
+  const container = document.getElementById("products");
+  if (!container) return console.error("No existe #products en HTML");
+
+  container.innerHTML = "";
 
   perfumes.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "producto";
-
-    div.innerHTML = `
-      <img src="${p.imagenes[0]}" alt="${p.nombre}">
-      <h3>${p.nombre}</h3>
-      <p>${p.descripcion}</p>
-      <strong>$${p.precio}</strong>
+    container.innerHTML += `
+      <div class="product">
+        <img src="${p.imagenURL}">
+        <h3>${p.nombre}</h3>
+        <p>${p.descripcion}</p>
+        <b>$${Number(p.precio).toLocaleString("es-AR")}</b>
+      </div>
     `;
-
-    contenedor.appendChild(div);
   });
 }
 
