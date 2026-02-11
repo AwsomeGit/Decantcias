@@ -185,11 +185,12 @@ function openModal(index) {
   el.desc.textContent = ACTIVE.descripcion || "";
   el.price.textContent = moneyAR(ACTIVE.precio);
 
-  // Label: Perfume (X ml)
-  if (el.perfumeLabel) {
-    const ml = ACTIVE.ml || 0;
-    el.perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
-  }
+ // Label: Perfume (X ml) desde el Sheet
+const perfumeLabel = el.overlay?.querySelector(".qty-row > span");
+if (perfumeLabel) {
+  const ml = Number(ACTIVE.ml || 0);
+  perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
+}
 
   // Decant: "Decant 5ML $X" (precio desde sheet)
   const dPrice = ACTIVE.precioDecant || 0;
