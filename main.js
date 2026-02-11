@@ -1,7 +1,6 @@
 const sheetURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
-
 function driveToDirect(url) {
   if (!url) return "";
   const m = url.match(/\/file\/d\/([^/]+)\//);
@@ -19,7 +18,6 @@ async function cargarPerfumes() {
     if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
 
     const csvText = await res.text();
-    console.log("CSV head:", csvText.slice(0, 200));
 
     const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
     if (parsed.errors?.length) console.error("Parse errors:", parsed.errors);
@@ -50,6 +48,7 @@ function mostrarPerfumes(perfumes) {
     const precioRaw = (p.precio || p.Precio || "").toString();
     const imagenRaw = p.imagenURL || p.imagenUrl || p.imagen || "";
 
+    // "$58.000" -> 58000
     const precioNum = Number(
       precioRaw.replace(/\$/g, "").replace(/\./g, "").replace(",", ".").trim()
     );
@@ -60,7 +59,15 @@ function mostrarPerfumes(perfumes) {
       .map(s => driveToDirect(s.trim()))
       .filter(Boolean);
 
-    const imgHTML = imgs[0] ? `<img src="${imgs[0]}" alt="${nombre}">` : "";
+    const imgHTML = `
+      <div class="img-wrap">
+        ${
+          imgs[0]
+            ? `<img src="${imgs[0]}" alt="${nombre}" loading="lazy">`
+            : ""
+        }
+      </div>
+    `;
 
     container.innerHTML += `
       <div class="product">
