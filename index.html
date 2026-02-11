@@ -1,45 +1,54 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decantcias | Laboratorio</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decantcias | Laboratorio</title>
+
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <div class="top-banner">
-        <img src="https://raw.githubusercontent.com/AwsomeGit/Decantcias/main/docs/img/DECANTCIAS_BANNER.png" alt="Logo">
-    </div>
 
-    <div class="container">
-        <div class="grid" id="main-grid"></div>
-    </div>
+<div class="top-banner">
+    <img src="https://raw.githubusercontent.com/AwsomeGit/Decantcias/main/docs/img/DECANTCIAS_BANNER.png">
+</div>
 
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModals()">✕</button>
-            <div class="modal-flex">
-                <div class="modal-col-img">
-                    <img id="modal-img" src="" alt="Producto">
+<div class="container">
+    <div class="grid" id="main-grid"></div>
+</div>
+
+<!-- MODAL -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">✕</button>
+
+        <div class="modal-flex">
+            <div class="modal-col-img">
+                <img id="modal-img">
+            </div>
+
+            <div class="modal-col-info">
+                <h2 id="modal-title"></h2>
+                <div id="modal-price" class="price-tag"></div>
+
+                <div class="desc-box">
+                    <p id="modal-desc"></p>
                 </div>
-                <div class="modal-col-info">
-                    <h2 id="modal-title"></h2>
-                    <div id="modal-price" class="price-tag"></div>
-                    <div class="desc-box">
-                        <p id="modal-desc"></p>
-                    </div>
-                    <div class="qty-box">
-                        <button onclick="updateQty(-1)">-</button>
-                        <span id="prod-qty">1</span>
-                        <button onclick="updateQty(1)">+</button>
-                    </div>
-                    <button class="btn-cart" onclick="addToCart()">Añadir al Carrito</button>
+
+                <div class="qty-box">
+                    <button onclick="updateQty(-1)">-</button>
+                    <span id="prod-qty">1</span>
+                    <button onclick="updateQty(1)">+</button>
                 </div>
+
+                <button class="btn-cart" onclick="buyNow()">Comprar por WhatsApp</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="main.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
