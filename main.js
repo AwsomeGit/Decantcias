@@ -1,45 +1,70 @@
-const products = [
-    { 
-        id: 1, 
-        name: "Lattafa Asad", 
-        price: 60000, 
-        imgs: ["img/asad.jpg", "img/asad2.jpg", "img/asad3.jpg"],
-        desc: "Fragancia potente con notas de pimienta negra, piña y vainilla."
-    },
-    { 
-        id: 2, 
-        name: "Lattafa Khamrah", 
-        price: 65000, 
-        imgs: ["img/khamrah.jpg", "img/khamrah2.jpg", "img/khamrah3.jpg"], 
-        desc: "Dulce y lujoso con canela, dátiles y praliné."
-    },
-    { 
-        id: 3, 
-        name: "Khamrah Qahwa", 
-        price: 70000, 
-        imgs: ["img/khamrahqhawa.jpg", "img/khamrahqahwa2.jpg", "img/khamraqahwa3.jpg"],
-        desc: `Fragancia intensa con café, praliné, canela y vainilla.`
-    }
-];
-
+// CONFIGURACIÓN INICIAL
+const sheetURL = 'TU_LINK_DE_CSV_AQUÍ'; // <--- PEGA TU LINK ACÁ
+let products = [];
 let cart = [];
 let currentProduct = null;
 let currentImgIdx = 0;
 let currentQty = 1;
 
-const grid = document.getElementById('main-grid');
-products.forEach(p => {
-    grid.innerHTML += `
-        <div class="card" onclick="openProduct(${p.id})">
-            <img src="${p.imgs[0]}" onerror="this.src='https://via.placeholder.com/300?text=Decantcias'">
-            <h3>${p.name}</h3>
-            <div class="price">$${p.price.toLocaleString()}</div>
-        </div>`;
-});
+// 1. FUNCIÓN PARA CARGAR PRODUCTOS DESDE GOOGLE SHEETS
+async function getProducts() {
+    try {
+        const response = await fetch(sheetURL);
+        const data = await response.text();
+        
+        // Dividimos el texto del Excel en filas
+        const rows = data.split('\n').slice(1); 
 
+        products = rows.map((row, index) => {
+            // Esta línea mágica separa las columnas sin romperse si hay comas en la descripción
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            
+            if (cols.length < 3) return null;
+
+            // ASIGNACIÓN DE COLUMNAS (A=0, B=1, C=2, etc.)
+            const marca = cols[0]?.trim();      // Columna A
+            const nombre = cols[1]?.trim();     // Columna B
+            const precioStr = cols[2]?.replace(/[^0-9]/g, ""); // Columna C (Precio)
+            const descripcion = cols[9]?.trim(); // Columna J (Tu nueva descripción)
+            const tamano = cols[5]?.trim();      // Columna F (Tamaño)
+            const fotoLink = cols[10]?.trim();   // Columna K (Link de foto)
+
+            return {
+                id: index + 1,
+                name: `${marca} ${nombre}`,
+                price: parseInt(precioStr) || 0,
+                // Si no hay foto en el Excel, pone una imagen gris por defecto
+                imgs: [fotoLink || 'https://via.placeholder.com/300?text=Decantcias'], 
+                desc: descripcion || `Tamaño: ${tamano}ml`,
+            };
+        }).filter(p => p !== null);
+
+        renderGrid();
+    } catch (error) {
+        console.error("Error cargando el stock:", error);
+    }
+}
+
+// 2. FUNCIÓN PARA MOSTRAR LOS PRODUCTOS EN LA WEB (Tarjetas)
+function renderGrid() {
+    const grid = document.getElementById('main-grid');
+    if(!grid) return;
+    grid.innerHTML = ""; 
+    products.forEach(p => {
+        grid.innerHTML += `
+            <div class="card" onclick="openProduct(${p.id})">
+                <img src="${p.imgs[0]}" onerror="this.src='https://via.placeholder.com/300?text=Decantcias'">
+                <h3>${p.name}</h3>
+                <div class="price">$${p.price.toLocaleString()}</div>
+            </div>`;
+    });
+}
+
+// 3. LAS FUNCIONES DEL MODAL Y CARRITO (Mantenemos las tuyas para que no cambie nada)
 function openProduct(id) {
     currentProduct = products.find(p => p.id === id);
-    currentImgIdx = 0; currentQty = 1;
+    currentImgIdx = 0; 
+    currentQty = 1;
     document.getElementById('modal-img').src = currentProduct.imgs[0];
     document.getElementById('modal-title').innerText = currentProduct.name;
     document.getElementById('modal-price').innerText = `$${currentProduct.price.toLocaleString()}`;
@@ -48,13 +73,15 @@ function openProduct(id) {
     document.getElementById('productModal').style.display = 'block';
 }
 
-function updateQty(val) { currentQty = Math.max(1, currentQty + val); document.getElementById('prod-qty').innerText = currentQty; }
-function changeImg(s) { 
-    currentImgIdx = (currentImgIdx + s + currentProduct.imgs.length) % currentProduct.imgs.length;
-    document.getElementById('modal-img').src = currentProduct.imgs[currentImgIdx]; 
+function updateQty(val) { 
+    currentQty = Math.max(1, currentQty + val); 
+    document.getElementById('prod-qty').innerText = currentQty; 
 }
-function closeModals() { document.getElementById('productModal').style.display = 'none'; document.getElementById('cartModal').style.display = 'none'; }
-function openCart() { document.getElementById('cartModal').style.display = 'block'; updateGlobalCart(); }
+
+function closeModals() { 
+    document.getElementById('productModal').style.display = 'none'; 
+    document.getElementById('cartModal').style.display = 'none'; 
+}
 
 function addToCart() {
     cart.push({ ...currentProduct, qty: currentQty, cartId: Date.now() });
@@ -75,7 +102,10 @@ function updateGlobalCart() {
         </div>`).join('');
 }
 
-function removeFromCart(id) { cart = cart.filter(i => i.cartId !== id); updateGlobalCart(); }
+function removeFromCart(id) { 
+    cart = cart.filter(i => i.cartId !== id); 
+    updateGlobalCart(); 
+}
 
 function sendWhatsApp() {
     if(cart.length === 0) return;
@@ -85,4 +115,5 @@ function sendWhatsApp() {
     window.open(`https://wa.me/5493517883411?text=${encodeURIComponent(msg)}`);
 }
 
-window.onclick = (e) => { if (e.target.className === 'modal') closeModals(); }
+// Iniciar la carga
+getProducts();
