@@ -127,18 +127,20 @@ async function cargarPerfumes() {
         .map(s => driveToDirect(s.trim()))
         .filter(Boolean);
 
-      return {
-        marca: getField(clean, ["marca", "Marca"]),
-        nombre: getField(clean, ["nombre", "Nombre"]),
-        descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
-        stock: toNumber(getField(clean, ["stock", "Stock"])),
-        precio: toNumber(getField(clean, ["precio", "Precio"])),
-        precioDecant: toNumber(
-          getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"])
-        ),
-        imgs,
-        raw: clean,
-      };
+    return {
+  marca: getField(clean, ["marca", "Marca"]),
+  nombre: getField(clean, ["nombre", "Nombre"]),
+  descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
+  stock: toNumber(getField(clean, ["stock", "Stock"])),
+  precio: toNumber(getField(clean, ["precio", "Precio"])),
+  precioDecant: toNumber(
+    getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"])
+  ),
+  ml: toNumber(getField(clean, ["ml", "ML", "Ml"])),   // 👈 NUEVO
+  imgs,
+  raw: clean,
+};
+
     });
 
     renderGrid(PRODUCTS);
