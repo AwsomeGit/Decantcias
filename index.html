@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decantcias | Test Excel</title>
+    <title>Decantcias | Test</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="top-banner">
-        <img src="img/DECANTCIAS_BANNER.png" alt="Decantcias">
+        <img src="img/DECANTCIAS_BANNER.png" alt="Logo">
     </div>
 
     <div class="container">
@@ -19,24 +19,25 @@
     <div id="productModal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModals()">✕</button>
-            <img id="modal-img" src="">
-            <h2 id="modal-title" style="font-family: 'Playfair Display', serif;"></h2>
-            <div id="modal-price" class="price"></div>
-            
-            <div class="qty-container">
-                <button class="btn-qty" onclick="updateQty(-1)">-</button>
-                <span id="prod-qty">1</span>
-                <button class="btn-qty" onclick="updateQty(1)">+</button>
+            <div class="modal-body">
+                <div class="modal-left">
+                    <img id="modal-img" src="">
+                </div>
+                <div class="modal-right">
+                    <h2 id="modal-title"></h2>
+                    <div id="modal-price" class="price"></div>
+                    <p id="modal-desc" class="description"></p>
+                    
+                    <div class="qty-container">
+                        <button class="btn-qty" onclick="updateQty(-1)">-</button>
+                        <span id="prod-qty">1</span>
+                        <button class="btn-qty" onclick="updateQty(1)">+</button>
+                    </div>
+
+                    <button onclick="addToCart()" class="btn-main">Añadir al Carrito</button>
+                </div>
             </div>
-
-            <p id="modal-desc" class="description"></p>
-            <button onclick="addToCart()" class="btn-main">Añadir al Carrito</button>
         </div>
-    </div>
-
-    <div class="cart-bar" onclick="openCart()">
-        <span>🛒 <strong id="cart-count">0</strong> productos</span>
-        <strong id="cart-total">$0</strong>
     </div>
 
     <script src="main.js"></script>
