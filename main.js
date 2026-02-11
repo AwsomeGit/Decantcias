@@ -13,7 +13,6 @@ function toNumber(raw) {
   if (raw == null) return 0;
   const s = String(raw).trim();
   if (!s) return 0;
-  // soporta 58000 / 58.000 / $58.000 / 58,000
   const cleaned = s
     .replace(/\$/g, "")
     .replace(/\s/g, "")
@@ -54,6 +53,25 @@ let CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 // DOM refs (modal)
 // ------------------------
 const el = {};
+const REQUIRED_MODAL_IDS = [
+  "modalOverlay",
+  "modalClose",
+  "modalImg",
+  "modalThumbs",
+  "modalTitle",
+  "modalDesc",
+  "modalPrice",
+  "qtyMinus",
+  "qtyPlus",
+  "qtyVal",
+  "decantToggle",
+  "decMinus",
+  "decPlus",
+  "decVal",
+  "addToCartBtn",
+  "cartCount",
+];
+
 function cacheDom() {
   el.products = document.getElementById("products");
 
@@ -76,9 +94,9 @@ function cacheDom() {
   el.decVal = document.getElementById("decVal");
 
   el.addBtn = document.getElementById("addToCartBtn");
-
   el.cartCount = document.getElementById("cartCount");
-  el.decPriceLabel = document.querySelector(".decant-price"); // "Decant $X"
+
+  el.decPriceLabel = document.querySelector(".decant-price");
 }
 
 // ------------------------
@@ -86,7 +104,7 @@ function cacheDom() {
 // ------------------------
 async function cargarPerfumes() {
   cacheDom();
-  if (!el.products) return;
+  if (!el.products) return console.error("No existe #products");
 
   try {
     const res = await fetch(sheetURL, { cache: "no-store" });
@@ -109,26 +127,27 @@ async function cargarPerfumes() {
         .map(s => driveToDirect(s.trim()))
         .filter(Boolean);
 
-      const precio = toNumber(getField(clean, ["precio", "Precio"]));
-      const precioDecant = toNumber(getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"]));
-
       return {
         marca: getField(clean, ["marca", "Marca"]),
         nombre: getField(clean, ["nombre", "Nombre"]),
         descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
         stock: toNumber(getField(clean, ["stock", "Stock"])),
-        precio,
-        precioDecant,
+        precio: toNumber(getField(clean, ["precio", "Precio"])),
+        precioDecant: toNumber(
+          getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"])
+        ),
         imgs,
         raw: clean,
       };
     });
 
     renderGrid(PRODUCTS);
-    wireModalEvents();
     updateCartBadge();
+
+    // Cablea modal SI está el HTML. Si falta algo, no rompe el catálogo.
+    wireModalEvents();
   } catch (e) {
-    console.error(e);
+    console.error("Error cargando perfumes:", e);
     el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
 }
@@ -142,7 +161,7 @@ function renderGrid(items) {
     const card = document.createElement("div");
     card.className = "product";
     card.innerHTML = `
-      <p class="title">${p.marca} ${p.nombre}</p>
+      <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
       <p class="sub">${moneyAR(p.precio)}</p>
     `;
     card.addEventListener("click", () => openModal(idx));
@@ -154,42 +173,39 @@ function renderGrid(items) {
 // Modal
 // ------------------------
 function openModal(index) {
+  // Si no existe modal, no hacemos nada
+  if (!el.overlay) return;
+
   ACTIVE = PRODUCTS[index];
   activeImgIdx = 0;
   qtyBottle = 1;
   decantEnabled = false;
   qtyDecant = 1;
 
-  // Textos
   el.title.textContent = `${ACTIVE.marca} ${ACTIVE.nombre}`;
   el.desc.textContent = ACTIVE.descripcion || "";
   el.price.textContent = moneyAR(ACTIVE.precio);
 
-  // Decant price desde sheet
   const dPrice = ACTIVE.precioDecant || 0;
   if (el.decPriceLabel) el.decPriceLabel.textContent = `Decant ${moneyAR(dPrice)}`;
 
-  // Cantidades UI
   el.qtyVal.textContent = String(qtyBottle);
   el.decToggle.checked = false;
   el.decVal.textContent = String(qtyDecant);
 
-  // Imágenes
   renderModalImages();
-
-  // Mostrar
   el.overlay.classList.remove("hidden");
 }
 
 function closeModal() {
+  if (!el.overlay) return;
   el.overlay.classList.add("hidden");
 }
 
 function renderModalImages() {
-  const imgs = ACTIVE.imgs || [];
+  const imgs = ACTIVE?.imgs || [];
   const current = imgs[activeImgIdx];
 
-  // Imagen principal
   if (current) {
     el.img.src = current;
     el.img.style.display = "block";
@@ -198,7 +214,6 @@ function renderModalImages() {
     el.img.style.display = "none";
   }
 
-  // Thumbs
   el.thumbs.innerHTML = "";
   imgs.forEach((src, i) => {
     const t = document.createElement("div");
@@ -218,7 +233,6 @@ function renderModalImages() {
 function addToCart() {
   if (!ACTIVE) return;
 
-  // Botella
   if (qtyBottle > 0) {
     CART.push({
       type: "bottle",
@@ -229,7 +243,6 @@ function addToCart() {
     });
   }
 
-  // Decant
   if (decantEnabled && qtyDecant > 0) {
     CART.push({
       type: "decant",
@@ -254,8 +267,14 @@ function updateCartBadge() {
 // Events
 // ------------------------
 function wireModalEvents() {
-  // evitar duplicar listeners
   if (wireModalEvents._wired) return;
+
+  const missing = REQUIRED_MODAL_IDS.filter(id => !document.getElementById(id));
+  if (missing.length) {
+    console.warn("Modal incompleto. Faltan IDs:", missing.join(", "));
+    return;
+  }
+
   wireModalEvents._wired = true;
 
   el.close.addEventListener("click", closeModal);
@@ -267,8 +286,9 @@ function wireModalEvents() {
     qtyBottle = Math.max(1, qtyBottle - 1);
     el.qtyVal.textContent = String(qtyBottle);
   });
+
   el.qtyPlus.addEventListener("click", () => {
-    qtyBottle = qtyBottle + 1;
+    qtyBottle += 1;
     el.qtyVal.textContent = String(qtyBottle);
   });
 
@@ -280,17 +300,18 @@ function wireModalEvents() {
     qtyDecant = Math.max(1, qtyDecant - 1);
     el.decVal.textContent = String(qtyDecant);
   });
+
   el.decPlus.addEventListener("click", () => {
-    qtyDecant = qtyDecant + 1;
+    qtyDecant += 1;
     el.decVal.textContent = String(qtyDecant);
   });
 
   el.addBtn.addEventListener("click", addToCart);
 
-  // ESC cierra
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !el.overlay.classList.contains("hidden")) closeModal();
   });
 }
 
-cargarPerfumes();
+// Ejecutar cuando el DOM esté listo
+document.addEventListener("DOMContentLoaded", cargarPerfumes);
