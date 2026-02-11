@@ -1,122 +1,33 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #0b0b0b;
+  font-family: Arial, sans-serif;
+  background: #111;
   color: white;
-}
-
-/* HEADER */
-header {
-  text-align: center;
-  padding: 25px;
-  background: linear-gradient(180deg, #000, #111);
-  border-bottom: 2px solid gold;
-}
-
-header h1 {
-  font-size: 2.2rem;
-  color: gold;
-}
-
-header p {
-  font-size: 0.9rem;
-  color: #ccc;
-}
-
-/* SEARCH */
-.filters {
-  padding: 10px;
-  text-align: center;
-}
-
-#search {
-  width: 80%;
-  max-width: 400px;
-  padding: 10px;
-  border-radius: 20px;
-  border: none;
-  outline: none;
-  font-size: 1rem;
-}
-
-/* GRID */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
   padding: 20px;
 }
 
-/* CARD */
-.product {
-  background: #121212;
-  border-radius: 14px;
-  padding: 12px;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
-  transition: 0.2s;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
 }
 
-.product:hover {
-  transform: scale(1.04);
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.35);
-}
-
-.product img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.product h3 {
-  font-size: 1.1rem;
-  margin-bottom: 6px;
-  color: gold;
-}
-
-.product p {
-  font-size: 0.85rem;
-  color: #ccc;
-  min-height: 50px;
-}
-
-.product b {
-  font-size: 1.2rem;
-  margin: 10px 0;
-  display: block;
-}
-
-/* BUTTON */
-.product button {
+.producto {
+  background: #1c1c1c;
   padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #000;
+}
+
+.producto img {
+  width: 100%;
   border-radius: 10px;
-  border: none;
-  font-weight: bold;
-  background: gold;
-  color: black;
-  cursor: pointer;
-  transition: 0.2s;
 }
 
-.product button:hover {
-  background: orange;
+.producto h3 {
+  margin: 10px 0 5px;
 }
 
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 15px;
-  background: black;
-  color: #666;
-  font-size: 0.8rem;
-  border-top: 1px solid #222;
+.producto p {
+  font-size: 14px;
+  opacity: 0.8;
 }
