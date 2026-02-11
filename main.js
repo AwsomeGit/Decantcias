@@ -6,22 +6,24 @@ let currentProduct = null;
 let currentQty = 1;
 
 async function loadProducts() {
-    const res = await fetch(sheetURL);
-    const data = await res.text();
-    const rows = data.split('\n').slice(1);
-    
-    products = rows.map((row, index) => {
-        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        if (cols.length < 5) return null;
-        return {
-            id: index,
-            name: `${cols[0]} ${cols[1]}`.replace(/"/g, '').trim(),
-            price: parseInt(cols[2]?.replace(/[^0-9]/g, '')) || 0,
-            desc: cols[7]?.replace(/"/g, '').trim() || "Fragancia exclusiva.",
-            img: cols[8]?.trim() || 'https://via.placeholder.com/200'
-        };
-    }).filter(p => p !== null);
-    renderGrid();
+    try {
+        const res = await fetch(sheetURL);
+        const data = await res.text();
+        const rows = data.split('\n').slice(1);
+        
+        products = rows.map((row, index) => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (cols.length < 5) return null;
+            return {
+                id: index,
+                name: `${cols[0]} ${cols[1]}`.replace(/"/g, '').trim(),
+                price: parseInt(cols[2]?.replace(/[^0-9]/g, '')) || 0,
+                desc: cols[7]?.replace(/"/g, '').trim() || "Fragancia exclusiva.",
+                img: cols[8]?.trim() || 'https://via.placeholder.com/200'
+            };
+        }).filter(p => p !== null);
+        renderGrid();
+    } catch (e) { console.error("Error cargando Excel:", e); }
 }
 
 function renderGrid() {
@@ -36,7 +38,7 @@ function renderGrid() {
 
 function openModal(id) {
     currentProduct = products.find(p => p.id === id);
-    currentQty = 1;
+    currentQty = 1; // Reset de cantidad
     document.getElementById('modal-img').src = currentProduct.img;
     document.getElementById('modal-title').innerText = currentProduct.name;
     document.getElementById('modal-price').innerText = '$' + currentProduct.price.toLocaleString();
@@ -45,6 +47,7 @@ function openModal(id) {
     document.getElementById('productModal').style.display = 'block';
 }
 
+// ESTA FUNCIÓN ES LA QUE TE FALTABA PARA LOS BOTONES + y -
 function updateQty(val) {
     currentQty = Math.max(1, currentQty + val);
     document.getElementById('prod-qty').innerText = currentQty;
@@ -52,19 +55,6 @@ function updateQty(val) {
 
 function closeModals() {
     document.getElementById('productModal').style.display = 'none';
-}
-
-function addToCart() {
-    cart.push({ ...currentProduct, qty: currentQty });
-    updateCartUI();
-    closeModals();
-}
-
-function updateCartUI() {
-    const count = cart.reduce((acc, item) => acc + item.qty, 0);
-    const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-    document.getElementById('cart-count').innerText = count;
-    document.getElementById('cart-total').innerText = '$' + total.toLocaleString();
 }
 
 loadProducts();
