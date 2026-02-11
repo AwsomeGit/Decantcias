@@ -1,38 +1,87 @@
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
-async function cargarPerfumes() {
-  const res = await fetch(sheetURL);
-  const csv = await res.text();
+/* CSV parser real (Google Sheets safe) */
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let current = "";
+  let insideQuotes = false;
 
-  const rows = csv.split("\n");
-  const headers = rows.shift().split(",");
+  for (let char of text) {
+    if (char === '"') insideQuotes = !insideQuotes;
+    else if (char === "," && !insideQuotes) {
+      row.push(current);
+      current = "";
+    }
+    else if (char === "\n" && !insideQuotes) {
+      row.push(current);
+      rows.push(row);
+      row = [];
+      current = "";
+    }
+    else {
+      current += char;
+    }
+  }
 
-  const perfumes = rows.map(row => {
-    const cols = row.split(",");
-    let obj = {};
-    headers.forEach((h, i) => obj[h.trim()] = cols[i]?.trim());
-    return obj;
-  });
+  if (current.length) {
+    row.push(current);
+    rows.push(row);
+  }
 
-  mostrarPerfumes(perfumes);
+  return rows;
 }
 
+/* Cargar perfumes */
+async function cargarPerfumes() {
+  try {
+    console.log("Cargando perfumes...");
+    const res = await fetch(sheetURL);
+    const csv = await res.text();
+
+    const data = parseCSV(csv);
+    const headers = data.shift();
+
+    const perfumes = data.map(row => {
+      let obj = {};
+      headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
+      return obj;
+    });
+
+    console.log("Perfumes cargados:", perfumes);
+    mostrarPerfumes(perfumes);
+
+  } catch (e) {
+    console.error("ERROR cargando Google Sheets:", e);
+  }
+}
+
+/* Mostrar perfumes en la web */
 function mostrarPerfumes(perfumes) {
   const container = document.getElementById("products");
-  if (!container) return console.error("No existe #products en HTML");
+  if (!container) return console.error("❌ No existe #products en HTML");
 
   container.innerHTML = "";
 
+  if (!perfumes.length) {
+    container.innerHTML = "<p>No hay productos cargados 😭</p>";
+    return;
+  }
+
   perfumes.forEach(p => {
+    const precio = Number(p.precio || 0).toLocaleString("es-AR");
+    const img = p.imagenURL || "https://via.placeholder.com/250x250?text=Sin+Imagen";
+
     container.innerHTML += `
       <div class="product">
-        <img src="${p.imagenURL}">
+        <img src="${img}" alt="${p.nombre}">
         <h3>${p.nombre}</h3>
-        <p>${p.descripcion}</p>
-        <b>$${Number(p.precio).toLocaleString("es-AR")}</b>
+        <p>${p.descripcion || ""}</p>
+        <b>$${precio}</b>
       </div>
     `;
   });
 }
 
-cargarPerfumes();
+/* Ejecutar */
+document.addEventListener("DOMContentLoaded", cargarPerfumes);
