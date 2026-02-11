@@ -1,1 +1,74 @@
-index.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decantcias | Perfumería Árabe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="main.js" type="text/javascript" defer></script>
+
+</head>
+<body>
+
+<!-- ===== BANNER DECANTCIAS ===== -->
+<div class="top-banner">
+    <img src="img/DECANTCIAS_BANNER.png" alt="Decantcias Perfumería Árabe">
+</div>
+
+<div class="container">
+    <div class="grid" id="main-grid"></div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModals()">✕</button>
+        <div class="carousel">
+            <button class="nav-btn" onclick="changeImg(-1)">❮</button>
+            <img id="modal-img" src="">
+            <button class="nav-btn" onclick="changeImg(1)">❯</button>
+        </div>
+        <h2 id="modal-title" style="margin: 10px 0; font-family: 'Playfair Display', serif;"></h2>
+        <div id="modal-price" style="font-size: 1.5rem; color: var(--dorado-claro); font-weight: bold;"></div>
+
+        <div class="unidero">
+            <button class="btn-qty" onclick="updateQty(-1)">-</button>
+            <span id="prod-qty" style="font-weight: bold; font-size: 1.2rem;">1</span>
+            <button class="btn-qty" onclick="updateQty(1)">+</button>
+        </div>
+
+        <p id="modal-desc" style="color: #666; margin-bottom: 15px;"></p>
+        <button onclick="addToCart()" class="btn-main">Añadir al Carrito</button>
+    </div>
+</div>
+
+<!-- MODAL CARRITO -->
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModals()">✕</button>
+        <h2 style="font-family: 'Playfair Display', serif;">Tu Pedido</h2>
+        <div id="cart-list"></div>
+        <div style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 10px;">
+            Total: <strong id="modal-total">$0</strong>
+        </div>
+        <a href="#" onclick="sendWhatsApp()" class="btn-whatsapp">Confirmar por WhatsApp</a>
+    </div>
+</div>
+
+<!-- BARRA CARRITO -->
+<div class="cart-bar" onclick="openCart()">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 1.3rem;">🛒</span>
+        <div style="text-align: left;">
+            <strong id="cart-count">0</strong> productos<br>
+            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Ver carrito</span>
+        </div>
+    </div>
+    <div style="text-align: right;">
+        <span style="font-size: 0.75rem;">Total:</span><br>
+        <strong id="cart-total" style="font-size: 1.2rem;">$0</strong>
+    </div>
+</div>
+
+</body>
+</html>
