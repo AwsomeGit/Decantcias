@@ -4,13 +4,13 @@ async function cargarPerfumes() {
   const res = await fetch(sheetURL);
   const csv = await res.text();
 
-  const rows = csv.split("\n").filter(r => r.trim() !== "");
-  const headers = rows.shift().split(";"); // porque Sheets exporta con ;
+  const rows = csv.split("\n");
+  const headers = rows.shift().split(";"); // 👈 IMPORTANTE
 
   const perfumes = rows.map(row => {
     const cols = row.split(";");
     let obj = {};
-    headers.forEach((h, i) => obj[h.trim()] = (cols[i] || "").trim());
+    headers.forEach((h, i) => obj[h.trim()] = cols[i]?.trim());
     return obj;
   });
 
@@ -24,29 +24,19 @@ function mostrarPerfumes(perfumes) {
   container.innerHTML = "";
 
   perfumes.forEach(p => {
-    if (!p.nombre) return;
+    let imgs = (p.imagenURL || "")
+      .split("|")
+      .map(i => i.trim())
+      .filter(i => i !== "");
 
-    // 💰 FIX PRECIO
-    let precio = (p.precio || "").replace(/[^\d]/g, "");
-    precio = Number(precio || 0).toLocaleString("es-AR");
-
-    // 🖼️ MULTI IMAGENES con |
-    let imgs = (p.imagenURL || "").split("|");
-    let imgHTML = "";
-
-    imgs.forEach(img => {
-      img = img.trim();
-      if (img) {
-        imgHTML += `<img src="${img}" class="product-img">`;
-      }
-    });
+    let imgHTML = imgs[0] ? `<img src="${imgs[0]}">` : "";
 
     container.innerHTML += `
       <div class="product">
-        <div class="img-box">${imgHTML}</div>
+        ${imgHTML}
         <h3>${p.nombre}</h3>
-        <p>${p.descripcion || ""}</p>
-        <b>$${precio}</b>
+        <p>${p.descripcion}</p>
+        <b>$${Number(p.precio || 0).toLocaleString("es-AR")}</b>
       </div>
     `;
   });
