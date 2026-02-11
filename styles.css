@@ -1,161 +1,122 @@
-:root {
-  --oro:#8a6d3b;
-  --oro-light:#c9a86a;
-  --bg:#faf7f2;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  font-family: Poppins;
-  background: var(--bg);
-  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #0b0b0b;
+  color: white;
 }
 
-.top-banner img {
-  width: 100%;
-  max-height: 150px;
-  object-fit: contain;
-  display: block;
+/* HEADER */
+header {
+  text-align: center;
+  padding: 25px;
+  background: linear-gradient(180deg, #000, #111);
+  border-bottom: 2px solid gold;
 }
 
-.container {
-  max-width: 1200px;
-  margin: auto;
+header h1 {
+  font-size: 2.2rem;
+  color: gold;
+}
+
+header p {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* SEARCH */
+.filters {
+  padding: 10px;
+  text-align: center;
+}
+
+#search {
+  width: 80%;
+  max-width: 400px;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+/* GRID */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
   padding: 20px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
-  gap: 20px;
+/* CARD */
+.product {
+  background: #121212;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* CARDS */
-.card {
-  background:#fff;
-  padding:20px;
-  border-radius:15px;
-  border:1px solid #eee;
-  text-align:center;
-  cursor:pointer;
-  transition:.3s;
+.product:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.35);
 }
 
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow:0 10px 30px rgba(0,0,0,.08);
+.product img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
 }
 
-.card img {
-  width:100%;
-  height:220px;
-  object-fit:contain;
+.product h3 {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  color: gold;
 }
 
-.price-tag {
-  color: var(--oro);
-  font-weight:bold;
-  font-size:1.2rem;
+.product p {
+  font-size: 0.85rem;
+  color: #ccc;
+  min-height: 50px;
 }
 
-/* MODAL */
-.modal {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
+.product b {
+  font-size: 1.2rem;
+  margin: 10px 0;
+  display: block;
 }
 
-.modal-content {
-  background:#fff;
-  width:95%;
-  max-width:850px;
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,.25);
+/* BUTTON */
+.product button {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  background: gold;
+  color: black;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.modal-flex {
-  display:flex;
-  flex-wrap:wrap;
+.product button:hover {
+  background: orange;
 }
 
-.modal-col-img {
-  flex:1;
-  min-width:300px;
-  padding:30px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:linear-gradient(135deg,#fff,#f7f2ea);
-}
-
-.modal-col-img img {
-  max-width:100%;
-  max-height:400px;
-  object-fit:contain;
-}
-
-.modal-col-info {
-  flex:1;
-  min-width:300px;
-  padding:40px;
-  background:#fafafa;
-}
-
-#modal-title {
-  font-family:"Playfair Display";
-  font-size:1.8rem;
-}
-
-.desc-box {
-  color:#555;
-  font-size:.95rem;
-  margin-top:15px;
-  border-top:1px solid #eee;
-  padding-top:10px;
-}
-
-.qty-box {
-  display:flex;
-  gap:15px;
-  margin:20px 0;
-}
-
-.qty-box button {
-  width:35px;
-  height:35px;
-  border-radius:50%;
-  border:1px solid var(--oro);
-  background:none;
-  cursor:pointer;
-}
-
-.btn-cart {
-  background:var(--oro);
-  color:#fff;
-  border:none;
-  padding:14px;
-  border-radius:30px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.close-btn {
-  position:absolute;
-  top:10px;
-  right:15px;
-  border:none;
-  background:none;
-  font-size:24px;
-  cursor:pointer;
-}
-
-/* MOBILE */
-@media(max-width:650px){
-  .modal-flex { flex-direction:column; }
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 15px;
+  background: black;
+  color: #666;
+  font-size: 0.8rem;
+  border-top: 1px solid #222;
 }
