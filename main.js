@@ -94,12 +94,19 @@ function renderGrid(items) {
     const card = document.createElement("div");
     card.className = "product";
 
-    const firstImg = (p.imgs && p.imgs.length) ? p.imgs[0] : "";
+    const firstImg = (Array.isArray(p.imgs) && p.imgs.length) ? String(p.imgs[0]).trim() : "";
 
     card.innerHTML = `
       <div class="product-card">
         <div class="card-thumb">
-          ${firstImg ? `<img src="${firstImg}" alt="${p.marca} ${p.nombre}" loading="lazy">` : ""}
+          ${
+            firstImg
+              ? `<img src="${firstImg}"
+                     alt="${(p.marca||"")} ${(p.nombre||"")}"
+                     referrerpolicy="no-referrer"
+                     onerror="this.style.display='none'">`
+              : ""
+          }
         </div>
         <div>
           <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
@@ -112,6 +119,7 @@ function renderGrid(items) {
     el.products.appendChild(card);
   });
 }
+
 
 // ------------------------
 // Load + parse
@@ -134,12 +142,12 @@ async function cargarPerfumes() {
         clean[kk] = (row[k] ?? "").toString().trim();
       }
 
-      const imagenRaw = getField(clean, ["imagenURL", "imagenUrl", "imagen"]);
-      const imgs = String(imagenRaw || "")
-        .split("|")
-        .map(s => driveToDirect(s.trim()))
-        .filter(Boolean);
-
+    const imagenRaw = getField(clean, ["imagenURL", "imagenUrl", "imagen"]);
+const imgs = String(imagenRaw || "")
+  .split("|")
+  .map(s => s.trim().replace(/^"|"$/g, ""))   // ✅ saca comillas
+  .map(s => driveToDirect(s))
+  .filter(Boolean);
       return {
         marca: getField(clean, ["marca", "Marca"]),
         nombre: getField(clean, ["nombre", "Nombre"]),
