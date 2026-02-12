@@ -54,22 +54,9 @@ let CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 // ------------------------
 const el = {};
 const REQUIRED_MODAL_IDS = [
-  "modalOverlay",
-  "modalClose",
-  "modalImg",
-  "modalThumbs",
-  "modalTitle",
-  "modalDesc",
-  "modalPrice",
-  "qtyMinus",
-  "qtyPlus",
-  "qtyVal",
-  "decantToggle",
-  "decMinus",
-  "decPlus",
-  "decVal",
-  "addToCartBtn",
-  "cartCount",
+  "modalOverlay","modalClose","modalImg","modalThumbs","modalTitle","modalDesc","modalPrice",
+  "qtyMinus","qtyPlus","qtyVal","decantToggle","decMinus","decPlus","decVal","addToCartBtn",
+  "cartCount"
 ];
 
 function cacheDom() {
@@ -95,9 +82,35 @@ function cacheDom() {
 
   el.addBtn = document.getElementById("addToCartBtn");
   el.cartCount = document.getElementById("cartCount");
+}
 
-  el.decPriceLabel = document.querySelector(".decant-price"); // label a la derecha
-  el.perfumeLabel = document.querySelector(".qty-row span");  // label a la izquierda (Perfume x ml)
+// ------------------------
+// Grid (miniatura = imgs[0])
+// ------------------------
+function renderGrid(items) {
+  el.products.innerHTML = "";
+
+  items.forEach((p, idx) => {
+    const card = document.createElement("div");
+    card.className = "product";
+
+    const firstImg = (p.imgs && p.imgs.length) ? p.imgs[0] : "";
+
+    card.innerHTML = `
+      <div class="product-card">
+        <div class="card-thumb">
+          ${firstImg ? `<img src="${firstImg}" alt="${p.marca} ${p.nombre}" loading="lazy">` : ""}
+        </div>
+        <div>
+          <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
+          <p class="sub">${moneyAR(p.precio)}</p>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener("click", () => openModal(idx));
+    el.products.appendChild(card);
+  });
 }
 
 // ------------------------
@@ -113,7 +126,6 @@ async function cargarPerfumes() {
 
     const csvText = await res.text();
     const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-    if (parsed.errors?.length) console.error("Parse errors:", parsed.errors);
 
     PRODUCTS = (parsed.data || []).map(row => {
       const clean = {};
@@ -134,10 +146,8 @@ async function cargarPerfumes() {
         descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
         stock: toNumber(getField(clean, ["stock", "Stock"])),
         precio: toNumber(getField(clean, ["precio", "Precio"])),
-        precioDecant: toNumber(
-          getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"])
-        ),
-        ml: toNumber(getField(clean, ["ml", "ML", "Ml"])), // 👈 NUEVO (desde sheet)
+        precioDecant: toNumber(getField(clean, ["Precio Decant","PrecioDecant","precioDecant","decant"])),
+        ml: toNumber(getField(clean, ["ml","ML","Ml"])),
         imgs,
         raw: clean,
       };
@@ -150,23 +160,6 @@ async function cargarPerfumes() {
     console.error("Error cargando perfumes:", e);
     el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
-}
-
-// ------------------------
-// Grid: solo marca + nombre
-// ------------------------
-function renderGrid(items) {
-  el.products.innerHTML = "";
-  items.forEach((p, idx) => {
-    const card = document.createElement("div");
-    card.className = "product";
-    card.innerHTML = `
-      <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
-      <p class="sub">${moneyAR(p.precio)}</p>
-    `;
-    card.addEventListener("click", () => openModal(idx));
-    el.products.appendChild(card);
-  });
 }
 
 // ------------------------
@@ -185,18 +178,17 @@ function openModal(index) {
   el.desc.textContent = ACTIVE.descripcion || "";
   el.price.textContent = moneyAR(ACTIVE.precio);
 
- // Label: Perfume (X ml) desde el Sheet
-const perfumeLabel = el.overlay?.querySelector(".qty-row > span");
-if (perfumeLabel) {
-  const ml = Number(ACTIVE.ml || 0);
-  perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
-}
-
-  // Decant: "Decant 5ML $X" (precio desde sheet)
-  const dPrice = ACTIVE.precioDecant || 0;
-  if (el.decPriceLabel) {
-    el.decPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
+  // Perfume (X ml) desde sheet
+  const perfumeLabel = el.overlay.querySelector(".qty-row > span");
+  if (perfumeLabel) {
+    const ml = Number(ACTIVE.ml || 0);
+    perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
   }
+
+  // Decant 5ML + precio desde sheet
+  const dPrice = ACTIVE.precioDecant || 0;
+  const decantPriceLabel = el.overlay.querySelector(".decant-price");
+  if (decantPriceLabel) decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
 
   el.qtyVal.textContent = String(qtyBottle);
   el.decToggle.checked = false;
@@ -258,7 +250,7 @@ function addToCart() {
       type: "decant",
       marca: ACTIVE.marca,
       nombre: ACTIVE.nombre,
-      ml: 5, // decant fijo 5ml
+      ml: 5,
       unitPrice: ACTIVE.precioDecant || 0,
       qty: qtyDecant,
     });
@@ -324,5 +316,7 @@ function wireModalEvents() {
   });
 }
 
-// Ejecutar cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", cargarPerfumes);
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("JS cargado correctamente");
+});
