@@ -1,6 +1,8 @@
 const sheetURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
+const WHATSAPP_NUMBER = "5493517883411";
+
 // ------------------------
 // Util
 // ------------------------
@@ -24,7 +26,7 @@ function toNumber(raw) {
 
 function driveToDirect(url) {
   if (!url) return "";
-  const m = url.match(/\/file\/d\/([^/]+)\//);
+  const m = String(url).match(/\/file\/d\/([^/]+)\//);
   if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
   return url;
 }
@@ -34,6 +36,19 @@ function getField(obj, keys) {
     if (obj[k] != null && String(obj[k]).trim() !== "") return obj[k];
   }
   return "";
+}
+
+// Si en el sheet ponés "maahir.jpg", lo convierte a "fotos/maahir.jpg".
+// Si ponés "fotos/maahir.jpg", lo deja.
+// Si ponés Drive/HTTP, lo deja (y si es Drive lo convierte a directo).
+function normalizeImgPath(url) {
+  if (!url) return "";
+  let u = String(url).trim().replace(/^"|"$/g, "");
+  if (!u) return "";
+
+  if (/^https?:\/\//i.test(u) || u.includes("drive.google.com")) return driveToDirect(u);
+  if (u.startsWith("fotos/")) return u;
+  return `fotos/${u}`;
 }
 
 // ------------------------
@@ -50,18 +65,15 @@ const CART_KEY = "decantcias_cart_v1";
 let CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
 // ------------------------
-// DOM refs (modal)
+// DOM refs
 // ------------------------
 const el = {};
-const REQUIRED_MODAL_IDS = [
-  "modalOverlay","modalClose","modalImg","modalThumbs","modalTitle","modalDesc","modalPrice",
-  "qtyMinus","qtyPlus","qtyVal","decantToggle","decMinus","decPlus","decVal","addToCartBtn",
-  "cartCount"
-];
 
 function cacheDom() {
+  // Grid
   el.products = document.getElementById("products");
 
+  // Product modal
   el.overlay = document.getElementById("modalOverlay");
   el.close = document.getElementById("modalClose");
 
@@ -81,7 +93,18 @@ function cacheDom() {
   el.decVal = document.getElementById("decVal");
 
   el.addBtn = document.getElementById("addToCartBtn");
+
+  // Badge / boton carrito
   el.cartCount = document.getElementById("cartCount");
+
+  // Cart modal
+  el.openCartBtn = document.getElementById("openCartBtn");
+  el.cartOverlay = document.getElementById("cartOverlay");
+  el.cartClose = document.getElementById("cartClose");
+  el.cartItems = document.getElementById("cartItems");
+  el.cartTotal = document.getElementById("cartTotal");
+  el.waBtn = document.getElementById("waBtn");
+  el.clearCartBtn = document.getElementById("clearCartBtn");
 }
 
 // ------------------------
@@ -102,7 +125,7 @@ function renderGrid(items) {
           ${
             firstImg
               ? `<img src="${firstImg}"
-                     alt="${(p.marca||"")} ${(p.nombre||"")}"
+                     alt="${(p.marca || "")} ${(p.nombre || "")}"
                      referrerpolicy="no-referrer"
                      onerror="this.style.display='none'">`
               : ""
@@ -119,7 +142,6 @@ function renderGrid(items) {
     el.products.appendChild(card);
   });
 }
-
 
 // ------------------------
 // Load + parse
@@ -142,12 +164,12 @@ async function cargarPerfumes() {
         clean[kk] = (row[k] ?? "").toString().trim();
       }
 
-    const imagenRaw = getField(clean, ["imagenURL", "imagenUrl", "imagen"]);
-const imgs = String(imagenRaw || "")
-  .split("|")
-  .map(s => s.trim().replace(/^"|"$/g, ""))   // ✅ saca comillas
-  .map(s => driveToDirect(s))
-  .filter(Boolean);
+      const imagenRaw = getField(clean, ["imagenURL", "imagenUrl", "imagen"]);
+      const imgs = String(imagenRaw || "")
+        .split("|")
+        .map(s => normalizeImgPath(s))
+        .filter(Boolean);
+
       return {
         marca: getField(clean, ["marca", "Marca"]),
         nombre: getField(clean, ["nombre", "Nombre"]),
@@ -163,7 +185,7 @@ const imgs = String(imagenRaw || "")
 
     renderGrid(PRODUCTS);
     updateCartBadge();
-    wireModalEvents();
+    wireEvents();
   } catch (e) {
     console.error("Error cargando perfumes:", e);
     el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
@@ -171,7 +193,7 @@ const imgs = String(imagenRaw || "")
 }
 
 // ------------------------
-// Modal
+// Product Modal
 // ------------------------
 function openModal(index) {
   if (!el.overlay) return;
@@ -228,7 +250,8 @@ function renderModalImages() {
     const t = document.createElement("div");
     t.className = "thumb" + (i === activeImgIdx ? " active" : "");
     t.innerHTML = `<img src="${src}" alt="">`;
-    t.addEventListener("click", () => {
+    t.addEventListener("click", (e) => {
+      e.stopPropagation();
       activeImgIdx = i;
       renderModalImages();
     });
@@ -237,8 +260,12 @@ function renderModalImages() {
 }
 
 // ------------------------
-// Cart
+// Cart (data)
 // ------------------------
+function saveCart() {
+  localStorage.setItem(CART_KEY, JSON.stringify(CART));
+}
+
 function addToCart() {
   if (!ACTIVE) return;
 
@@ -264,7 +291,7 @@ function addToCart() {
     });
   }
 
-  localStorage.setItem(CART_KEY, JSON.stringify(CART));
+  saveCart();
   updateCartBadge();
   closeModal();
 }
@@ -274,57 +301,177 @@ function updateCartBadge() {
   if (el.cartCount) el.cartCount.textContent = `Carrito: ${totalItems}`;
 }
 
-// ------------------------
-// Events
-// ------------------------
-function wireModalEvents() {
-  if (wireModalEvents._wired) return;
+function cartItemLabel(it) {
+  const mlTxt = it.type === "decant" ? "Decant 5ML" : `Perfume (${it.ml || 0} ml)`;
+  return `${it.marca} ${it.nombre} • ${mlTxt}`;
+}
 
-  const missing = REQUIRED_MODAL_IDS.filter(id => !document.getElementById(id));
-  if (missing.length) {
-    console.warn("Modal incompleto. Faltan IDs:", missing.join(", "));
+function renderCart() {
+  if (!el.cartItems) return;
+
+  el.cartItems.innerHTML = "";
+
+  if (!CART.length) {
+    el.cartItems.innerHTML = `<div style="padding:10px;opacity:.7">Carrito vacío.</div>`;
+    if (el.cartTotal) el.cartTotal.textContent = moneyAR(0);
     return;
   }
 
-  wireModalEvents._wired = true;
+  let total = 0;
 
-  el.close.addEventListener("click", closeModal);
-  el.overlay.addEventListener("click", (e) => {
+  CART.forEach((it, i) => {
+    const line = (it.unitPrice || 0) * (it.qty || 0);
+    total += line;
+
+    const row = document.createElement("div");
+    row.className = "cart-item";
+    row.innerHTML = `
+      <div>
+        <div class="name">${cartItemLabel(it)}</div>
+        <div class="meta">${moneyAR(it.unitPrice)} c/u</div>
+      </div>
+      <div class="right">
+        <div class="qtyline">
+          <button class="cart-mini-btn" data-act="minus" data-i="${i}" type="button">−</button>
+          <b>${it.qty}</b>
+          <button class="cart-mini-btn" data-act="plus" data-i="${i}" type="button">+</button>
+        </div>
+        <div><b>${moneyAR(line)}</b></div>
+        <button class="cart-mini-btn" data-act="del" data-i="${i}" type="button" title="Eliminar">✕</button>
+      </div>
+    `;
+    el.cartItems.appendChild(row);
+  });
+
+  if (el.cartTotal) el.cartTotal.textContent = moneyAR(total);
+
+  // delegation
+  el.cartItems.onclick = (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    const act = btn.dataset.act;
+    const idx = Number(btn.dataset.i);
+    if (!Number.isFinite(idx)) return;
+
+    if (act === "minus") {
+      CART[idx].qty = Math.max(1, (CART[idx].qty || 1) - 1);
+    } else if (act === "plus") {
+      CART[idx].qty = (CART[idx].qty || 1) + 1;
+    } else if (act === "del") {
+      CART.splice(idx, 1);
+    }
+
+    saveCart();
+    updateCartBadge();
+    renderCart();
+  };
+}
+
+function openCart() {
+  if (!el.cartOverlay) return;
+  renderCart();
+  el.cartOverlay.classList.remove("hidden");
+}
+
+function closeCart() {
+  if (!el.cartOverlay) return;
+  el.cartOverlay.classList.add("hidden");
+}
+
+function buildWhatsAppMessage() {
+  if (!CART.length) return "Hola! Quiero hacer un pedido.";
+
+  const grouped = {};
+  for (const it of CART) {
+    const key = `${it.type}|${it.marca}|${it.nombre}|${it.ml}|${it.unitPrice}`;
+    grouped[key] = grouped[key] || { ...it, qty: 0 };
+    grouped[key].qty += (it.qty || 0);
+  }
+
+  let total = 0;
+  const lines = Object.values(grouped).map(it => {
+    const lineTotal = (it.unitPrice || 0) * (it.qty || 0);
+    total += lineTotal;
+    return `• ${cartItemLabel(it)} x${it.qty} = ${moneyAR(lineTotal)}`;
+  });
+
+  return [
+    "Hola! Quiero hacer un pedido:",
+    "",
+    ...lines,
+    "",
+    `Total: ${moneyAR(total)}`,
+  ].join("\n");
+}
+
+function goWhatsApp() {
+  const msg = buildWhatsAppMessage();
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(url, "_blank");
+}
+
+// ------------------------
+// Events
+// ------------------------
+function wireEvents() {
+  if (wireEvents._wired) return;
+  wireEvents._wired = true;
+
+  // Product modal
+  el.close?.addEventListener("click", closeModal);
+  el.overlay?.addEventListener("click", (e) => {
     if (e.target === el.overlay) closeModal();
   });
 
-  el.qtyMinus.addEventListener("click", () => {
+  el.qtyMinus?.addEventListener("click", () => {
     qtyBottle = Math.max(1, qtyBottle - 1);
     el.qtyVal.textContent = String(qtyBottle);
   });
 
-  el.qtyPlus.addEventListener("click", () => {
+  el.qtyPlus?.addEventListener("click", () => {
     qtyBottle += 1;
     el.qtyVal.textContent = String(qtyBottle);
   });
 
-  el.decToggle.addEventListener("change", () => {
+  el.decToggle?.addEventListener("change", () => {
     decantEnabled = el.decToggle.checked;
   });
 
-  el.decMinus.addEventListener("click", () => {
+  el.decMinus?.addEventListener("click", () => {
     qtyDecant = Math.max(1, qtyDecant - 1);
     el.decVal.textContent = String(qtyDecant);
   });
 
-  el.decPlus.addEventListener("click", () => {
+  el.decPlus?.addEventListener("click", () => {
     qtyDecant += 1;
     el.decVal.textContent = String(qtyDecant);
   });
 
-  el.addBtn.addEventListener("click", addToCart);
+  el.addBtn?.addEventListener("click", addToCart);
 
+  // Cart modal
+  el.openCartBtn?.addEventListener("click", openCart);
+  el.cartClose?.addEventListener("click", closeCart);
+  el.cartOverlay?.addEventListener("click", (e) => {
+    if (e.target === el.cartOverlay) closeCart();
+  });
+
+  el.clearCartBtn?.addEventListener("click", () => {
+    CART = [];
+    saveCart();
+    updateCartBadge();
+    renderCart();
+  });
+
+  el.waBtn?.addEventListener("click", goWhatsApp);
+
+  // ESC cierra ambos
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !el.overlay.classList.contains("hidden")) closeModal();
+    if (e.key !== "Escape") return;
+    if (el.overlay && !el.overlay.classList.contains("hidden")) closeModal();
+    if (el.cartOverlay && !el.cartOverlay.classList.contains("hidden")) closeCart();
   });
 }
 
 document.addEventListener("DOMContentLoaded", cargarPerfumes);
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("JS cargado correctamente");
-});
