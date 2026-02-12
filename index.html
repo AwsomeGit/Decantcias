@@ -4,121 +4,124 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Decantcias</title>
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 
-  <!-- HERO -->
-<!-- HERO -->
-<header class="hero" id="top">
-  <div class="hero-overlay">
-    <div class="hero-content">
-      <h1>Decantcias</h1>
-      <p>Perfumes árabes importados • Decants premium • Envíos a todo el país</p>
+  <div class="page">
 
-      <div class="hero-actions">
-        <a class="hero-btn hero-btn-primary" href="#products">Ver catálogo</a>
-        <a class="hero-btn hero-btn-ghost" href="https://wa.me/5493517883411" target="_blank" rel="noopener">
-          WhatsApp
-        </a>
+    <!-- HERO -->
+    <header class="hero" id="top">
+      <div class="hero-overlay">
+        <div class="hero-content">
+          <h1>Decantcias</h1>
+          <p>Perfumes árabes importados • Decants premium • Envíos a todo el país</p>
+
+          <div class="hero-actions">
+            <a class="hero-btn hero-btn-primary" href="#products">Ver catálogo</a>
+            <a class="hero-btn hero-btn-ghost" href="https://wa.me/5493517883411" target="_blank" rel="noopener">
+              WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Botón flotante carrito -->
+    <div class="cart-bar">
+      <button id="openCartBtn" class="cart-btn" type="button">
+        🛒 <span id="cartCount">Carrito: 0</span>
+      </button>
+    </div>
+
+    <!-- Modal Carrito -->
+    <div id="cartOverlay" class="modal-overlay hidden">
+      <div class="modal cart-modal">
+        <button id="cartClose" class="modal-close" type="button">✕</button>
+
+        <h2 class="modal-title">Tu carrito</h2>
+        <div id="cartItems" class="cart-items"></div>
+
+        <div class="cart-summary">
+          <div class="cart-total">
+            <span>Total</span>
+            <b id="cartTotal">$0</b>
+          </div>
+
+          <button id="waBtn" class="btn-primary" type="button">Pedir por WhatsApp</button>
+          <button id="clearCartBtn" class="btn-secondary" type="button">Vaciar carrito</button>
+        </div>
       </div>
     </div>
-  </div>
-</header>
 
-  <!-- Botón flotante carrito -->
-  <div class="cart-bar">
-    <button id="openCartBtn" class="cart-btn" type="button">
-      🛒 <span id="cartCount">Carrito: 0</span>
-    </button>
-  </div>
+    <!-- GRID -->
+    <div id="products" class="products-grid"></div>
 
-  <!-- Modal Carrito -->
-  <div id="cartOverlay" class="modal-overlay hidden">
-    <div class="modal cart-modal">
-      <button id="cartClose" class="modal-close" type="button">✕</button>
+    <!-- Modal Producto -->
+    <div id="modalOverlay" class="modal-overlay hidden">
+      <div class="modal">
+        <button id="modalClose" class="modal-close" type="button">✕</button>
 
-      <h2 class="modal-title">Tu carrito</h2>
-      <div id="cartItems" class="cart-items"></div>
-
-      <div class="cart-summary">
-        <div class="cart-total">
-          <span>Total</span>
-          <b id="cartTotal">$0</b>
-        </div>
-
-        <button id="waBtn" class="btn-primary" type="button">Pedir por WhatsApp</button>
-        <button id="clearCartBtn" class="btn-secondary" type="button">Vaciar carrito</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- GRID -->
-  <div id="products" class="products-grid"></div>
-
-  <!-- Modal Producto -->
-  <div id="modalOverlay" class="modal-overlay hidden">
-    <div class="modal">
-      <button id="modalClose" class="modal-close" type="button">✕</button>
-
-      <div class="modal-grid">
-        <!-- Columna imágenes -->
-        <div>
-          <div class="modal-img-wrap">
-            <img id="modalImg" alt="">
-          </div>
-          <div id="modalThumbs" class="modal-thumbs"></div>
-        </div>
-
-        <!-- Columna detalle -->
-        <div>
-          <h2 id="modalTitle" class="modal-title"></h2>
-          <p id="modalDesc" class="modal-desc"></p>
-
-          <div class="price-row">
-            <span class="price-label">Precio</span>
-            <span id="modalPrice" class="price-val"></span>
-          </div>
-
-          <div class="qty-row">
-            <span>Perfume</span>
-            <div class="qty">
-              <button id="qtyMinus" type="button">−</button>
-              <span id="qtyVal">0</span>
-              <button id="qtyPlus" type="button">+</button>
+        <div class="modal-grid">
+          <!-- Columna imágenes -->
+          <div>
+            <div class="modal-img-wrap">
+              <img id="modalImg" alt="">
             </div>
+            <div id="modalThumbs" class="modal-thumbs"></div>
           </div>
 
-          <div class="decant-row">
-            <div class="decant-left">
-              <label class="switch">
-                <input id="decantToggle" type="checkbox">
-                <span class="slider"></span>
-              </label>
-              <span class="decant-label">Decant</span>
+          <!-- Columna detalle -->
+          <div>
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <p id="modalDesc" class="modal-desc"></p>
+
+            <div class="price-row">
+              <span class="price-label">Precio</span>
+              <span id="modalPrice" class="price-val"></span>
             </div>
 
-            <div class="decant-right">
-              <span class="decant-price">Decant $0</span>
-              <div class="qty small">
-                <button id="decMinus" type="button">−</button>
-                <span id="decVal">1</span>
-                <button id="decPlus" type="button">+</button>
+            <div class="qty-row">
+              <span>Perfume</span>
+              <div class="qty">
+                <button id="qtyMinus" type="button">−</button>
+                <span id="qtyVal">0</span>
+                <button id="qtyPlus" type="button">+</button>
               </div>
             </div>
-          </div>
 
-          <button id="addToCartBtn" class="btn-primary" type="button">
-            Agregar al carrito
-          </button>
+            <div class="decant-row">
+              <div class="decant-left">
+                <label class="switch">
+                  <input id="decantToggle" type="checkbox">
+                  <span class="slider"></span>
+                </label>
+                <span class="decant-label">Decant</span>
+              </div>
+
+              <div class="decant-right">
+                <span class="decant-price">Decant $0</span>
+                <div class="qty small">
+                  <button id="decMinus" type="button">−</button>
+                  <span id="decVal">1</span>
+                  <button id="decPlus" type="button">+</button>
+                </div>
+              </div>
+            </div>
+
+            <button id="addToCartBtn" class="btn-primary" type="button">
+              Agregar al carrito
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <footer>
-    © 2026 Decantcias • WhatsApp directo
-  </footer>
+    <footer>
+      © 2026 Decantcias • WhatsApp directo
+    </footer>
+
+  </div>
 
   <!-- PapaParse -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
