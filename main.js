@@ -1,355 +1,319 @@
-/* -------------------------
-   BASE
--------------------------- */
-body{
-  font-family: Arial, sans-serif;
-  background:#111;
-  color:#fff;
-  padding:20px;
-  margin:0;
+const sheetURL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
+
+// ------------------------
+// Util
+// ------------------------
+function moneyAR(n) {
+  const v = Number(n);
+  return `$${(Number.isFinite(v) ? v : 0).toLocaleString("es-AR")}`;
 }
 
-header{
-  margin-bottom:16px;
+function toNumber(raw) {
+  if (raw == null) return 0;
+  const s = String(raw).trim();
+  if (!s) return 0;
+  const cleaned = s
+    .replace(/\$/g, "")
+    .replace(/\s/g, "")
+    .replace(/\./g, "")
+    .replace(",", ".");
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : 0;
 }
 
-footer{
-  margin-top:20px;
-  opacity:.7;
+function driveToDirect(url) {
+  if (!url) return "";
+  const m = url.match(/\/file\/d\/([^/]+)\//);
+  if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  return url;
 }
 
-/* -------------------------
-   GRID
--------------------------- */
-.products-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:18px;
-  padding:18px 0;
-  align-items:start;
+function getField(obj, keys) {
+  for (const k of keys) {
+    if (obj[k] != null && String(obj[k]).trim() !== "") return obj[k];
+  }
+  return "";
 }
 
-/* -------------------------
-   CARD
--------------------------- */
-.product{
-  cursor:pointer;
-  background:#fff;
-  color:#111;
-  border-radius:16px;
-  padding:14px;
-  box-shadow:0 10px 28px rgba(0,0,0,.25);
-  transition:.2s ease;
+// ------------------------
+// State
+// ------------------------
+let PRODUCTS = [];
+let ACTIVE = null;
+let activeImgIdx = 0;
+let qtyBottle = 1;
+let decantEnabled = false;
+let qtyDecant = 1;
+
+const CART_KEY = "decantcias_cart_v1";
+let CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+
+// ------------------------
+// DOM refs (modal)
+// ------------------------
+const el = {};
+const REQUIRED_MODAL_IDS = [
+  "modalOverlay","modalClose","modalImg","modalThumbs","modalTitle","modalDesc","modalPrice",
+  "qtyMinus","qtyPlus","qtyVal","decantToggle","decMinus","decPlus","decVal","addToCartBtn",
+  "cartCount"
+];
+
+function cacheDom() {
+  el.products = document.getElementById("products");
+
+  el.overlay = document.getElementById("modalOverlay");
+  el.close = document.getElementById("modalClose");
+
+  el.img = document.getElementById("modalImg");
+  el.thumbs = document.getElementById("modalThumbs");
+  el.title = document.getElementById("modalTitle");
+  el.desc = document.getElementById("modalDesc");
+  el.price = document.getElementById("modalPrice");
+
+  el.qtyMinus = document.getElementById("qtyMinus");
+  el.qtyPlus = document.getElementById("qtyPlus");
+  el.qtyVal = document.getElementById("qtyVal");
+
+  el.decToggle = document.getElementById("decantToggle");
+  el.decMinus = document.getElementById("decMinus");
+  el.decPlus = document.getElementById("decPlus");
+  el.decVal = document.getElementById("decVal");
+
+  el.addBtn = document.getElementById("addToCartBtn");
+  el.cartCount = document.getElementById("cartCount");
 }
 
-.product:hover{
-  transform:translateY(-3px);
-  box-shadow:0 16px 36px rgba(0,0,0,.35);
+// ------------------------
+// Grid (miniatura = imgs[0])
+// ------------------------
+function renderGrid(items) {
+  el.products.innerHTML = "";
+
+  items.forEach((p, idx) => {
+    const card = document.createElement("div");
+    card.className = "product";
+
+    const firstImg = (p.imgs && p.imgs.length) ? p.imgs[0] : "";
+
+    card.innerHTML = `
+      <div class="product-card">
+        <div class="card-thumb">
+          ${firstImg ? `<img src="${firstImg}" alt="${p.marca} ${p.nombre}" loading="lazy">` : ""}
+        </div>
+        <div>
+          <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
+          <p class="sub">${moneyAR(p.precio)}</p>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener("click", () => openModal(idx));
+    el.products.appendChild(card);
+  });
 }
 
-.product-card{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
+// ------------------------
+// Load + parse
+// ------------------------
+async function cargarPerfumes() {
+  cacheDom();
+  if (!el.products) return console.error("No existe #products");
 
-/* Imagen miniatura */
-.card-thumb{
-  width:70px;
-  height:70px;
-  border-radius:14px;
-  background:#f3f3f3;
-  overflow:hidden;
-  flex:0 0 auto;
-}
+  try {
+    const res = await fetch(sheetURL, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
 
-.card-thumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
+    const csvText = await res.text();
+    const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
-.product .title{
-  margin:0;
-  font-size:16px;
-  font-weight:700;
-  line-height:1.2;
-}
+    PRODUCTS = (parsed.data || []).map(row => {
+      const clean = {};
+      for (const k in row) {
+        const kk = (k || "").replace(/^\uFEFF/, "").trim();
+        clean[kk] = (row[k] ?? "").toString().trim();
+      }
 
-.product .sub{
-  margin:6px 0 0;
-  font-size:13px;
-  opacity:.7;
-}
+      const imagenRaw = getField(clean, ["imagenURL", "imagenUrl", "imagen"]);
+      const imgs = String(imagenRaw || "")
+        .split("|")
+        .map(s => driveToDirect(s.trim()))
+        .filter(Boolean);
 
-/* -------------------------
-   CART BADGE
--------------------------- */
-.cart-bar{
-  position:fixed;
-  right:16px;
-  bottom:16px;
-  background:#222;
-  color:#fff;
-  padding:10px 14px;
-  border-radius:999px;
-  box-shadow:0 10px 24px rgba(0,0,0,.35);
-  z-index:20;
-  font-size:14px;
-}
+      return {
+        marca: getField(clean, ["marca", "Marca"]),
+        nombre: getField(clean, ["nombre", "Nombre"]),
+        descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
+        stock: toNumber(getField(clean, ["stock", "Stock"])),
+        precio: toNumber(getField(clean, ["precio", "Precio"])),
+        precioDecant: toNumber(getField(clean, ["Precio Decant","PrecioDecant","precioDecant","decant"])),
+        ml: toNumber(getField(clean, ["ml","ML","Ml"])),
+        imgs,
+        raw: clean,
+      };
+    });
 
-/* -------------------------
-   MODAL
--------------------------- */
-.modal-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  z-index:50;
-}
-
-.hidden{ display:none; }
-
-.modal{
-  width:min(920px, 100%);
-  background:#fff;
-  color:#111;
-  border-radius:22px;
-  padding:18px;
-  position:relative;
-  animation:fadeIn .2s ease;
-}
-
-@keyframes fadeIn{
-  from{ transform:scale(.96); opacity:0; }
-  to{ transform:scale(1); opacity:1; }
-}
-
-.modal-close{
-  position:absolute;
-  top:12px;
-  right:12px;
-  border:none;
-  background:#eee;
-  border-radius:12px;
-  padding:8px 12px;
-  cursor:pointer;
-  font-size:14px;
-}
-
-.modal-grid{
-  display:grid;
-  grid-template-columns:1.1fr 1fr;
-  gap:20px;
-}
-
-@media (max-width: 760px){
-  .modal-grid{
-    grid-template-columns:1fr;
+    renderGrid(PRODUCTS);
+    updateCartBadge();
+    wireModalEvents();
+  } catch (e) {
+    console.error("Error cargando perfumes:", e);
+    el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
 }
 
-/* Imagen principal */
-.modal-img-wrap{
-  width:100%;
-  height:380px;
-  background:#f3f3f3;
-  border-radius:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
+// ------------------------
+// Modal
+// ------------------------
+function openModal(index) {
+  if (!el.overlay) return;
+
+  ACTIVE = PRODUCTS[index];
+  activeImgIdx = 0;
+  qtyBottle = 1;
+  decantEnabled = false;
+  qtyDecant = 1;
+
+  el.title.textContent = `${ACTIVE.marca} ${ACTIVE.nombre}`;
+  el.desc.textContent = ACTIVE.descripcion || "";
+  el.price.textContent = moneyAR(ACTIVE.precio);
+
+  // Perfume (X ml) desde sheet
+  const perfumeLabel = el.overlay.querySelector(".qty-row > span");
+  if (perfumeLabel) {
+    const ml = Number(ACTIVE.ml || 0);
+    perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
+  }
+
+  // Decant 5ML + precio desde sheet
+  const dPrice = ACTIVE.precioDecant || 0;
+  const decantPriceLabel = el.overlay.querySelector(".decant-price");
+  if (decantPriceLabel) decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
+
+  el.qtyVal.textContent = String(qtyBottle);
+  el.decToggle.checked = false;
+  el.decVal.textContent = String(qtyDecant);
+
+  renderModalImages();
+  el.overlay.classList.remove("hidden");
 }
 
-.modal-img-wrap img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  display:block;
+function closeModal() {
+  if (!el.overlay) return;
+  el.overlay.classList.add("hidden");
 }
 
-/* Miniaturas */
-.modal-thumbs{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-  overflow-x:auto;
+function renderModalImages() {
+  const imgs = ACTIVE?.imgs || [];
+  const current = imgs[activeImgIdx];
+
+  if (current) {
+    el.img.src = current;
+    el.img.style.display = "block";
+  } else {
+    el.img.removeAttribute("src");
+    el.img.style.display = "none";
+  }
+
+  el.thumbs.innerHTML = "";
+  imgs.forEach((src, i) => {
+    const t = document.createElement("div");
+    t.className = "thumb" + (i === activeImgIdx ? " active" : "");
+    t.innerHTML = `<img src="${src}" alt="">`;
+    t.addEventListener("click", () => {
+      activeImgIdx = i;
+      renderModalImages();
+    });
+    el.thumbs.appendChild(t);
+  });
 }
 
-.thumb{
-  width:80px;
-  height:80px;
-  border-radius:14px;
-  overflow:hidden;
-  background:#f3f3f3;
-  border:2px solid transparent;
-  cursor:pointer;
-  flex:0 0 auto;
+// ------------------------
+// Cart
+// ------------------------
+function addToCart() {
+  if (!ACTIVE) return;
+
+  if (qtyBottle > 0) {
+    CART.push({
+      type: "bottle",
+      marca: ACTIVE.marca,
+      nombre: ACTIVE.nombre,
+      ml: ACTIVE.ml || 0,
+      unitPrice: ACTIVE.precio,
+      qty: qtyBottle,
+    });
+  }
+
+  if (decantEnabled && qtyDecant > 0) {
+    CART.push({
+      type: "decant",
+      marca: ACTIVE.marca,
+      nombre: ACTIVE.nombre,
+      ml: 5,
+      unitPrice: ACTIVE.precioDecant || 0,
+      qty: qtyDecant,
+    });
+  }
+
+  localStorage.setItem(CART_KEY, JSON.stringify(CART));
+  updateCartBadge();
+  closeModal();
 }
 
-.thumb.active{
-  border-color:#111;
+function updateCartBadge() {
+  const totalItems = CART.reduce((acc, it) => acc + (it.qty || 0), 0);
+  if (el.cartCount) el.cartCount.textContent = `Carrito: ${totalItems}`;
 }
 
-.thumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
+// ------------------------
+// Events
+// ------------------------
+function wireModalEvents() {
+  if (wireModalEvents._wired) return;
+
+  const missing = REQUIRED_MODAL_IDS.filter(id => !document.getElementById(id));
+  if (missing.length) {
+    console.warn("Modal incompleto. Faltan IDs:", missing.join(", "));
+    return;
+  }
+
+  wireModalEvents._wired = true;
+
+  el.close.addEventListener("click", closeModal);
+  el.overlay.addEventListener("click", (e) => {
+    if (e.target === el.overlay) closeModal();
+  });
+
+  el.qtyMinus.addEventListener("click", () => {
+    qtyBottle = Math.max(1, qtyBottle - 1);
+    el.qtyVal.textContent = String(qtyBottle);
+  });
+
+  el.qtyPlus.addEventListener("click", () => {
+    qtyBottle += 1;
+    el.qtyVal.textContent = String(qtyBottle);
+  });
+
+  el.decToggle.addEventListener("change", () => {
+    decantEnabled = el.decToggle.checked;
+  });
+
+  el.decMinus.addEventListener("click", () => {
+    qtyDecant = Math.max(1, qtyDecant - 1);
+    el.decVal.textContent = String(qtyDecant);
+  });
+
+  el.decPlus.addEventListener("click", () => {
+    qtyDecant += 1;
+    el.decVal.textContent = String(qtyDecant);
+  });
+
+  el.addBtn.addEventListener("click", addToCart);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !el.overlay.classList.contains("hidden")) closeModal();
+  });
 }
 
-/* -------------------------
-   MODAL TEXT
--------------------------- */
-.modal-title{
-  margin:0 0 8px;
-  font-size:22px;
-  font-weight:700;
-}
-
-.modal-desc{
-  margin:0 0 14px;
-  font-size:14px;
-  color:#333;
-  line-height:1.4;
-}
-
-.price-row{
-  display:flex;
-  justify-content:space-between;
-  padding:12px 0;
-  border-top:1px solid #eee;
-  border-bottom:1px solid #eee;
-  margin-bottom:12px;
-}
-
-.price-label{
-  color:#555;
-}
-
-.price-val{
-  font-weight:800;
-}
-
-/* -------------------------
-   QTY
--------------------------- */
-.qty-row,
-.decant-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:12px 0;
-  gap:10px;
-}
-
-.qty{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:#f3f3f3;
-  border-radius:14px;
-  padding:6px 10px;
-}
-
-.qty.small{
-  padding:4px 8px;
-  gap:8px;
-}
-
-.qty button{
-  width:34px;
-  height:32px;
-  border:none;
-  border-radius:10px;
-  background:#fff;
-  cursor:pointer;
-  font-weight:700;
-  font-size:16px;
-}
-
-.decant-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.decant-right{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.decant-price{
-  font-weight:700;
-}
-
-/* -------------------------
-   BUTTON
--------------------------- */
-.btn-primary{
-  width:100%;
-  margin-top:16px;
-  background:#111;
-  color:#fff;
-  border:none;
-  border-radius:16px;
-  padding:14px;
-  cursor:pointer;
-  font-weight:700;
-  font-size:15px;
-  transition:.2s ease;
-}
-
-.btn-primary:hover{
-  background:#000;
-}
-
-/* -------------------------
-   SWITCH
--------------------------- */
-.switch{
-  position:relative;
-  display:inline-block;
-  width:44px;
-  height:24px;
-}
-
-.switch input{
-  opacity:0;
-  width:0;
-  height:0;
-}
-
-.slider{
-  position:absolute;
-  inset:0;
-  background:#ccc;
-  border-radius:999px;
-  transition:.2s;
-}
-
-.slider:before{
-  content:"";
-  position:absolute;
-  height:18px;
-  width:18px;
-  left:3px;
-  top:3px;
-  background:white;
-  border-radius:50%;
-  transition:.2s;
-}
-
-.switch input:checked + .slider{
-  background:#111;
-}
-
-.switch input:checked + .slider:before{
-  transform:translateX(20px);
-}
+document.addEventListener("DOMContentLoaded", cargarPerfumes);
