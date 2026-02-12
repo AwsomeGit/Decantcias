@@ -4,21 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Decantcias</title>
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 
-<header class="hero">
-  <img src="fotos/headerDecantcias.png" alt="Decantcias">
+  <!-- HERO -->
+  <header class="hero">
+    <img class="hero-img" src="fotos/headerDecantcias.png" alt="Decantcias">
 
-  <div class="hero-overlay">
-    <div class="hero-content">
-      <h1>Decantcias</h1>
-      <p>Perfumes árabes importados • Decants premium • Envíos a todo el país</p>
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <h1>Decantcias</h1>
+        <p>Perfumes árabes importados • Decants premium • Envíos a todo el país</p>
+      </div>
     </div>
-  </div>
-</header>
-
+  </header>
 
   <!-- Botón flotante carrito -->
   <div class="cart-bar">
@@ -75,10 +75,10 @@
           </div>
 
           <div class="qty-row">
-            <span>Cantidad (botella)</span>
+            <span>Perfume</span>
             <div class="qty">
               <button id="qtyMinus" type="button">−</button>
-              <span id="qtyVal">1</span>
+              <span id="qtyVal">0</span>
               <button id="qtyPlus" type="button">+</button>
             </div>
           </div>
@@ -116,9 +116,7 @@
 
   <!-- PapaParse (antes de main.js) -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="main.js?v=5" defer></script>
-
+  <script src="main.js?v=6" defer></script>
 
 </body>
 </html>
-
