@@ -200,7 +200,7 @@ function openModal(index) {
 
   ACTIVE = PRODUCTS[index];
   activeImgIdx = 0;
-  qtyBottle = 1;
+  qtyBottle = 0;
   decantEnabled = false;
   qtyDecant = 1;
 
@@ -425,7 +425,7 @@ function wireEvents() {
   });
 
   el.qtyMinus?.addEventListener("click", () => {
-    qtyBottle = Math.max(1, qtyBottle - 1);
+    qtyBottle = Math.max(0, qtyBottle - 1);
     el.qtyVal.textContent = String(qtyBottle);
   });
 
