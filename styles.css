@@ -14,12 +14,15 @@ body{
    HERO HEADER PREMIUM
  =========================*/
 .hero{
-  position:relative;
-  width:100%;
-  margin:0 0 16px;
-  overflow:hidden;
-  background:#000;
+  position: relative;
+  width: 100vw;              /* ancho total de la ventana */
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  overflow: hidden;
+  background: #000;
 }
+
 
 .hero-img{
   width:100%;
