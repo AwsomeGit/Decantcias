@@ -57,7 +57,7 @@ function normalizeImgPath(url) {
 let PRODUCTS = [];
 let ACTIVE = null;
 let activeImgIdx = 0;
-let qtyBottle = 1;
+let qtyBottle = 0;
 let decantEnabled = false;
 let qtyDecant = 1;
 
@@ -474,4 +474,10 @@ function wireEvents() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", cargarPerfumes);
+function init() {
+  cacheDom();
+  wireEvents();     // ✅ listeners del carrito y modal se atan siempre
+  cargarPerfumes(); // ✅ recién después carga productos
+}
+
+document.addEventListener("DOMContentLoaded", init);
