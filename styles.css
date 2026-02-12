@@ -63,11 +63,13 @@ footer{
   flex:0 0 auto;
 }
 
-.card-thumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
+.card-thumb{
+  width:70px;
+  height:70px;
+  border-radius:14px;
+  background:#f3f3f3;
+  overflow:hidden;
+  flex:0 0 auto;
 }
 
 .product .title{
