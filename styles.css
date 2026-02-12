@@ -531,3 +531,20 @@ footer{
   font-size:14px;
   border-top:1px solid rgba(255,255,255,.06);
 }
+/* Marco dorado en miniaturas del GRID */
+.card-thumb{
+  background: linear-gradient(180deg,#0e0e0e,#000);
+  padding: 6px;                 /* grosor del marco */
+  border-radius: 16px;
+  border: 2px solid #c9a43b;
+  box-shadow:
+    0 0 0 3px #000,
+    0 0 0 5px rgba(201,164,59,.25),
+    0 10px 20px rgba(0,0,0,.30);
+}
+
+/* La imagen queda dentro */
+.card-thumb img{
+  border-radius: 10px;
+  background:#fff;
+}
