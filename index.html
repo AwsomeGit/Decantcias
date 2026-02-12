@@ -13,6 +13,33 @@
     <p>Perfumes árabes importados • Precios reales • Envíos a todo el país</p>
   </header>
 
+  <!-- Barra / botón carrito -->
+<div class="cart-bar">
+  <button id="openCartBtn" class="cart-btn">
+    🛒 <span id="cartCount">Carrito: 0</span>
+  </button>
+</div>
+
+<!-- Modal Carrito -->
+<div id="cartOverlay" class="modal-overlay hidden">
+  <div class="modal cart-modal">
+    <button id="cartClose" class="modal-close">✕</button>
+
+    <h2 class="modal-title">Tu carrito</h2>
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="cart-summary">
+      <div class="cart-total">
+        <span>Total</span>
+        <b id="cartTotal">$0</b>
+      </div>
+
+      <button id="waBtn" class="btn-primary">Pedir por WhatsApp</button>
+      <button id="clearCartBtn" class="btn-secondary">Vaciar carrito</button>
+    </div>
+  </div>
+</div>
+
   <div id="products" class="products-grid"></div>
 
   <!-- Carrito (badge) -->
