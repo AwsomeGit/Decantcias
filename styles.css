@@ -25,13 +25,11 @@ body{
 
 
 .hero-img{
-  width:100%;
-  height:110px;              /* ✅ finito */
-  object-fit:contain;        /* ✅ NO recorta, entra completa */
-  object-position:center;
-  display:block;
-  background:#000;           /* ✅ relleno si sobran espacios */
-  filter:brightness(.95);    /* ✅ con contain no hace falta oscurecer tanto */
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  object-position: center 35%;
+  display: block;
 }
 
 
