@@ -342,3 +342,121 @@ footer{
   object-fit:cover;
   display:block;
 }
+/* =========================
+   QTY + DECANT (restaurar UI premium)
+ =========================*/
+.qty-row,
+.decant-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:12px 0;
+  gap:12px;
+}
+
+.qty{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#f3f3f3;
+  border-radius:14px;
+  padding:6px 10px;
+}
+
+.qty.small{
+  padding:4px 8px;
+  gap:8px;
+}
+
+.qty button{
+  width:34px;
+  height:32px;
+  border:none;
+  border-radius:10px;
+  background:#fff;
+  cursor:pointer;
+  font-weight:800;
+  font-size:16px;
+  box-shadow:0 1px 0 rgba(0,0,0,.06);
+}
+
+.decant-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.decant-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.decant-label{
+  font-weight:700;
+}
+
+.decant-price{
+  font-weight:800;
+}
+
+/* Switch premium */
+.switch{
+  position:relative;
+  display:inline-block;
+  width:44px;
+  height:24px;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#ccc;
+  border-radius:999px;
+  transition:.2s;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  height:18px;
+  width:18px;
+  left:3px;
+  top:3px;
+  background:#fff;
+  border-radius:50%;
+  transition:.2s;
+}
+
+.switch input:checked + .slider{
+  background:#111;
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(20px);
+}
+
+/* Botón principal dentro del modal */
+.btn-primary{
+  width:100%;
+  margin-top:16px;
+  background:#111;
+  color:#fff;
+  border:none;
+  border-radius:16px;
+  padding:14px;
+  cursor:pointer;
+  font-weight:800;
+  font-size:15px;
+  transition:.2s ease;
+}
+
+.btn-primary:hover{
+  background:#000;
+}
