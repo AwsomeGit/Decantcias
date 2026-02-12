@@ -92,14 +92,99 @@ footer{
   position:fixed;
   right:16px;
   bottom:16px;
-  background:#222;
+  z-index:9999;   /* ✅ más alto que el modal */
+}
+.cart-btn{
+  border:none;
+  background:#111;
   color:#fff;
   padding:10px 14px;
   border-radius:999px;
-  box-shadow:0 10px 24px rgba(0,0,0,.35);
-  z-index:20;
-  font-size:14px;
+  cursor:pointer;
+  font-weight:700;
 }
+
+.cart-modal{
+  width:min(720px, 100%);
+}
+
+.cart-items{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:360px;
+  overflow:auto;
+  padding-right:6px;
+}
+
+.cart-item{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  gap:10px;
+  background:#f6f6f6;
+  border-radius:14px;
+  padding:12px;
+}
+
+.cart-item .name{
+  font-weight:700;
+}
+
+.cart-item .meta{
+  font-size:12px;
+  opacity:.75;
+  margin-top:4px;
+}
+
+.cart-item .right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px;
+}
+
+.cart-item .qtyline{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.cart-mini-btn{
+  width:30px;
+  height:30px;
+  border:none;
+  border-radius:10px;
+  background:#fff;
+  cursor:pointer;
+  font-weight:800;
+}
+
+.btn-secondary{
+  width:100%;
+  margin-top:10px;
+  background:#eee;
+  color:#111;
+  border:none;
+  border-radius:16px;
+  padding:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.cart-summary{
+  margin-top:14px;
+  border-top:1px solid #eee;
+  padding-top:12px;
+}
+
+.cart-total{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
 
 /* -------------------------
    MODAL
