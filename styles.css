@@ -24,11 +24,13 @@ body{
 .hero-img{
   width:100%;
   height:110px;              /* ✅ finito */
-  object-fit:cover;          /* ✅ estirado a lo ancho */
-  object-position:center 35%;
+  object-fit:contain;        /* ✅ NO recorta, entra completa */
+  object-position:center;
   display:block;
-  filter:brightness(.75);
+  background:#000;           /* ✅ relleno si sobran espacios */
+  filter:brightness(.95);    /* ✅ con contain no hace falta oscurecer tanto */
 }
+
 
 /* texto arriba de la imagen (overlay superior) */
 .hero-overlay{
