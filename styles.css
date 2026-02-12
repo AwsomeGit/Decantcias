@@ -11,37 +11,44 @@ body{
   font-family: Arial, sans-serif;
   color:#fff;
 
-  /* imagen de fondo para TODA la página */
+  /* ✅ Background GLOBAL para toda la página */
   background:
     linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.72)),
     url("fotos/headerDecantcias.png") no-repeat center center / cover;
 
-  background-attachment: fixed; /* opcional: efecto premium */
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Wrapper opcional (lo agregamos en index.html) */
+.page{
+  min-height: 100vh;
 }
 
 /* =========================
-   HERO HEADER PREMIUM
+   HERO (solo contenido encima del background global)
  =========================*/
 .hero{
   position: relative;
   width: 100%;
-  height: 140px;
-  background: url("fotos/headerDecantcias.png") no-repeat 40% center / cover;
-  overflow: hidden;
+  height: auto;               /* ✅ ya no banner fijo */
+  padding: 34px 20px 14px;    /* ✅ espacio para texto/botones */
+  background: none;           /* ✅ importante */
 }
 
 .hero-overlay{
-  position:absolute;
-  inset:0;
+  position: relative;         /* ✅ ya no absoluto */
+  inset: auto;
   display:flex;
   align-items:flex-start;
   justify-content:center;
   text-align:center;
   padding:10px 16px 0;
-  background:linear-gradient(
+
+  /* ✅ degradé sutil arriba para legibilidad (sin “caja”) */
+  background: linear-gradient(
     180deg,
-    rgba(0,0,0,.72) 0%,
-    rgba(0,0,0,.28) 55%,
+    rgba(0,0,0,.40) 0%,
     rgba(0,0,0,0) 100%
   );
 }
@@ -107,7 +114,7 @@ body{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   gap:18px;
-  padding:18px 20px;
+  padding:18px 20px 40px;
   align-items:start;
 }
 
@@ -186,7 +193,7 @@ body{
 }
 
 /* -------------------------
-   MODAL GENERAL
+   MODAL GENERAL (✅ no se escapa)
 -------------------------- */
 .modal-overlay{
   position:fixed;
@@ -197,6 +204,8 @@ body{
   justify-content:center;
   padding:18px;
   z-index:50;
+
+  overflow: auto;  /* ✅ si algo excede, no rompe la pantalla */
 }
 
 .hidden{ display:none; }
@@ -209,6 +218,16 @@ body{
   padding:18px;
   position:relative;
   animation:fadeIn .2s ease;
+
+  max-height: calc(100vh - 36px); /* ✅ clave */
+  overflow: auto;                 /* ✅ clave */
+}
+
+/* Si tu carrito usa .cart-modal */
+.cart-modal{
+  width:min(720px, 100%);
+  max-height: calc(100vh - 36px);
+  overflow: auto;
 }
 
 @keyframes fadeIn{
@@ -225,6 +244,11 @@ body{
   border-radius:12px;
   padding:8px 12px;
   cursor:pointer;
+}
+
+/* Si tu modal tiene imagen grande, evitá que empuje todo */
+.modal-img-wrap{
+  height: min(380px, 45vh);
 }
 
 /* -------------------------
