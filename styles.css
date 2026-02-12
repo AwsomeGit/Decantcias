@@ -5,9 +5,10 @@ body{
   font-family: Arial, sans-serif;
   background:#111;
   color:#fff;
-  padding:20px;
+  padding:0;      /* ✅ antes 20px */
   margin:0;
 }
+
 
 /* =========================
    HERO HEADER PREMIUM
@@ -96,9 +97,10 @@ body{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   gap:18px;
-  padding:18px 0;
+  padding:18px 20px;  /* ✅ antes 18px 0 */
   align-items:start;
 }
+
 
 /* -------------------------
    CARD
@@ -510,4 +512,15 @@ body{
 
 .switch input:checked + .slider:before{
   transform:translateX(20px);
+}
+footer{
+  width:100%;
+  margin-top:28px;
+  padding:28px 20px;
+  background:linear-gradient(180deg,#0e0e0e,#000);
+  color:#aaa;
+  text-align:center;
+  font-size:14px;
+  letter-spacing:.4px;
+  border-top:1px solid rgba(255,255,255,.06);
 }
