@@ -4,13 +4,19 @@
 html, body{
   margin:0;
   padding:0;
-  overflow-x:hidden;
+  min-height:100%;
 }
 
 body{
   font-family: Arial, sans-serif;
-  background:#111;
   color:#fff;
+
+  /* imagen de fondo para TODA la página */
+  background:
+    linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.72)),
+    url("fotos/headerDecantcias.png") no-repeat center center / cover;
+
+  background-attachment: fixed; /* opcional: efecto premium */
 }
 
 /* =========================
