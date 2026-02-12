@@ -16,9 +16,12 @@ body{
 .hero{
   position: relative;
   width: 100%;
-  margin: 0;
+  height: 140px;
+  background-image: url("fotos/headerDecantcias.png");
+  background-size: cover;
+  background-position: 40% center;
+  background-repeat: no-repeat;
   overflow: hidden;
-  background: #000;
 }
 .hero-img{
   width: 100%;
