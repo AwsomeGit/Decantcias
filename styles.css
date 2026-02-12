@@ -264,3 +264,81 @@ footer{
   font-size:14px;
   border-top:1px solid rgba(255,255,255,.06);
 }
+/* =========================
+   MODAL FIX (no se rompe)
+ =========================*/
+
+/* Overlay: scroll si hace falta */
+.modal-overlay{
+  overflow: auto;
+  padding: 18px;
+  align-items: center;
+}
+
+/* Caja modal: límite de alto + scroll interno */
+.modal{
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+}
+
+/* Layout interno del modal producto */
+.modal-grid{
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 760px){
+  .modal-grid{ grid-template-columns: 1fr; }
+}
+
+/* Contenedor imagen principal: limita alto */
+.modal-img-wrap{
+  width: 100%;
+  height: min(420px, 55vh);   /* clave */
+  background: #f3f3f3;
+  border-radius: 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Imagen: nunca excede el contenedor */
+.modal-img-wrap img{
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display:block;
+}
+
+/* Miniaturas */
+.modal-thumbs{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+  overflow-x:auto;
+  padding-bottom: 4px;
+}
+
+.thumb{
+  width:80px;
+  height:80px;
+  border-radius:14px;
+  overflow:hidden;
+  background:#f3f3f3;
+  border:2px solid transparent;
+  cursor:pointer;
+  flex:0 0 auto;
+}
+
+.thumb.active{ border-color:#111; }
+
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
