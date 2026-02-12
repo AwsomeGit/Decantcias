@@ -143,7 +143,31 @@ async function cargarPerfumes() {
       };
     });
 
-    renderGrid(PRODUCTS);
+    function renderGrid(items) {
+  el.products.innerHTML = "";
+
+  items.forEach((p, idx) => {
+    const card = document.createElement("div");
+    card.className = "product";
+
+    const firstImg = (p.imgs && p.imgs.length) ? p.imgs[0] : "";
+
+    card.innerHTML = `
+      <div class="product-card">
+        <div class="card-thumb">
+          ${firstImg ? `<img src="${firstImg}" alt="${p.marca} ${p.nombre}" loading="lazy">` : ""}
+        </div>
+        <div>
+          <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
+          <p class="sub">${moneyAR(p.precio)}</p>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener("click", () => openModal(idx));
+    el.products.appendChild(card);
+  });
+}
     updateCartBadge();
     wireModalEvents();
   } catch (e) {
@@ -155,14 +179,20 @@ async function cargarPerfumes() {
 // ------------------------
 // Grid: solo marca + nombre
 // ------------------------
-function renderGrid(items) {
-  el.products.innerHTML = "";
-  items.forEach((p, idx) => {
-    const card = document.createElement("div");
-    card.className = "product";
-    card.innerHTML = `
+const firstImg = (p.imgs && p.imgs.length) ? p.imgs[0] : "";
+
+card.innerHTML = `
+  <div class="product-card">
+    <div class="card-thumb">
+      ${firstImg ? `<img src="${firstImg}" alt="${p.marca} ${p.nombre}" loading="lazy">` : ""}
+    </div>
+    <div>
       <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
       <p class="sub">${moneyAR(p.precio)}</p>
+    </div>
+  </div>
+`;
+
     `;
     card.addEventListener("click", () => openModal(idx));
     el.products.appendChild(card);
