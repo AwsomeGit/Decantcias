@@ -12,9 +12,6 @@ body{
 
 /* =========================
    HERO HEADER PREMIUM
-========================= */
-/* HERO full width + más bajo */
-/* HERO full width elegante y más bajo */
 .hero{
   position:relative;
   width:100%;
@@ -23,15 +20,47 @@ body{
   background:#000;
 }
 
-/* altura controlada con relación de aspecto */
 .hero-img{
   width:100%;
-  height:100px;          /* 🔥 finita */
+  height:140px;                /* franja fina */
   object-fit:cover;
-  object-position:center 35%;
+  object-position:center 30%;
   display:block;
-  filter:brightness(.95) contrast(1.05);
+  filter:brightness(.7);       /* oscurece para que el texto destaque */
 }
+
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;          /* 👈 centra vertical */
+  justify-content:center;      /* 👈 centra horizontal */
+  text-align:center;
+  padding:0 20px;
+  background:linear-gradient(
+    90deg,
+    rgba(0,0,0,.6) 0%,
+    rgba(0,0,0,.2) 40%,
+    rgba(0,0,0,.6) 100%
+  );
+}
+
+.hero-content h1{
+  margin:0;
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:2px;
+  color:#f5d17a;
+  text-transform:uppercase;
+}
+
+.hero-content p{
+  margin-top:6px;
+  font-size:14px;
+  opacity:.85;
+  color:#eee;
+}
+
 /* -------------------------
    GRID
 -------------------------- */
