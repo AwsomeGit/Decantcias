@@ -14,81 +14,24 @@ body{
    HERO HEADER PREMIUM
 ========================= */
 /* HERO full width + más bajo */
+/* HERO full width elegante y más bajo */
 .hero{
   position:relative;
   width:100%;
-  margin:0 0 20px;          /* sin auto/centrado */
-  border-radius:0;          /* full edge */
+  margin:0;
   overflow:hidden;
-  box-shadow: 0 24px 60px rgba(0,0,0,.55);
   background:#000;
 }
 
-/* imagen full width */
+/* altura controlada con relación de aspecto */
 .hero-img{
-  position:relative;
-  z-index:1;
   width:100%;
-  height:260px;             /* menos alto */
+  height:clamp(140px, 22vw, 220px); /* ✅ más bajo y responsive */
   object-fit:cover;
+  object-position:center 40%; /* ajusta el encuadre */
   display:block;
-  filter: brightness(.95) contrast(1.05) saturate(1.05);
+  filter:brightness(.95) contrast(1.05);
 }
-
-/* overlay */
-.hero-overlay{
-  position:absolute;
-  inset:0;
-  z-index:2;
-  background:
-    radial-gradient(900px 420px at 18% 30%, rgba(245,209,122,.18), transparent 60%),
-    linear-gradient(180deg,
-      rgba(0,0,0,.30) 0%,
-      rgba(0,0,0,.18) 45%,
-      rgba(0,0,0,.70) 100%
-    );
-  display:flex;
-  align-items:flex-end;
-  padding:24px 28px;
-}
-
-.hero-content{
-  color:#fff;
-  max-width:1100px;
-  width:100%;
-  margin:0 auto;            /* texto centrado, banner full */
-}
-
-.hero-content h1{
-  margin:0;
-  font-size:40px;
-  font-weight:900;
-  letter-spacing:1.2px;
-  color:#f5d17a;
-  text-shadow: 0 10px 28px rgba(0,0,0,.55);
-}
-
-.hero-content p{
-  margin:8px 0 0;
-  font-size:15px;
-  line-height:1.4;
-  opacity:.9;
-  text-shadow: 0 8px 20px rgba(0,0,0,.55);
-}
-
-/* responsive */
-@media (max-width: 900px){
-  .hero-img{ height:220px; }
-  .hero-content h1{ font-size:34px; }
-}
-
-@media (max-width: 520px){
-  .hero-img{ height:190px; }
-  .hero-overlay{ padding:18px 16px; }
-  .hero-content h1{ font-size:28px; letter-spacing:.8px; }
-  .hero-content p{ font-size:13px; }
-}
-
 
 /* -------------------------
    GRID
