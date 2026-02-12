@@ -21,8 +21,13 @@ body{
   background: #000;
 }
 .hero-img{
-  width: 100vw;     /* solo la imagen a vw */
+  width: 100%;
+  height: 150px;              /* más espacio para que recorte menos */
+  object-fit: cover;          /* llena sin barras */
+  object-position: center 30%; /* enfoca un poco más arriba */
+  display: block;
 }
+
 
 /* texto arriba de la imagen (overlay superior) */
 .hero-overlay{
