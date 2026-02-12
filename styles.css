@@ -26,13 +26,12 @@ body{
 /* altura controlada con relación de aspecto */
 .hero-img{
   width:100%;
-  height:clamp(140px, 22vw, 220px); /* ✅ más bajo y responsive */
+  height:120px;          /* 🔥 finita */
   object-fit:cover;
-  object-position:center 40%; /* ajusta el encuadre */
+  object-position:center 35%;
   display:block;
   filter:brightness(.95) contrast(1.05);
 }
-
 /* -------------------------
    GRID
 -------------------------- */
