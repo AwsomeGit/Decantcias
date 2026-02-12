@@ -460,3 +460,19 @@ footer{
 .btn-primary:hover{
   background:#000;
 }
+/* Marco premium imagen principal */
+.modal-img-wrap{
+  background: linear-gradient(180deg,#0e0e0e,#000);
+  padding: 14px;                 /* crea el marco interno */
+  border-radius: 22px;
+  border: 2px solid #c9a43b;     /* dorado */
+  box-shadow:
+    0 0 0 1px rgba(255,215,120,.25),
+    0 18px 40px rgba(0,0,0,.45);
+}
+
+/* La imagen queda dentro del marco */
+.modal-img-wrap img{
+  border-radius: 14px;
+  background: #fff;
+}
