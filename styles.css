@@ -530,3 +530,23 @@ body{
     justify-content:center;
   }
 }
+/* ===== FIX DEFINITIVO: modal SIEMPRE centrado ===== */
+#modalOverlay.modal-overlay{
+  position: fixed !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px !important;
+  background: rgba(0,0,0,.65) !important;
+  z-index: 20000 !important;
+}
+
+#modalOverlay.modal-overlay .modal{
+  margin: auto !important;
+  position: relative !important;
+  max-height: calc(100vh - 120px) !important;
+}
+
+/* Asegura que hidden realmente lo apaga */
+.hidden{ display:none !important; }
