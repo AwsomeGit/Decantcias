@@ -504,3 +504,42 @@ footer{
   text-shadow:0 10px 24px rgba(0,0,0,.55);
 }
 
+/* FORCE: cards compactas (evita que otro CSS las agrande) */
+.products-grid .product-card{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+
+.products-grid .card-thumb{
+  width:70px !important;
+  height:70px !important;
+  border-radius:14px !important;
+  overflow:hidden !important;
+  background:#fff !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 70px !important;
+}
+
+.products-grid .card-thumb img{
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  display:block !important;
+}
+
+.products-grid .brand-logo{
+  height:18px !important;
+  margin-bottom:6px !important;
+  display:flex !important;
+  align-items:center !important;
+}
+
+.products-grid .brand-logo img{
+  height:18px !important;
+  width:auto !important;
+  object-fit:contain !important;
+  opacity:.9 !important;
+}
