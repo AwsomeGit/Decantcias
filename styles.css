@@ -167,5 +167,39 @@ body{
     0 0 0 4px #000,
     0 0 0 6px rgba(201,164,59,.25);
 }
+/* ==== FIX cards (evita logos gigantes) ==== */
+.product-card{
+  display:flex !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+
+.card-thumb{
+  width:70px !important;
+  height:70px !important;
+  border-radius:16px !important;
+  overflow:hidden !important;
+  background:#000 !important;
+  border:2px solid #c9a43b !important;
+  flex:0 0 auto !important;
+}
+
+.card-thumb img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  background:#fff !important;
+  display:block !important;
+}
+
+/* texto a la derecha, no debajo */
+.card-info{
+  min-width:0 !important;
+}
+
+.card-info .title,
+.card-info .sub{
+  margin-left:0 !important;
+}
 
 
