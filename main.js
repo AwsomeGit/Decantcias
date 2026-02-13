@@ -70,6 +70,13 @@ let CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 const el = {};
 
 function cacheDom() {
+    // Brands
+  el.brands = document.getElementById("brands");
+  el.brandView = document.getElementById("brandView");
+  el.brandBack = document.getElementById("brandBack");
+  el.brandTitle = document.getElementById("brandTitle");
+  el.brandProducts = document.getElementById("brandProducts");
+
   // Grid
   el.products = document.getElementById("products");
 
