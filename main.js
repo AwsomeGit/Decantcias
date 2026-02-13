@@ -2,8 +2,6 @@ const sheetURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
 const WHATSAPP_NUMBER = "5493517883411";
-
-// Solo estas marcas como “home”
 const MAIN_BRANDS = ["Lattafa", "Armaf", "Zimaya"];
 
 // ------------------------
@@ -125,12 +123,15 @@ function cacheDom() {
 
   // Product modal
   el.overlay = document.getElementById("modalOverlay");
+  el.modalBox = el.overlay?.querySelector(".modal-box") || null;
   el.close = document.getElementById("modalClose");
   el.img = document.getElementById("modalImg");
   el.thumbs = document.getElementById("modalThumbs");
   el.title = document.getElementById("modalTitle");
   el.desc = document.getElementById("modalDesc");
   el.price = document.getElementById("modalPrice");
+  el.perfumeLabel = document.getElementById("perfumeLabel");
+  el.decantPriceLabel = document.getElementById("decantPriceLabel");
 
   el.qtyMinus = document.getElementById("qtyMinus");
   el.qtyPlus = document.getElementById("qtyPlus");
@@ -147,11 +148,16 @@ function cacheDom() {
   el.cartCount = document.getElementById("cartCount");
   el.openCartBtn = document.getElementById("openCartBtn");
   el.cartOverlay = document.getElementById("cartOverlay");
+  el.cartBox = el.cartOverlay?.querySelector(".modal-box") || null;
   el.cartClose = document.getElementById("cartClose");
   el.cartItems = document.getElementById("cartItems");
   el.cartTotal = document.getElementById("cartTotal");
   el.waBtn = document.getElementById("waBtn");
   el.clearCartBtn = document.getElementById("clearCartBtn");
+}
+
+function lockScroll(lock) {
+  document.body.style.overflow = lock ? "hidden" : "";
 }
 
 // ------------------------
@@ -278,8 +284,7 @@ function renderBrands(products) {
 }
 
 function openBrand(brandName) {
-  // IMPORTANTE: no “pantalla nueva”, solo muestra la sección de abajo
-  hideAllCatalog(); // para que no quede mezclado con el catálogo completo
+  hideAllCatalog();
 
   const key = normBrand(brandName);
   const filtered = PRODUCTS.filter((p) => normBrand(p.marca) === key);
@@ -293,7 +298,6 @@ function openBrand(brandName) {
 
 function closeBrand() {
   hideBrandSection();
-  // vuelve a marcas (no hacemos scroll forzado)
 }
 
 // ------------------------
@@ -362,27 +366,29 @@ function openModalByProduct(product) {
   el.price.textContent = moneyAR(ACTIVE.precio);
 
   // Perfume (X ml)
-  const perfumeLabel = el.overlay.querySelector(".qty-label");
-  if (perfumeLabel) {
-    const ml = Number(ACTIVE.ml || 0);
-    perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
-  }
+  const ml = Number(ACTIVE.ml || 0);
+  if (el.perfumeLabel) el.perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
 
   // Decant 5ML + precio
   const dPrice = ACTIVE.precioDecant || 0;
-  const decantPriceLabel = el.overlay.querySelector(".decant-price");
-  if (decantPriceLabel) decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
+  if (el.decantPriceLabel) el.decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
 
   el.qtyVal.textContent = String(qtyBottle);
   el.decToggle.checked = false;
   el.decVal.textContent = String(qtyDecant);
 
   renderModalImages();
+
   el.overlay.classList.remove("hidden");
+  el.overlay.setAttribute("aria-hidden", "false");
+  lockScroll(true);
 }
 
 function closeModal() {
-  el.overlay?.classList.add("hidden");
+  if (!el.overlay) return;
+  el.overlay.classList.add("hidden");
+  el.overlay.setAttribute("aria-hidden", "true");
+  lockScroll(false);
 }
 
 function renderModalImages() {
@@ -519,10 +525,15 @@ function openCart() {
   if (!el.cartOverlay) return;
   renderCart();
   el.cartOverlay.classList.remove("hidden");
+  el.cartOverlay.setAttribute("aria-hidden", "false");
+  lockScroll(true);
 }
 
 function closeCart() {
-  el.cartOverlay?.classList.add("hidden");
+  if (!el.cartOverlay) return;
+  el.cartOverlay.classList.add("hidden");
+  el.cartOverlay.setAttribute("aria-hidden", "true");
+  lockScroll(false);
 }
 
 function buildWhatsAppMessage() {
@@ -558,10 +569,8 @@ function wireEvents() {
   if (wireEvents._wired) return;
   wireEvents._wired = true;
 
-  // Volver en filtrado
   el.brandBack?.addEventListener("click", closeBrand);
 
-  // Abrir catálogo (footer)
   document.querySelectorAll('a[href="#products"]').forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
@@ -569,11 +578,13 @@ function wireEvents() {
     });
   });
 
-  // Modal producto: X y click afuera
+  // Modal producto
   el.close?.addEventListener("click", closeModal);
+
   el.overlay?.addEventListener("click", (e) => {
     if (e.target === el.overlay) closeModal();
   });
+  el.modalBox?.addEventListener("click", (e) => e.stopPropagation());
 
   el.qtyMinus?.addEventListener("click", () => {
     qtyBottle = Math.max(0, qtyBottle - 1);
@@ -604,9 +615,11 @@ function wireEvents() {
   // Cart modal
   el.openCartBtn?.addEventListener("click", openCart);
   el.cartClose?.addEventListener("click", closeCart);
+
   el.cartOverlay?.addEventListener("click", (e) => {
     if (e.target === el.cartOverlay) closeCart();
   });
+  el.cartBox?.addEventListener("click", (e) => e.stopPropagation());
 
   el.clearCartBtn?.addEventListener("click", () => {
     CART = [];
@@ -620,6 +633,7 @@ function wireEvents() {
   // ESC cierra ambos
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
+
     if (el.overlay && !el.overlay.classList.contains("hidden")) closeModal();
     if (el.cartOverlay && !el.cartOverlay.classList.contains("hidden")) closeCart();
   });
