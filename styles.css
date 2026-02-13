@@ -605,29 +605,68 @@ body{
 }
 
 /* Imagen decorativa */
-.footer-deco{
-  position:absolute;
-  height:42px;          /* tamaño chico */
-  opacity:0.18;         /* elegante y sutil */
-  pointer-events:none;  /* no clickeable */
-  top:50%;
-  transform:translateY(-50%);
+/* =========================
+   Footer logos con brillo
+========================= */
+
+.footer-bar{
+  position: fixed;
+  overflow: hidden;
 }
 
-/* Izquierda */
+/* Logo decorativo */
+.footer-deco{
+  position:absolute;
+  height:44px;
+  top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+
+  opacity:0.85;
+
+  /* brillo dorado */
+  filter:
+    drop-shadow(0 0 4px rgba(245, 209, 122, .8))
+    drop-shadow(0 0 10px rgba(201, 164, 59, .6))
+    drop-shadow(0 0 18px rgba(201, 164, 59, .4));
+
+  transition: all .4s ease;
+}
+
+/* izquierda */
 .footer-deco-left{
   left:20px;
 }
 
-/* Derecha */
+/* derecha */
 .footer-deco-right{
   right:20px;
 }
 
-/* En mobile los ocultamos */
-@media (max-width: 768px){
+/* leve animación premium */
+.footer-deco{
+  animation: footerGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes footerGlow{
+  from{
+    filter:
+      drop-shadow(0 0 4px rgba(245, 209, 122, .6))
+      drop-shadow(0 0 8px rgba(201, 164, 59, .4));
+  }
+  to{
+    filter:
+      drop-shadow(0 0 6px rgba(245, 209, 122, 1))
+      drop-shadow(0 0 16px rgba(201, 164, 59, .8))
+      drop-shadow(0 0 26px rgba(201, 164, 59, .6));
+  }
+}
+
+/* ocultar en mobile */
+@media (max-width:768px){
   .footer-deco{
     display:none;
   }
 }
+
 
