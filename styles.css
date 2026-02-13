@@ -7,12 +7,10 @@ html, body{
   min-height:100%;
 }
 
-*, *::before, *::after{
-  box-sizing:border-box;
-}
+*, *::before, *::after{ box-sizing:border-box; }
 
 body{
-  font-family: "Poppins", Arial, sans-serif;
+  font-family:"Poppins", Arial, sans-serif;
   color:#fff;
   overflow-x:hidden;
 
@@ -24,13 +22,31 @@ body{
   padding-bottom:86px; /* footer fijo */
 }
 
+/* Logo grande “sobre el guante”, detrás del contenido */
+.bg-logo{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background: url("fotos/logo-footer.png") no-repeat;
+  background-size: min(820px, 55vw);
+  background-position: 38% 62%; /* ajustado para quedar sobre el guante */
+  opacity:.20;
+  filter:
+    drop-shadow(0 0 10px rgba(245, 209, 122, .35))
+    drop-shadow(0 0 22px rgba(201, 164, 59, .25));
+}
+
+/* Asegura que el contenido quede por arriba del bg-logo */
+.hero, #brands, #brandView, #products, .cart-bar, .footer-bar{
+  position:relative;
+  z-index:1;
+}
+
 /* =========================
    HERO
 ========================= */
-.hero{
-  width:100%;
-  padding:34px 20px 14px;
-}
+.hero{ width:100%; padding:34px 20px 14px; }
 
 .hero-overlay{
   display:flex;
@@ -216,7 +232,7 @@ body{
 .cart-bar{
   position:fixed;
   right:16px;
-  bottom:96px; /* deja espacio al footer */
+  bottom:96px;
   z-index:9000;
 }
 
@@ -232,44 +248,65 @@ body{
 
 /* =========================
    MODALS
-   .modal = overlay
-   .modal-box = caja
 ========================= */
 .hidden{ display:none !important; }
 
 .modal{
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  background: rgba(0,0,0,.65);
-  z-index: 20000; /* arriba del footer */
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.65);
+  z-index:20000;
 }
 
 .modal-box{
-  width: min(920px, 100%);
-  max-height: calc(100vh - 120px); /* no choca con footer */
-  overflow: auto;
-  background: #fff;
-  color: #111;
-  border-radius: 22px;
-  padding: 18px;
-  position: relative;
-  box-shadow: 0 20px 50px rgba(0,0,0,.55);
+  width:min(820px, calc(100vw - 28px));
+  max-height:82vh;
+  overflow:auto;
+  background:#fff;
+  color:#111;
+  border-radius:18px;
+  padding:16px;
+  position:relative;
+  box-shadow:0 20px 50px rgba(0,0,0,.55);
+}
+
+@media (max-width:640px){
+  .modal-box{
+    width:calc(100vw - 18px);
+    max-height:86vh;
+  }
 }
 
 .modal-close{
   position:absolute;
-  top:12px;
-  right:12px;
+  top:10px;
+  right:10px;
   border:none;
   background:#eee;
   border-radius:12px;
   padding:8px 12px;
   cursor:pointer;
   font-weight:800;
+}
+
+.modal-title{
+  margin:10px 0 6px;
+  font-size:18px;
+  font-weight:800;
+}
+
+.modal-desc{
+  margin:0 0 10px;
+  opacity:.85;
+}
+
+.modal-price{
+  font-weight:900;
+  margin:6px 0 10px;
 }
 
 /* Gallery */
@@ -281,11 +318,15 @@ body{
 
 .modal-main-img{
   width:100%;
-  height: min(420px, 55vh);
-  object-fit: contain;
+  max-height:52vh;
+  object-fit:contain;
   background:#fff;
-  border-radius:16px;
+  border-radius:14px;
   border:2px solid #c9a43b;
+}
+
+@media (max-width:640px){
+  .modal-main-img{ max-height:42vh; }
 }
 
 .modal-thumbs{
@@ -296,9 +337,9 @@ body{
 }
 
 .thumb{
-  width:80px;
-  height:80px;
-  border-radius:14px;
+  width:64px;
+  height:64px;
+  border-radius:12px;
   overflow:hidden;
   background:#000;
   border:2px solid #c9a43b;
@@ -307,7 +348,7 @@ body{
 }
 
 .thumb.active{
-  box-shadow: 0 0 0 2px #000, 0 0 0 4px #c9a43b;
+  box-shadow:0 0 0 2px #000, 0 0 0 4px #c9a43b;
 }
 
 .thumb img{
@@ -315,12 +356,6 @@ body{
   height:100%;
   object-fit:cover;
   display:block;
-}
-
-/* Text modal */
-.modal-price{
-  font-weight:800;
-  margin:6px 0 10px;
 }
 
 /* QTY */
@@ -369,8 +404,9 @@ body{
   align-items:center;
   gap:10px;
 }
+
 .decant-right{
-  font-weight:700;
+  font-weight:800;
 }
 
 /* Switch */
@@ -403,28 +439,24 @@ body{
   border-radius:50%;
   transition:.2s;
 }
-.switch input:checked + .slider{
-  background:#111;
-}
-.switch input:checked + .slider:before{
-  transform:translateX(20px);
-}
+.switch input:checked + .slider{ background:#111; }
+.switch input:checked + .slider:before{ transform:translateX(20px); }
 
-/* Modal buttons */
+/* Modal button */
 .btn-cart{
   width:100%;
-  margin-top:14px;
+  margin-top:12px;
   background:#111;
   color:#fff;
   border:none;
-  border-radius:16px;
+  border-radius:14px;
   padding:14px;
   font-weight:900;
   cursor:pointer;
 }
 .btn-cart:hover{ background:#000; }
 
-/* Cart modal content */
+/* Cart modal */
 .cart-items{
   margin:10px 0 14px;
   display:flex;
@@ -457,12 +489,17 @@ body{
   gap:8px;
 }
 
+.cart-total{
+  margin:10px 0 12px;
+  font-weight:800;
+}
+
 .btn-whatsapp{
   width:100%;
   background:#25D366;
   color:#111;
   border:none;
-  border-radius:16px;
+  border-radius:14px;
   padding:12px;
   font-weight:900;
   cursor:pointer;
@@ -473,7 +510,7 @@ body{
   background:#eee;
   color:#111;
   border:none;
-  border-radius:16px;
+  border-radius:14px;
   padding:12px;
   font-weight:800;
   cursor:pointer;
@@ -491,12 +528,17 @@ body{
   background:rgba(0,0,0,.72);
   backdrop-filter: blur(10px);
   border-top:1px solid rgba(255,255,255,.08);
+  height:64px;               /* fijo, estable */
+  display:flex;
+  align-items:center;
+  overflow:hidden;           /* no “barras raras” */
 }
 
 .footer-inner{
   max-width:1100px;
   margin:0 auto;
-  padding:12px 18px;
+  padding:0 18px;
+  width:100%;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -507,7 +549,7 @@ body{
   color:#ddd;
   font-size:13px;
   opacity:.95;
-  line-height:1.3;
+  line-height:1.2;
 }
 
 .footer-right{
@@ -540,90 +582,48 @@ body{
   border:1px solid rgba(255,255,255,.16);
 }
 
-@media (max-width: 760px){
+/* Logos laterales con brillo (sin cambiar el tamaño del footer) */
+.footer-deco{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  height:44px;
+  width:auto;
+  pointer-events:none;
+  opacity:.90;
+  animation: footerGlow 3s ease-in-out infinite alternate;
+  filter:
+    drop-shadow(0 0 4px rgba(245, 209, 122, .6))
+    drop-shadow(0 0 10px rgba(201, 164, 59, .35));
+}
+
+.footer-deco-left{ left:14px; }
+.footer-deco-right{ right:14px; }
+
+@keyframes footerGlow{
+  from{
+    filter:
+      drop-shadow(0 0 4px rgba(245, 209, 122, .55))
+      drop-shadow(0 0 10px rgba(201, 164, 59, .30));
+  }
+  to{
+    filter:
+      drop-shadow(0 0 6px rgba(245, 209, 122, .95))
+      drop-shadow(0 0 16px rgba(201, 164, 59, .70))
+      drop-shadow(0 0 26px rgba(201, 164, 59, .45));
+  }
+}
+
+/* En mobile ocultamos los logos para que no molesten */
+@media (max-width: 768px){
+  .footer-deco{ display:none; }
+  .footer-bar{ height:auto; padding:10px 0; }
+  body{ padding-bottom:96px; }
   .footer-inner{
     flex-direction:column;
     align-items:stretch;
+    gap:10px;
+    padding:0 14px;
   }
-  .footer-right{
-    justify-content:center;
-  }
+  .footer-right{ justify-content:center; }
 }
-/* =========================
-   FIX: modal producto no gigante
-========================= */
-
-/* caja del modal un poco más chica y cómoda */
-#modalOverlay .modal-box{
-  width: min(820px, calc(100vw - 28px));
-  max-height: min(82vh, 720px);
-  overflow: hidden; /* el scroll lo maneja el contenido, no la caja entera */
-}
-
-/* el contenido adentro scrollea si hace falta */
-#modalOverlay .modal-box{
-  display: flex;
-  flex-direction: column;
-}
-
-#modalOverlay .modal-gallery{
-  flex: 0 0 auto;
-}
-
-/* Imagen principal: nunca gigante */
-#modalOverlay .modal-main-img{
-  width: 100%;
-  height: auto;
-  max-height: 52vh;          /* clave: limita alto en pantalla */
-  object-fit: contain;
-  border-radius: 16px;
-}
-
-/* Thumbs más compactas */
-#modalOverlay .thumb{
-  width: 64px;
-  height: 64px;
-}
-
-/* En mobile: todavía más bajo */
-@media (max-width: 640px){
-  #modalOverlay .modal-box{
-    width: calc(100vw - 18px);
-    max-height: 86vh;
-  }
-  #modalOverlay .modal-main-img{
-    max-height: 42vh;
-  }
-}
-/* =========================
-   /* =========================
-   Footer logos laterales (sin brillo exagerado)
-========================= */
-.footer-bar{
-  position:fixed;
-  overflow:hidden;
-}
-
-.footer-deco{
-  position:absolute;
-  bottom:10px;              /* lo baja hacia el guante */
-  width:52px;
-  height:auto;
-  pointer-events:none;
-
-  background:#000;
-  padding:6px;
-  border-radius:12px;
-  border:2px solid #c9a43b;
-  box-shadow: 0 10px 22px rgba(0,0,0,.45);
-  opacity:.92;
-}
-
-.footer-deco-left{ left:18px; }
-.footer-deco-right{ right:18px; transform:scaleX(-1); }
-
-@media (max-width:768px){
-  .footer-deco{ display:none; }
-}
-
-
