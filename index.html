@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Decantcias</title>
-<link rel="stylesheet" href="styles.css?v=40">
 
-
+  <link rel="stylesheet" href="styles.css?v=41">
 </head>
 <body>
 
@@ -19,12 +18,16 @@
           <h1>Decantcias</h1>
           <p>Perfumes árabes originales • 🔥 Decants premium 🔥 • Envíos a todo el país</p>
 
-        <div class="hero-actions">
-  <a class="hero-btn hero-btn-primary" href="#products">Ver catálogo</a>
-  <a class="hero-btn hero-btn-ghost" href="https://wa.me/5493517883411" target="_blank">
-    WhatsApp
-  </a>
-</div>
+          <div class="hero-actions">
+            <!-- Baja al catálogo completo -->
+            <a class="hero-btn hero-btn-primary" href="#catalogo">Ver catálogo</a>
+
+            <a class="hero-btn hero-btn-ghost"
+               href="https://wa.me/5493517883411"
+               target="_blank" rel="noopener">
+              WhatsApp
+            </a>
+          </div>
 
         </div>
       </div>
@@ -56,18 +59,21 @@
         </div>
       </div>
     </div>
-<!-- MARCAS PRINCIPALES -->
-<div id="brands" class="brands-grid"></div>
 
-<!-- Vista marca (oculta) -->
-<section id="brandView" class="brand-view hidden">
-  <div class="brand-head">
-    <button id="brandBack" class="hero-btn hero-btn-ghost" type="button">← Volver</button>
-    <h2 id="brandTitle" class="brand-title"></h2>
-  </div>
-  <div id="brandProducts" class="products-grid"></div>
-</section>
-    <!-- GRID -->
+    <!-- MARCAS PRINCIPALES -->
+    <div id="brands" class="brands-grid"></div>
+
+    <!-- Vista marca (oculta) -->
+    <section id="brandView" class="brand-view hidden">
+      <div class="brand-head">
+        <button id="brandBack" class="hero-btn hero-btn-ghost" type="button">← Volver</button>
+        <h2 id="brandTitle" class="brand-title"></h2>
+      </div>
+      <div id="brandProducts" class="products-grid"></div>
+    </section>
+
+    <!-- CATÁLOGO COMPLETO -->
+    <div id="catalogo"></div>
     <div id="products" class="products-grid"></div>
 
     <!-- Modal Producto -->
@@ -138,7 +144,7 @@
 
   <!-- PapaParse -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="main.js?v=7" defer></script>
+  <script src="main.js?v=8" defer></script>
 
 </body>
 </html>
