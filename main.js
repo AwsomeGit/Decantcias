@@ -44,6 +44,26 @@ function getField(obj, keys) {
 // Si en el sheet ponés "maahir.jpg", lo convierte a "fotos/maahir.jpg".
 // Si ponés "fotos/maahir.jpg", lo deja.
 // Si ponés Drive/HTTP, lo deja (y si es Drive lo convierte a directo).
+function getBrandLogo(marcaRaw) {
+  if (!marcaRaw) return "";
+
+  const m = marcaRaw.toLowerCase().trim();
+
+  const map = {
+    "afnan": "fotos/afnan.png",
+    "armaf": "fotos/armaflogo.jpg",
+    "lattafa": "fotos/lattafalogo.jpg",
+    "zimaya": "fotos/zimayalogo.jpg",
+    "al wataniah": "fotos/alwatanialogo.png",
+  };
+
+  for (const key in map) {
+    if (m.includes(key)) return map[key];
+  }
+
+  return "";
+}
+
 function normalizeImgPath(url) {
   if (!url) return "";
   let u = String(url).trim().replace(/^"|"$/g, "");
@@ -165,24 +185,35 @@ function renderGrid(items, mountEl) {
 
     const firstImg = (Array.isArray(p.imgs) && p.imgs.length) ? String(p.imgs[0]).trim() : "";
 
-    card.innerHTML = `
-      <div class="product-card">
-        <div class="card-thumb">
-          ${
-            firstImg
-              ? `<img src="${firstImg}"
-                     alt="${(p.marca || "")} ${(p.nombre || "")}"
-                     referrerpolicy="no-referrer"
-                     onerror="this.style.display='none'">`
-              : ""
-          }
-        </div>
-        <div>
-          <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
-          <p class="sub">${moneyAR(p.precio)}</p>
-        </div>
-      </div>
-    `;
+ const logo = getBrandLogo(p.marca);
+
+card.innerHTML = `
+  <div class="product-card">
+    <div class="card-thumb">
+      ${
+        firstImg
+          ? `<img src="${firstImg}"
+                 alt="${(p.marca || "")} ${(p.nombre || "")}"
+                 loading="lazy">`
+          : ""
+      }
+    </div>
+
+    <div class="card-info">
+      ${
+        logo
+          ? `<div class="brand-logo">
+               <img src="${logo}" alt="${p.marca}">
+             </div>`
+          : ""
+      }
+
+      <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
+      <p class="sub">${moneyAR(p.precio)}</p>
+    </div>
+  </div>
+`;
+
 
     card.addEventListener("click", () => openModalByProduct(p));
     target.appendChild(card);
