@@ -16,7 +16,6 @@ body{
   color:#fff;
   overflow-x:hidden;
 
-  /* Background GLOBAL */
   background:
     linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.72)),
     url("fotos/headerDecantcias.png") no-repeat center center / cover;
@@ -27,7 +26,7 @@ body{
 .page{ min-height:100vh; }
 
 /* =========================
-   HERO (solo contenido)
+   HERO
  =========================*/
 .hero{
   width:100%;
@@ -100,29 +99,39 @@ body{
 /* -------------------------
    GRID
 -------------------------- */
-Ahora te entiendo perfecto.
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+  padding:18px 20px 40px;
+  align-items:start;
+}
 
-Lo que está pasando:
+/* -------------------------
+   CARD
+-------------------------- */
+.product{
+  cursor:pointer;
+  background:#fff;
+  color:#111;
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.25);
+  transition:.2s ease;
+}
 
-👉 Le pusimos padding al .card-thumb para crear el marco.
-Eso reduce el espacio interno → la imagen se achica.
+.product:hover{
+  transform:translateY(-3px);
+  box-shadow:0 16px 36px rgba(0,0,0,.35);
+}
 
-Vos querés:
+.product-card{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
 
-Que el cuadrado completo tenga el marco dorado
-
-Pero que la imagen mantenga su tamaño original
-
-Sin que se vea “encogida”
-
-✅ Solución correcta (sin achicar la imagen)
-
-No usamos padding.
-Creamos el marco con box-shadow externo.
-
-Reemplazá el bloque del GRID por este:
-
-/* GRID thumbs – marco completo sin achicar imagen */
+/* Thumb del grid: marco completo sin achicar */
 .product .card-thumb{
   width:70px;
   height:70px;
@@ -131,14 +140,12 @@ Reemplazá el bloque del GRID por este:
   overflow:hidden;
 
   border:2px solid #c9a43b;
-
   box-shadow:
     0 0 0 3px #000,
     0 0 0 5px rgba(201,164,59,.25),
     0 8px 18px rgba(0,0,0,.35);
 }
 
-/* Imagen ocupa todo el espacio */
 .product .card-thumb img{
   width:100%;
   height:100%;
@@ -146,6 +153,19 @@ Reemplazá el bloque del GRID por este:
   display:block;
   background:#fff;
 }
+
+.product .title{
+  margin:0;
+  font-size:16px;
+  font-weight:700;
+}
+
+.product .sub{
+  margin:6px 0 0;
+  font-size:13px;
+  opacity:.7;
+}
+
 /* -------------------------
    CART BADGE
 -------------------------- */
@@ -191,7 +211,6 @@ Reemplazá el bloque del GRID por este:
   padding:18px;
   position:relative;
   animation:fadeIn .2s ease;
-
   max-height: calc(100vh - 36px);
   overflow:auto;
 }
@@ -229,9 +248,7 @@ Reemplazá el bloque del GRID por este:
   .modal-grid{ grid-template-columns: 1fr; }
 }
 
-/* =========================
-   IMAGEN MODAL (marco negro + dorado)
-========================= */
+/* Imagen modal: marco negro + dorado */
 .modal-img-wrap{
   width:100%;
   height: min(420px, 55vh);
@@ -261,7 +278,7 @@ Reemplazá el bloque del GRID por este:
   background:#fff;
 }
 
-/* Miniaturas */
+/* Miniaturas modal */
 .modal-thumbs{
   display:flex;
   gap:10px;
@@ -318,217 +335,4 @@ Reemplazá el bloque del GRID por este:
   padding:12px 0;
   border-top:1px solid #eee;
   border-bottom:1px solid #eee;
-  margin-bottom:12px;
-}
-
-.price-label{ color:#555; }
-.price-val{ font-weight:900; }
-
-/* -------------------------
-   QTY + DECANT (switch separado)
--------------------------- */
-.qty-row,
-.decant-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:12px 0;
-  gap:12px;
-}
-
-.qty-row{
-  padding-bottom:12px;
-  border-bottom:1px solid #eee;
-}
-
-.decant-row{
-  padding-top:12px;
-}
-
-.qty{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:#f3f3f3;
-  border-radius:14px;
-  padding:6px 10px;
-}
-
-.qty.small{
-  padding:4px 8px;
-  gap:8px;
-}
-
-.qty button{
-  width:34px;
-  height:32px;
-  border:none;
-  border-radius:10px;
-  background:#fff;
-  cursor:pointer;
-  font-weight:800;
-  font-size:16px;
-  box-shadow:0 1px 0 rgba(0,0,0,.06);
-}
-
-.decant-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.decant-right{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.decant-label{ font-weight:800; }
-.decant-price{ font-weight:900; }
-
-/* Switch */
-.switch{
-  position:relative;
-  display:inline-block;
-  width:44px;
-  height:24px;
-}
-
-.switch input{
-  opacity:0;
-  width:0;
-  height:0;
-}
-
-.slider{
-  position:absolute;
-  inset:0;
-  background:#ccc;
-  border-radius:999px;
-  transition:.2s;
-}
-
-.slider:before{
-  content:"";
-  position:absolute;
-  height:18px;
-  width:18px;
-  left:3px;
-  top:3px;
-  background:#fff;
-  border-radius:50%;
-  transition:.2s;
-}
-
-.switch input:checked + .slider{
-  background:#111;
-  box-shadow:0 0 0 2px rgba(0,0,0,.10);
-}
-
-.switch input:checked + .slider:before{
-  transform:translateX(20px);
-}
-
-/* Botones */
-.btn-primary{
-  width:100%;
-  margin-top:16px;
-  background:#111;
-  color:#fff;
-  border:none;
-  border-radius:16px;
-  padding:14px;
-  cursor:pointer;
-  font-weight:900;
-  font-size:15px;
-  transition:.2s ease;
-}
-
-.btn-primary:hover{ background:#000; }
-
-.btn-secondary{
-  width:100%;
-  margin-top:10px;
-  background:#eee;
-  color:#111;
-  border:none;
-  border-radius:16px;
-  padding:12px;
-  cursor:pointer;
-  font-weight:800;
-}
-
-/* Cart list */
-.cart-items{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  max-height:360px;
-  overflow:auto;
-  padding-right:6px;
-}
-
-.cart-item{
-  display:grid;
-  grid-template-columns: 1fr auto;
-  gap:10px;
-  background:#f6f6f6;
-  border-radius:14px;
-  padding:12px;
-}
-
-.cart-item .name{ font-weight:800; }
-.cart-item .meta{ font-size:12px; opacity:.75; margin-top:4px; }
-
-.cart-item .right{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:8px;
-}
-
-.cart-item .qtyline{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.cart-mini-btn{
-  width:30px;
-  height:30px;
-  border:none;
-  border-radius:10px;
-  background:#fff;
-  cursor:pointer;
-  font-weight:900;
-}
-
-/* Footer */
-footer{
-  width:100%;
-  margin-top:28px;
-  padding:28px 20px;
-  background:linear-gradient(180deg,#0e0e0e,#000);
-  color:#aaa;
-  text-align:center;
-  font-size:14px;
-  border-top:1px solid rgba(255,255,255,.06);
-}
-/* Marco dorado en miniaturas del GRID */
-.card-thumb{
-  background: linear-gradient(180deg,#0e0e0e,#000);
-  padding: 6px;                 /* grosor del marco */
-  border-radius: 16px;
-  border: 2px solid #c9a43b;
-  box-shadow:
-    0 0 0 3px #000,
-    0 0 0 5px rgba(201,164,59,.25),
-    0 10px 20px rgba(0,0,0,.30);
-}
-
-/* La imagen queda dentro */
-.card-thumb img{
-  border-radius: 10px;
-  background:#fff;
-}
+  margin-bott
