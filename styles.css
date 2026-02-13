@@ -625,11 +625,7 @@ body{
   opacity:0.85;
 
   /* brillo dorado */
-  filter:
-    drop-shadow(0 0 4px rgba(245, 209, 122, .8))
-    drop-shadow(0 0 10px rgba(201, 164, 59, .6))
-    drop-shadow(0 0 18px rgba(201, 164, 59, .4));
-
+ 
   transition: all .4s ease;
 }
 
