@@ -564,3 +564,26 @@ body{
     grid-template-columns:1fr;
   }
 }
+/* ===== FIX: modal centrado ===== */
+.modal-overlay{
+  position: fixed !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px !important;
+  background: rgba(0,0,0,.65) !important;
+  z-index: 9998 !important; /* arriba del footer */
+  overflow: auto !important;
+}
+
+.modal{
+  position: relative !important;
+  margin: auto !important;
+  width: min(920px, 100%) !important;
+  max-height: calc(100vh - 120px) !important; /* no choca con footer */
+  overflow: auto !important;
+}
+
+/* el footer abajo, pero debajo del modal */
+.footer-bar{ z-index: 40 !important; }
