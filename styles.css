@@ -31,54 +31,6 @@ body{
 /* =========================
    HERO
 ========================= */
-.hero-actions{
-  margin-top:16px;
-  display:flex;
-  gap:12px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-
-.hero-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height:38px;
-  padding:0 18px;
-  border-radius:999px;
-  font-weight:800;
-  font-size:14px;
-  text-decoration:none;
-  letter-spacing:.3px;
-  cursor:pointer;
-  transition:.2s ease;
-}
-
-/* Botón dorado */
-.hero-btn-primary{
-  background:#f5d17a;
-  color:#111;
-  box-shadow:0 6px 18px rgba(0,0,0,.35);
-}
-
-.hero-btn-primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 24px rgba(0,0,0,.45);
-}
-
-/* Botón oscuro vidrio */
-.hero-btn-ghost{
-  background:rgba(0,0,0,.55);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.25);
-  backdrop-filter:blur(6px);
-}
-
-.hero-btn-ghost:hover{
-  background:rgba(0,0,0,.75);
-  transform:translateY(-2px);
-}
-
 .hero{
   width:100%;
   padding:34px 20px 14px;
@@ -109,15 +61,68 @@ body{
   color:#eee;
 }
 
+.hero-actions{
+  margin-top:16px;
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.hero-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:38px;
+  padding:0 18px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:14px;
+  text-decoration:none;
+  letter-spacing:.3px;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.hero-btn-primary{
+  background:#f5d17a;
+  color:#111;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+}
+.hero-btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(0,0,0,.45);
+}
+
+.hero-btn-ghost{
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.25);
+  backdrop-filter:blur(6px);
+}
+.hero-btn-ghost:hover{
+  background:rgba(0,0,0,.75);
+  transform:translateY(-2px);
+}
+
 /* =========================
    BRANDS GRID (HOME)
-   (FIX: vuelve al layout prolijo)
 ========================= */
 .brands-grid{
+  max-width:1100px;
+  margin:0 auto;
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  grid-template-columns:repeat(3, minmax(260px, 1fr));
   gap:18px;
   padding:18px 20px 10px;
+  align-items:start;
+}
+
+@media (max-width: 980px){
+  .brands-grid{ grid-template-columns:repeat(2, minmax(260px, 1fr)); }
+}
+@media (max-width: 640px){
+  .brands-grid{ grid-template-columns:1fr; }
 }
 
 /* =========================
@@ -144,7 +149,6 @@ body{
   transition:transform .18s ease, box-shadow .18s ease;
 }
 
-/* Marco dorado animado */
 .product::after{
   content:"";
   position:absolute;
@@ -164,7 +168,6 @@ body{
   transform:translateY(-6px);
   box-shadow:0 16px 36px rgba(0,0,0,.45);
 }
-
 .product:hover::after{
   opacity:1;
   transform:scale(1);
@@ -176,7 +179,6 @@ body{
   align-items:center;
 }
 
-/* Miniatura */
 .product .card-thumb{
   width:70px;
   height:70px;
@@ -200,16 +202,13 @@ body{
   font-size:16px;
   font-weight:700;
 }
-
 .product .sub{
   margin:6px 0 0;
   font-size:13px;
   opacity:.7;
 }
 
-/* =========================
-   BRAND LOGO (en cards de producto)
-========================= */
+/* Logo marca dentro de productos */
 .brand-logo{
   width:34px;
   height:34px;
@@ -222,7 +221,6 @@ body{
   justify-content:center;
   margin-bottom:6px;
 }
-
 .brand-logo img{
   width:100%;
   height:100%;
@@ -237,7 +235,7 @@ body{
   position:fixed;
   right:16px;
   bottom:96px; /* deja espacio al footer */
-  z-index:9999;
+  z-index:9000;
 }
 
 .cart-btn{
@@ -251,8 +249,10 @@ body{
 }
 
 /* =========================
-   MODAL GENERAL
+   MODAL (CENTRADO SIEMPRE)
 ========================= */
+.hidden{ display:none !important; }
+
 .modal-overlay{
   position:fixed;
   inset:0;
@@ -261,11 +261,9 @@ body{
   align-items:center;
   justify-content:center;
   padding:18px;
-  z-index:50;
+  z-index:10000; /* arriba de todo */
   overflow:auto;
 }
-
-.hidden{ display:none; }
 
 .modal{
   width:min(920px, 100%);
@@ -274,8 +272,9 @@ body{
   border-radius:22px;
   padding:18px;
   position:relative;
-  max-height: calc(100vh - 36px);
+  max-height: calc(100vh - 120px); /* no choca con footer */
   overflow:auto;
+  margin:auto;
 }
 
 .modal-close{
@@ -295,7 +294,6 @@ body{
   grid-template-columns: 1.1fr 1fr;
   gap:20px;
 }
-
 @media (max-width: 760px){
   .modal-grid{ grid-template-columns: 1fr; }
 }
@@ -316,7 +314,6 @@ body{
   align-items:center;
   justify-content:center;
 }
-
 .modal-img-wrap img{
   width:100%;
   height:100%;
@@ -332,7 +329,6 @@ body{
   margin-top:14px;
   overflow-x:auto;
 }
-
 .thumb{
   width:80px;
   height:80px;
@@ -342,13 +338,11 @@ body{
   border:2px solid #c9a43b;
   flex:0 0 auto;
 }
-
 .thumb.active{
   box-shadow:
     0 0 0 2px #000,
     0 0 0 4px #c9a43b;
 }
-
 .thumb img{
   width:100%;
   height:100%;
@@ -372,7 +366,6 @@ body{
   padding-bottom:12px;
   border-bottom:1px solid #eee;
 }
-
 .decant-row{
   padding-top:12px;
 }
@@ -385,6 +378,7 @@ body{
   border-radius:14px;
   padding:6px 10px;
 }
+.qty.small{ padding:5px 8px; }
 
 .qty button{
   width:34px;
@@ -403,13 +397,11 @@ body{
   width:44px;
   height:24px;
 }
-
 .switch input{
   opacity:0;
   width:0;
   height:0;
 }
-
 .slider{
   position:absolute;
   inset:0;
@@ -417,7 +409,6 @@ body{
   border-radius:999px;
   transition:.2s;
 }
-
 .slider:before{
   content:"";
   position:absolute;
@@ -429,11 +420,9 @@ body{
   border-radius:50%;
   transition:.2s;
 }
-
 .switch input:checked + .slider{
   background:#111;
 }
-
 .switch input:checked + .slider:before{
   transform:translateX(20px);
 }
@@ -450,7 +439,6 @@ body{
   font-weight:900;
   cursor:pointer;
 }
-
 .btn-primary:hover{ background:#000; }
 
 .btn-secondary{
@@ -466,8 +454,7 @@ body{
 }
 
 /* =========================
-   FOOTER BAR (texto + botones)
-   (FIX: queda fija y estable)
+   FOOTER BAR (FIJO)
 ========================= */
 .footer-bar{
   position:fixed;
@@ -543,47 +530,3 @@ body{
     justify-content:center;
   }
 }
-/* ===== FIX: marcas en fila, prolijas ===== */
-#brands.brands-grid{
-  max-width:1100px;
-  margin:0 auto;
-  display:grid !important;
-  grid-template-columns:repeat(3, minmax(260px, 1fr));
-  gap:18px;
-  padding:18px 20px 10px;
-  align-items:start;
-}
-
-@media (max-width: 980px){
-  #brands.brands-grid{
-    grid-template-columns:repeat(2, minmax(260px, 1fr));
-  }
-}
-@media (max-width: 640px){
-  #brands.brands-grid{
-    grid-template-columns:1fr;
-  }
-}
-/* ===== FIX: modal centrado ===== */
-.modal-overlay{
-  position: fixed !important;
-  inset: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 18px !important;
-  background: rgba(0,0,0,.65) !important;
-  z-index: 9998 !important; /* arriba del footer */
-  overflow: auto !important;
-}
-
-.modal{
-  position: relative !important;
-  margin: auto !important;
-  width: min(920px, 100%) !important;
-  max-height: calc(100vh - 120px) !important; /* no choca con footer */
-  overflow: auto !important;
-}
-
-/* el footer abajo, pero debajo del modal */
-.footer-bar{ z-index: 40 !important; }
