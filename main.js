@@ -63,7 +63,7 @@ function getBrandLogo(marcaRaw) {
     zimaya: "fotos/zimayalogo.jpg",
     "al wataniah": "fotos/alwatanialogo.png",
     "alwataniah": "fotos/alwatanialogo.png",
-    "Maison Alhambra": "fotos/maisonalhambra.png",
+    "maison alhambra": "fotos/maisonalhambra.png",
   };
 
   for (const key in map) {
