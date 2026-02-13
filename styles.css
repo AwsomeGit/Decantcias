@@ -537,3 +537,11 @@ body{
   }
   .footer-right{ justify-content:center; }
 }
+.hero{
+  padding: 24px 20px 10px;   /* menos alto */
+}
+
+.hero-overlay{
+  padding: 0;              
+  background: none;         
+}
