@@ -21,15 +21,15 @@ body{
     url("fotos/headerDecantcias.png") no-repeat center center / cover;
 
   background-attachment: fixed;
+
+  /* Para que el footer fijo no tape contenido */
+  padding-bottom:86px;
 }
 
 .page{ min-height:100vh; }
 
 /* =========================
    HERO
-========================= */
-/* =========================
-   HERO BOTONES (FIX)
 ========================= */
 .hero-actions{
   margin-top:16px;
@@ -110,7 +110,18 @@ body{
 }
 
 /* =========================
-   GRID
+   BRANDS GRID (HOME)
+   (FIX: vuelve al layout prolijo)
+========================= */
+.brands-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+  padding:18px 20px 10px;
+}
+
+/* =========================
+   GRID (PRODUCTOS)
 ========================= */
 .products-grid{
   display:grid;
@@ -165,7 +176,7 @@ body{
   align-items:center;
 }
 
-/* Miniatura grid */
+/* Miniatura */
 .product .card-thumb{
   width:70px;
   height:70px;
@@ -173,6 +184,7 @@ body{
   overflow:hidden;
   background:#000;
   border:2px solid #c9a43b;
+  flex:0 0 auto;
 }
 
 .product .card-thumb img{
@@ -180,6 +192,7 @@ body{
   height:100%;
   object-fit:contain;
   background:#fff;
+  display:block;
 }
 
 .product .title{
@@ -195,12 +208,35 @@ body{
 }
 
 /* =========================
+   BRAND LOGO (en cards de producto)
+========================= */
+.brand-logo{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  overflow:hidden;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:6px;
+}
+
+.brand-logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+/* =========================
    CART BADGE
 ========================= */
 .cart-bar{
   position:fixed;
   right:16px;
-  bottom:86px;
+  bottom:96px; /* deja espacio al footer */
   z-index:9999;
 }
 
@@ -304,6 +340,7 @@ body{
   overflow:hidden;
   background:#000;
   border:2px solid #c9a43b;
+  flex:0 0 auto;
 }
 
 .thumb.active{
@@ -316,6 +353,7 @@ body{
   width:100%;
   height:100%;
   object-fit:cover;
+  display:block;
 }
 
 /* =========================
@@ -428,10 +466,8 @@ body{
 }
 
 /* =========================
-   FOOTER
-========================= */
-/* =========================
    FOOTER BAR (texto + botones)
+   (FIX: queda fija y estable)
 ========================= */
 .footer-bar{
   position:fixed;
@@ -496,11 +532,6 @@ body{
   background:rgba(255,255,255,.10);
   color:#fff;
   border:1px solid rgba(255,255,255,.16);
-}
-
-/* Para que no tape contenido */
-body{
-  padding-bottom:70px;
 }
 
 @media (max-width: 760px){
