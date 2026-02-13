@@ -200,7 +200,7 @@ body{
 .cart-bar{
   position:fixed;
   right:16px;
-  bottom:16px;
+  bottom:86px;
   z-index:9999;
 }
 
