@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Decantcias</title>
 
-  <link rel="stylesheet" href="styles.css?v=100">
+  <link rel="stylesheet" href="styles.css?v=101">
 
   <!-- FUENTES -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
 
   <!-- HERO -->
   <header class="hero">
-        <div class="hero-overlay">
+    <div class="hero-overlay">
       <div class="hero-content">
         <h1>DECANTCIAS</h1>
       </div>
@@ -27,7 +27,7 @@
   <!-- MARCAS -->
   <section id="brands" class="brands-grid"></section>
 
-  <!-- LISTA FILTRADA (BAJA DEBAJO DE MARCAS, SIN CAMBIAR DE “PANTALLA”) -->
+  <!-- LISTA FILTRADA -->
   <section id="brandView" class="brand-view hidden">
     <div class="brand-head">
       <button id="brandBack" class="back-btn" type="button">← Volver</button>
@@ -46,67 +46,68 @@
     </button>
   </div>
 
-  <!-- ================= MODAL PRODUCTO ================= -->
-  <div class="modal-box">
-  <button id="modalClose" class="modal-close" type="button">✕</button>
+  <!-- ================= MODAL PRODUCTO (CORREGIDO) ================= -->
+  <div id="modalOverlay" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box" role="document">
+      <button id="modalClose" class="modal-close" type="button" aria-label="Cerrar">✕</button>
 
-  <div class="modal-left">
-    <div class="modal-gallery">
-      <img id="modalImg" class="modal-main-img" alt="">
-      <div id="modalThumbs" class="modal-thumbs"></div>
+      <div class="modal-left">
+        <div class="modal-gallery">
+          <img id="modalImg" class="modal-main-img" alt="">
+          <div id="modalThumbs" class="modal-thumbs"></div>
+        </div>
+      </div>
+
+      <div class="modal-right">
+        <h2 id="modalTitle" class="modal-title"></h2>
+        <p id="modalDesc" class="modal-desc"></p>
+        <div id="modalPrice" class="modal-price"></div>
+
+        <!-- BOTONERA abajo -->
+        <div class="modal-actions">
+          <!-- PERFUME -->
+          <div class="qty-row qty-row-split">
+            <span id="perfumeLabel" class="qty-label">Perfume</span>
+            <div class="qty-controls">
+              <button id="qtyMinus" type="button">-</button>
+              <span id="qtyVal">0</span>
+              <button id="qtyPlus" type="button">+</button>
+            </div>
+          </div>
+
+          <!-- DECANT (switch) -->
+          <div class="decant-row">
+            <div class="decant-left">
+              <label class="switch" aria-label="Activar decant">
+                <input type="checkbox" id="decantToggle">
+                <span class="slider"></span>
+              </label>
+              <span class="decant-label">Decant</span>
+            </div>
+
+            <div class="decant-right">
+              <span id="decantPriceLabel" class="decant-price">Decant 5ML</span>
+            </div>
+          </div>
+
+          <div class="qty-row qty-row-split">
+            <span class="qty-label">Cantidad decant</span>
+            <div class="qty-controls">
+              <button id="decMinus" type="button">-</button>
+              <span id="decVal">1</span>
+              <button id="decPlus" type="button">+</button>
+            </div>
+          </div>
+
+          <button id="addToCartBtn" class="btn-cart" type="button">Agregar al carrito</button>
+        </div>
+      </div>
     </div>
   </div>
-
-  <div class="modal-right">
-    <h2 id="modalTitle" class="modal-title"></h2>
-    <p id="modalDesc" class="modal-desc"></p>
-    <div id="modalPrice" class="modal-price"></div>
-
-    <!-- BOTONERA abajo -->
-    <div class="modal-actions">
-      <!-- PERFUME -->
-      <div class="qty-row qty-row-split">
-        <span class="qty-label">Perfume</span>
-        <div class="qty-controls">
-          <button id="qtyMinus" type="button">-</button>
-          <span id="qtyVal">0</span>
-          <button id="qtyPlus" type="button">+</button>
-        </div>
-      </div>
-
-      <!-- DECANT (switch) -->
-      <div class="decant-row">
-        <div class="decant-left">
-          <label class="switch" aria-label="Activar decant">
-            <input type="checkbox" id="decantToggle">
-            <span class="slider"></span>
-          </label>
-          <span class="decant-label">Decant</span>
-        </div>
-
-        <div class="decant-right">
-          <span class="decant-price">Decant 5ML</span>
-        </div>
-      </div>
-
-      <div class="qty-row qty-row-split">
-        <span class="qty-label">Cantidad decant</span>
-        <div class="qty-controls">
-          <button id="decMinus" type="button">-</button>
-          <span id="decVal">1</span>
-          <button id="decPlus" type="button">+</button>
-        </div>
-      </div>
-
-      <button id="addToCartBtn" class="btn-cart" type="button">Agregar al carrito</button>
-    </div>
-  </div>
-</div>
-
 
   <!-- ================= MODAL CARRITO ================= -->
-  <div id="cartOverlay" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modal-box cart-box">
+  <div id="cartOverlay" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box cart-box" role="document">
       <button id="cartClose" class="modal-close" type="button">✕</button>
       <h2 class="modal-title">🛒 Carrito</h2>
 
@@ -123,7 +124,6 @@
 
   <!-- FOOTER -->
   <footer class="footer-bar">
-    <!-- logos laterales -->
     <img class="footer-deco footer-deco-left" src="fotos/logo-footer.png" alt="" aria-hidden="true">
     <img class="footer-deco footer-deco-right" src="fotos/logo-footer.png" alt="" aria-hidden="true">
 
@@ -142,6 +142,6 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
   <!-- TU JS -->
-  <script src="main.js?v=100" defer></script>
+  <script src="main.js?v=101" defer></script>
 </body>
 </html>
