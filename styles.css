@@ -237,34 +237,35 @@ body{
 .hidden{ display:none !important; }
 
 .modal{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  background:rgba(0,0,0,.65);
-  z-index:20000;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0,0,0,.65);
+  z-index: 20000;
 }
 
 /* =========================
-   MODAL PRODUCTO (2 columnas reales)
+   MODAL PRODUCTO (2 columnas) - SOLO #modalOverlay
 ========================= */
 #modalOverlay .modal-box{
   width: min(980px, 92vw);
   max-height: 85vh;
-  background:#fff;
-  color:#111;
-  border-radius:22px;
-  padding:22px;
-  position:relative;
+  background: #fff;
+  color: #111;
+  border-radius: 22px;
+  padding: 22px;
+  position: relative;
 
-  display:grid;
-  grid-template-columns: 1.05fr .95fr;
-  gap:22px;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  column-gap: 22px;
+  row-gap: 10px;
 
-  overflow:hidden;
-  box-shadow:0 25px 60px rgba(0,0,0,.55);
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,.55);
 }
 
 #modalOverlay .modal-close{
@@ -277,23 +278,25 @@ body{
   padding:8px 12px;
   cursor:pointer;
   font-weight:800;
+  z-index: 2;
 }
 
-/* Columna izquierda */
-#modalOverlay .modal-left{ min-width:0; }
-
+/* Columna izquierda: galería */
 #modalOverlay .modal-gallery{
+  grid-column: 1;
+  grid-row: 1 / span 20; /* ocupa todo el alto del modal */
   display:flex;
   flex-direction:column;
   gap:12px;
+  min-width: 0;
 }
 
 #modalOverlay .modal-main-img{
   width:100%;
-  height:320px;
-  object-fit:contain;
-  border-radius:16px;
-  border:2px solid #c9a43b;
+  height: 320px;
+  object-fit: contain;
+  border-radius: 16px;
+  border: 2px solid #c9a43b;
   background:#fff;
 }
 
@@ -326,38 +329,34 @@ body{
   display:block;
 }
 
-/* Columna derecha */
-#modalOverlay .modal-right{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
+/* Columna derecha: contenido */
+#modalOverlay #modalTitle,
+#modalOverlay #modalDesc,
+#modalOverlay #modalPrice,
+#modalOverlay .qty-row,
+#modalOverlay .decant-row,
+#modalOverlay .btn-cart{
+  grid-column: 2;
+  min-width: 0;
 }
 
 #modalOverlay #modalTitle{
-  margin:2px 0 8px;
-  font-size:20px;
-  font-weight:900;
+  margin: 2px 0 6px;
+  font-size: 20px;
+  font-weight: 900;
 }
 
 #modalOverlay #modalDesc{
-  margin:0 0 10px;
-  opacity:.85;
-  max-height:220px;      /* scroll solo descripción */
-  overflow:auto;
-  padding-right:6px;
+  margin: 0 0 8px;
+  opacity: .85;
+  max-height: 220px;      /* scroll solo descripción */
+  overflow: auto;
+  padding-right: 6px;
 }
 
 #modalOverlay #modalPrice{
-  font-weight:900;
-  margin:6px 0 10px;
-}
-
-/* Botonera siempre abajo */
-#modalOverlay .modal-actions{
-  margin-top:auto;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  font-weight: 900;
+  margin: 6px 0 6px;
 }
 
 /* QTY filas */
@@ -366,7 +365,7 @@ body{
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  margin:10px 0;
+  margin: 6px 0;
 }
 
 #modalOverlay .qty-row button{
@@ -379,13 +378,13 @@ body{
   font-weight:800;
 }
 
-/* Decant switch */
+/* Decant row */
 #modalOverlay .decant-row{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  margin:10px 0;
+  margin: 6px 0;
   padding:10px 12px;
   border-radius:14px;
   background:#f7f7f7;
@@ -401,19 +400,18 @@ body{
   font-weight:800;
 }
 
+/* Switch */
 #modalOverlay .switch{
   position:relative;
   display:inline-block;
   width:44px;
   height:24px;
 }
-
 #modalOverlay .switch input{
   opacity:0;
   width:0;
   height:0;
 }
-
 #modalOverlay .slider{
   position:absolute;
   inset:0;
@@ -421,7 +419,6 @@ body{
   border-radius:999px;
   transition:.2s;
 }
-
 #modalOverlay .slider:before{
   content:"";
   position:absolute;
@@ -433,14 +430,13 @@ body{
   border-radius:50%;
   transition:.2s;
 }
-
 #modalOverlay .switch input:checked + .slider{ background:#111; }
 #modalOverlay .switch input:checked + .slider:before{ transform:translateX(20px); }
 
-/* botón */
+/* Botón */
 #modalOverlay .btn-cart{
   width:100%;
-  margin-top:10px;
+  margin-top: 8px;
   background:#111;
   color:#fff;
   border:none;
@@ -449,21 +445,47 @@ body{
   font-weight:900;
   cursor:pointer;
 }
-
 #modalOverlay .btn-cart:hover{ background:#000; }
 
-/* Responsive modal producto */
-@media (max-width: 900px){
-  #modalOverlay .modal-box{
-    grid-template-columns:1fr;
-    max-height:90vh;
-    overflow:auto;
-  }
-
-  #modalOverlay .modal-main-img{ height:280px; }
-  #modalOverlay #modalDesc{ max-height:160px; }
+/* =========================
+   MODAL CARRITO - NO hereda grid
+========================= */
+#cartOverlay .modal-box{
+  width: min(560px, 92vw);
+  max-height: 85vh;
+  overflow: auto;
+  background:#fff;
+  color:#111;
+  border-radius:22px;
+  padding: 22px;
+  position: relative;
+  box-shadow:0 25px 60px rgba(0,0,0,.55);
 }
 
+#cartOverlay .modal-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  border:none;
+  background:#eee;
+  border-radius:12px;
+  padding:8px 12px;
+  cursor:pointer;
+  font-weight:800;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  #modalOverlay .modal-box{
+    grid-template-columns: 1fr;
+    max-height: 90vh;
+    overflow: auto;
+  }
+
+  #modalOverlay .modal-gallery{
+    grid-column: 1;
+    grid-row: auto;
+  }
 
   #modalOverlay #modalTitle,
   #modalOverlay #modalDesc,
@@ -471,12 +493,13 @@ body{
   #modalOverlay .qty-row,
   #modalOverlay .decant-row,
   #modalOverlay .btn-cart{
-    grid-column:1;
+    grid-column: 1;
   }
 
-  #modalOverlay .modal-main-img{ height: 260px; }
-  #modalOverlay #modalDesc{ max-height: 140px; }
+  #modalOverlay .modal-main-img{ height: 280px; }
+  #modalOverlay #modalDesc{ max-height: 160px; }
 }
+
 
 /* =========================
    FOOTER
