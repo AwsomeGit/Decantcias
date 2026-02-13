@@ -3,6 +3,9 @@ const sheetURL =
 
 const WHATSAPP_NUMBER = "5493517883411";
 
+// Solo estas marcas como “home”
+const MAIN_BRANDS = ["Lattafa", "Armaf", "Zimaya"];
+
 // ------------------------
 // Util
 // ------------------------
@@ -51,6 +54,22 @@ function normalizeImgPath(url) {
   return `fotos/${u}`;
 }
 
+function normBrand(s) {
+  return String(s || "").trim().toLowerCase();
+}
+
+function isMainBrand(brand) {
+  const b = normBrand(brand);
+  return MAIN_BRANDS.some(x => normBrand(x) === b);
+}
+
+function prettyBrand(brand) {
+  // Devuelve la versión “bonita” según MAIN_BRANDS si coincide
+  const b = normBrand(brand);
+  const found = MAIN_BRANDS.find(x => normBrand(x) === b);
+  return found || String(brand || "").trim();
+}
+
 // ------------------------
 // State
 // ------------------------
@@ -70,14 +89,14 @@ let CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 const el = {};
 
 function cacheDom() {
-    // Brands
+  // Brands view
   el.brands = document.getElementById("brands");
   el.brandView = document.getElementById("brandView");
   el.brandBack = document.getElementById("brandBack");
   el.brandTitle = document.getElementById("brandTitle");
   el.brandProducts = document.getElementById("brandProducts");
 
-  // Grid
+  // Main products grid
   el.products = document.getElementById("products");
 
   // Product modal
@@ -115,12 +134,32 @@ function cacheDom() {
 }
 
 // ------------------------
-// Grid (miniatura = imgs[0])
+// Render helpers
 // ------------------------
-function renderGrid(items) {
-  el.products.innerHTML = "";
+function setMainView() {
+  // Muestra marcas (si existen) y oculta vista marca
+  if (el.brandView) el.brandView.classList.add("hidden");
+  if (el.products) el.products.classList.add("hidden"); // main grid de productos lo ocultamos
+  if (el.brands) el.brands.classList.remove("hidden");
+}
 
-  items.forEach((p, idx) => {
+function setBrandView() {
+  if (el.brands) el.brands.classList.add("hidden");
+  if (el.brandView) el.brandView.classList.remove("hidden");
+  if (el.products) el.products.classList.add("hidden");
+}
+
+// ------------------------
+// GRID de productos (para lista completa o filtrada)
+// Ahora NO depende de índices globales
+// ------------------------
+function renderGrid(items, mountEl) {
+  const target = mountEl || el.products;
+  if (!target) return;
+
+  target.innerHTML = "";
+
+  items.forEach((p) => {
     const card = document.createElement("div");
     card.className = "product";
 
@@ -145,9 +184,87 @@ function renderGrid(items) {
       </div>
     `;
 
-    card.addEventListener("click", () => openModal(idx));
-    el.products.appendChild(card);
+    card.addEventListener("click", () => openModalByProduct(p));
+    target.appendChild(card);
   });
+}
+
+// ------------------------
+// MARCAS (solo MAIN_BRANDS sin repetir, pero detectadas desde sheet)
+// ------------------------
+function renderBrands(products) {
+  if (!el.brands) return;
+
+  // Agrupar por marca (solo MAIN_BRANDS)
+  const map = new Map(); // key normBrand -> { brand, sampleImg }
+  for (const p of products) {
+    if (!isMainBrand(p.marca)) continue;
+    const key = normBrand(p.marca);
+    if (!map.has(key)) {
+      map.set(key, {
+        brand: prettyBrand(p.marca),
+        sampleImg: (p.imgs && p.imgs[0]) ? p.imgs[0] : ""
+      });
+    }
+  }
+
+  // Orden como MAIN_BRANDS
+  const brandsList = MAIN_BRANDS
+    .map(b => {
+      const key = normBrand(b);
+      return map.get(key) ? map.get(key) : null;
+    })
+    .filter(Boolean);
+
+  el.brands.innerHTML = "";
+  brandsList.forEach(({ brand, sampleImg }) => {
+    const card = document.createElement("div");
+    card.className = "product"; // reusamos la card para que se vea igual premium
+
+    card.innerHTML = `
+      <div class="product-card">
+        <div class="card-thumb">
+          ${
+            sampleImg
+              ? `<img src="${sampleImg}"
+                     alt="${brand}"
+                     referrerpolicy="no-referrer"
+                     onerror="this.style.display='none'">`
+              : ""
+          }
+        </div>
+        <div>
+          <p class="title">${brand}</p>
+          <p class="sub">Ver productos</p>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener("click", () => openBrand(brand));
+    el.brands.appendChild(card);
+  });
+
+  // Si no hay contenedor de vista marca, al menos mostramos productos normales
+  if (el.brandView && el.brandProducts) {
+    setMainView();
+  } else {
+    // fallback
+    if (el.products) el.products.classList.remove("hidden");
+  }
+}
+
+function openBrand(brandName) {
+  const key = normBrand(brandName);
+  const filtered = PRODUCTS.filter(p => normBrand(p.marca) === key);
+
+  if (el.brandTitle) el.brandTitle.textContent = brandName;
+  if (el.brandProducts) renderGrid(filtered, el.brandProducts);
+
+  if (el.brandView && el.brandProducts) setBrandView();
+}
+
+function closeBrand() {
+  setMainView();
 }
 
 // ------------------------
@@ -155,7 +272,7 @@ function renderGrid(items) {
 // ------------------------
 async function cargarPerfumes() {
   cacheDom();
-  if (!el.products) return console.error("No existe #products");
+  if (!el.products && !el.brands) return console.error("No existe #products ni #brands");
 
   try {
     const res = await fetch(sheetURL, { cache: "no-store" });
@@ -190,22 +307,33 @@ async function cargarPerfumes() {
       };
     });
 
-    renderGrid(PRODUCTS);
+    // Si hay vista de marcas -> renderiza marcas (home)
+    if (el.brands) {
+      renderBrands(PRODUCTS);
+    } else {
+      // fallback: lista completa de productos
+      if (el.products) {
+        el.products.classList.remove("hidden");
+        renderGrid(PRODUCTS, el.products);
+      }
+    }
+
     updateCartBadge();
     wireEvents();
   } catch (e) {
     console.error("Error cargando perfumes:", e);
-    el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
+    if (el.products) el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
+    if (el.brands) el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
 }
 
 // ------------------------
 // Product Modal
 // ------------------------
-function openModal(index) {
+function openModalByProduct(product) {
   if (!el.overlay) return;
 
-  ACTIVE = PRODUCTS[index];
+  ACTIVE = product;
   activeImgIdx = 0;
   qtyBottle = 0;
   decantEnabled = false;
@@ -352,7 +480,6 @@ function renderCart() {
 
   if (el.cartTotal) el.cartTotal.textContent = moneyAR(total);
 
-  // delegation
   el.cartItems.onclick = (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -425,6 +552,9 @@ function wireEvents() {
   if (wireEvents._wired) return;
   wireEvents._wired = true;
 
+  // Brand view
+  el.brandBack?.addEventListener("click", closeBrand);
+
   // Product modal
   el.close?.addEventListener("click", closeModal);
   el.overlay?.addEventListener("click", (e) => {
@@ -483,8 +613,8 @@ function wireEvents() {
 
 function init() {
   cacheDom();
-  wireEvents();     // ✅ listeners del carrito y modal se atan siempre
-  cargarPerfumes(); // ✅ recién después carga productos
+  wireEvents();
+  cargarPerfumes();
 }
 
 document.addEventListener("DOMContentLoaded", init);
