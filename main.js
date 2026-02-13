@@ -2,8 +2,6 @@ const sheetURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
 const WHATSAPP_NUMBER = "5493517883411";
-
-// Solo estas marcas como “home”
 const MAIN_BRANDS = ["Lattafa", "Armaf", "Zimaya"];
 
 // ------------------------
@@ -27,20 +25,16 @@ function toNumber(raw) {
   return Number.isFinite(n) ? n : 0;
 }
 
-// Convierte distintos formatos de Google Drive a URL directa (uc)
 function driveToDirect(url) {
   if (!url) return "";
   const u = String(url).trim();
 
-  // /file/d/<ID>/
   let m = u.match(/\/file\/d\/([^/]+)\//);
   if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
 
-  // open?id=<ID>
   m = u.match(/[?&]id=([^&]+)/);
   if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
 
-  // uc?id=<ID>
   m = u.match(/\/uc\?(?:.*&)?id=([^&]+)/);
   if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
 
@@ -54,16 +48,14 @@ function getField(obj, keys) {
   return "";
 }
 
-// Logos por marca (carpeta fotos)
 function getBrandLogo(marcaRaw) {
   if (!marcaRaw) return "";
-
   const m = marcaRaw.toLowerCase().trim();
 
   const map = {
     afnan: "fotos/afnan.png",
     armaf: "fotos/armaflogo.jpg",
-    lattafa: "fotos/lattafalogo.jpg",     // 👈 ojo: vos dijiste lattafalogo (sin .jpg)
+    lattafa: "fotos/lattafalogo.jpg",
     zimaya: "fotos/zimayalogo.jpg",
     "al wataniah": "fotos/alwatanialogo.png",
     "alwataniah": "fotos/alwatanialogo.png",
@@ -72,14 +64,9 @@ function getBrandLogo(marcaRaw) {
   for (const key in map) {
     if (m.includes(key)) return map[key];
   }
-
   return "";
 }
 
-// Normaliza imágenes del sheet:
-// - http/https o drive -> deja (drive a directo)
-// - "fotos/xxx" -> deja
-// - "xxx.jpg" -> "fotos/xxx.jpg"
 function normalizeImgPath(url) {
   if (!url) return "";
   let u = String(url).trim().replace(/^"|"$/g, "");
@@ -124,18 +111,19 @@ let CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 const el = {};
 
 function cacheDom() {
-  // Brands view
   el.brands = document.getElementById("brands");
+
   el.brandView = document.getElementById("brandView");
   el.brandBack = document.getElementById("brandBack");
   el.brandTitle = document.getElementById("brandTitle");
   el.brandProducts = document.getElementById("brandProducts");
 
-  // Main products grid
   el.products = document.getElementById("products");
+  el.goCatalogBtn = document.getElementById("goCatalogBtn");
 
-  // Product modal
+  // Product modal (overlay = .modal)
   el.overlay = document.getElementById("modalOverlay");
+  el.modalBox = el.overlay?.querySelector(".modal-box") || null;
   el.close = document.getElementById("modalClose");
 
   el.img = document.getElementById("modalImg");
@@ -155,12 +143,11 @@ function cacheDom() {
 
   el.addBtn = document.getElementById("addToCartBtn");
 
-  // Badge / boton carrito
+  // Cart
   el.cartCount = document.getElementById("cartCount");
-
-  // Cart modal
   el.openCartBtn = document.getElementById("openCartBtn");
   el.cartOverlay = document.getElementById("cartOverlay");
+  el.cartBox = el.cartOverlay?.querySelector(".modal-box") || null;
   el.cartClose = document.getElementById("cartClose");
   el.cartItems = document.getElementById("cartItems");
   el.cartTotal = document.getElementById("cartTotal");
@@ -169,22 +156,30 @@ function cacheDom() {
 }
 
 // ------------------------
-// Render helpers
+// Views
 // ------------------------
-function setMainView() {
-  if (el.brandView) el.brandView.classList.add("hidden");
-  if (el.products) el.products.classList.add("hidden");
-  if (el.brands) el.brands.classList.remove("hidden");
+function showHome() {
+  el.brandView?.classList.add("hidden");
+  el.products?.classList.add("hidden");
 }
 
-function setBrandView() {
-  if (el.brands) el.brands.classList.add("hidden");
-  if (el.brandView) el.brandView.classList.remove("hidden");
-  if (el.products) el.products.classList.add("hidden");
+function showBrandView() {
+  // marcas SIEMPRE quedan arriba (no las ocultamos)
+  el.products?.classList.add("hidden");
+  el.brandView?.classList.remove("hidden");
+  el.brandView?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function showAllProducts() {
+  el.brandView?.classList.add("hidden");
+  if (!el.products) return;
+  el.products.classList.remove("hidden");
+  renderGrid(PRODUCTS, el.products);
+  el.products.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ------------------------
-// GRID de productos (para lista completa o filtrada)
+// Grid
 // ------------------------
 function renderGrid(items, mountEl) {
   const target = mountEl || el.products;
@@ -196,36 +191,17 @@ function renderGrid(items, mountEl) {
     const card = document.createElement("div");
     card.className = "product";
 
-    const firstImg =
-      Array.isArray(p.imgs) && p.imgs.length ? String(p.imgs[0]).trim() : "";
-
+    const firstImg = Array.isArray(p.imgs) && p.imgs.length ? String(p.imgs[0]).trim() : "";
     const logo = getBrandLogo(p.marca);
 
     card.innerHTML = `
       <div class="product-card">
-        <!-- Miniatura = producto -->
         <div class="card-thumb">
-          ${
-            firstImg
-              ? `<img src="${firstImg}"
-                     alt="${(p.marca || "")} ${(p.nombre || "")}"
-                     loading="lazy"
-                     onerror="this.style.display='none'">`
-              : ""
-          }
+          ${firstImg ? `<img src="${firstImg}" alt="${(p.marca || "")} ${(p.nombre || "")}" loading="lazy" onerror="this.style.display='none'">` : ""}
         </div>
 
         <div class="card-info">
-          <!-- Logo = marca -->
-          ${
-            logo
-              ? `<div class="brand-logo">
-                   <img src="${logo}" alt="${p.marca}" loading="lazy"
-                        onerror="this.style.display='none'">
-                 </div>`
-              : ""
-          }
-
+          ${logo ? `<div class="brand-logo"><img src="${logo}" alt="${p.marca}" loading="lazy" onerror="this.style.display='none'"></div>` : ""}
           <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
           <p class="sub">${moneyAR(p.precio)}</p>
         </div>
@@ -238,19 +214,17 @@ function renderGrid(items, mountEl) {
 }
 
 // ------------------------
-// MARCAS (home)
+// Brands
 // ------------------------
 function renderBrands(products) {
   if (!el.brands) return;
 
-  // Detecta qué MAIN_BRANDS existen en el sheet (sin repetir)
-  const present = new Map(); // normBrand -> prettyBrand
+  const present = new Map();
   for (const p of products) {
     if (!isMainBrand(p.marca)) continue;
     present.set(normBrand(p.marca), prettyBrand(p.marca));
   }
 
-  // Orden como MAIN_BRANDS
   const brandsList = MAIN_BRANDS
     .map((b) => {
       const key = normBrand(b);
@@ -269,31 +243,23 @@ function renderBrands(products) {
     card.innerHTML = `
       <div class="product-card">
         <div class="card-thumb">
-          ${
-            logo
-              ? `<img src="${logo}"
-                     alt="${brand}"
-                     loading="lazy"
-                     onerror="this.style.display='none'">`
-              : ""
-          }
+          ${logo ? `<img src="${logo}" alt="${brand}" loading="lazy" onerror="this.style.display='none'">` : ""}
         </div>
-        <div>
+        <div class="card-info">
           <p class="title">${brand}</p>
           <p class="sub">Ver productos</p>
         </div>
       </div>
     `;
 
-    card.addEventListener("click", () => openBrand(brand));
+    // IMPORTANT: no navegación, solo despliega abajo
+    card.addEventListener("click", (e) => {
+      e.preventDefault();
+      openBrand(brand);
+    });
+
     el.brands.appendChild(card);
   });
-
-  if (el.brandView && el.brandProducts) {
-    setMainView();
-  } else {
-    if (el.products) el.products.classList.remove("hidden");
-  }
 }
 
 function openBrand(brandName) {
@@ -303,20 +269,21 @@ function openBrand(brandName) {
   if (el.brandTitle) el.brandTitle.textContent = brandName;
   if (el.brandProducts) renderGrid(filtered, el.brandProducts);
 
-  if (el.brandView && el.brandProducts) setBrandView();
+  showBrandView();
 }
 
 function closeBrand() {
-  setMainView();
+  showHome();
+  el.brands?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ------------------------
-// Load + parse
+// Load
 // ------------------------
 async function cargarPerfumes() {
   cacheDom();
-  if (!el.products && !el.brands) {
-    console.error("No existe #products ni #brands");
+  if (!el.brands) {
+    console.error("No existe #brands");
     return;
   }
 
@@ -346,28 +313,18 @@ async function cargarPerfumes() {
         descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
         stock: toNumber(getField(clean, ["stock", "Stock"])),
         precio: toNumber(getField(clean, ["precio", "Precio"])),
-        precioDecant: toNumber(getField(clean, ["Precio Decant","PrecioDecant","precioDecant","decant"])),
-        ml: toNumber(getField(clean, ["ml","ML","Ml"])),
+        precioDecant: toNumber(getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"])),
+        ml: toNumber(getField(clean, ["ml", "ML", "Ml"])),
         imgs,
         raw: clean,
       };
     });
 
-    // Home = marcas
-    if (el.brands) {
-      renderBrands(PRODUCTS);
-    } else {
-      if (el.products) {
-        el.products.classList.remove("hidden");
-        renderGrid(PRODUCTS, el.products);
-      }
-    }
-
+    renderBrands(PRODUCTS);
     updateCartBadge();
     wireEvents();
   } catch (e) {
     console.error("Error cargando perfumes:", e);
-    if (el.products) el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
     if (el.brands) el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
 }
@@ -389,7 +346,7 @@ function openModalByProduct(product) {
   el.price.textContent = moneyAR(ACTIVE.precio);
 
   // Perfume (X ml)
-  const perfumeLabel = el.overlay.querySelector(".qty-row > span");
+  const perfumeLabel = el.overlay.querySelector(".qty-row-split .qty-label");
   if (perfumeLabel) {
     const ml = Number(ACTIVE.ml || 0);
     perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
@@ -409,8 +366,7 @@ function openModalByProduct(product) {
 }
 
 function closeModal() {
-  if (!el.overlay) return;
-  el.overlay.classList.add("hidden");
+  el.overlay?.classList.add("hidden");
 }
 
 function renderModalImages() {
@@ -478,7 +434,7 @@ function addToCart() {
 
 function updateCartBadge() {
   const totalItems = CART.reduce((acc, it) => acc + (it.qty || 0), 0);
-  if (el.cartCount) el.cartCount.textContent = `Carrito: ${totalItems}`;
+  if (el.cartCount) el.cartCount.textContent = String(totalItems);
 }
 
 function cartItemLabel(it) {
@@ -506,17 +462,17 @@ function renderCart() {
     const row = document.createElement("div");
     row.className = "cart-item";
     row.innerHTML = `
-      <div>
+      <div class="cart-item-left">
         <div class="name">${cartItemLabel(it)}</div>
         <div class="meta">${moneyAR(it.unitPrice)} c/u</div>
       </div>
-      <div class="right">
+      <div class="cart-item-right">
         <div class="qtyline">
           <button class="cart-mini-btn" data-act="minus" data-i="${i}" type="button">−</button>
           <b>${it.qty}</b>
           <button class="cart-mini-btn" data-act="plus" data-i="${i}" type="button">+</button>
         </div>
-        <div><b>${moneyAR(line)}</b></div>
+        <div class="line-total"><b>${moneyAR(line)}</b></div>
         <button class="cart-mini-btn" data-act="del" data-i="${i}" type="button" title="Eliminar">✕</button>
       </div>
     `;
@@ -554,8 +510,7 @@ function openCart() {
 }
 
 function closeCart() {
-  if (!el.cartOverlay) return;
-  el.cartOverlay.classList.add("hidden");
+  el.cartOverlay?.classList.add("hidden");
 }
 
 function buildWhatsAppMessage() {
@@ -594,17 +549,24 @@ function wireEvents() {
   // Brand view
   el.brandBack?.addEventListener("click", closeBrand);
 
-  // Product modal
+  // Footer: ver catálogo (muestra lista completa, sin romper home)
+  el.goCatalogBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    showAllProducts();
+    history.replaceState(null, "", "#products");
+  });
+
+  // Product modal: X + click afuera + ESC
   el.close?.addEventListener("click", closeModal);
   el.overlay?.addEventListener("click", (e) => {
     if (e.target === el.overlay) closeModal();
   });
 
+  // Cantidades
   el.qtyMinus?.addEventListener("click", () => {
     qtyBottle = Math.max(0, qtyBottle - 1);
     el.qtyVal.textContent = String(qtyBottle);
   });
-
   el.qtyPlus?.addEventListener("click", () => {
     qtyBottle += 1;
     el.qtyVal.textContent = String(qtyBottle);
@@ -618,7 +580,6 @@ function wireEvents() {
     qtyDecant = Math.max(1, qtyDecant - 1);
     el.decVal.textContent = String(qtyDecant);
   });
-
   el.decPlus?.addEventListener("click", () => {
     qtyDecant += 1;
     el.decVal.textContent = String(qtyDecant);
@@ -626,7 +587,7 @@ function wireEvents() {
 
   el.addBtn?.addEventListener("click", addToCart);
 
-  // Cart modal
+  // Cart modal: abrir/cerrar + click afuera + ESC
   el.openCartBtn?.addEventListener("click", openCart);
   el.cartClose?.addEventListener("click", closeCart);
   el.cartOverlay?.addEventListener("click", (e) => {
@@ -642,7 +603,6 @@ function wireEvents() {
 
   el.waBtn?.addEventListener("click", goWhatsApp);
 
-  // ESC cierra ambos
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (el.overlay && !el.overlay.classList.contains("hidden")) closeModal();
@@ -654,6 +614,7 @@ function init() {
   cacheDom();
   wireEvents();
   cargarPerfumes();
+  showHome();
 }
 
 document.addEventListener("DOMContentLoaded", init);
