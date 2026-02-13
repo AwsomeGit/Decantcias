@@ -547,3 +547,42 @@ body{
   }
   .footer-right{ justify-content:center; }
 }
+/* =========================
+   FIX: el logo grande NO debe empujar contenido
+========================= */
+.hero-logo-bg{
+  position: fixed;          /* sale del flujo => no empuja nada */
+  left: 80px;               /* ajustá fino */
+  top: 250px;               /* ajustá fino */
+  width: min(520px, 40vw);  /* tamaño */
+  height: auto;
+  opacity: .28;
+  pointer-events: none;
+  z-index: 1;               /* arriba del fondo, debajo del contenido */
+  filter:
+    drop-shadow(0 0 10px rgba(245, 209, 122, .35))
+    drop-shadow(0 0 22px rgba(201, 164, 59, .25));
+}
+
+/* Tu bg-logo debe quedar atrás de todo */
+.bg-logo{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* El contenido arriba (marcas, hero, etc.) */
+.hero, #brands, #brandView, #products, .cart-bar, .footer-bar{
+  position: relative;
+  z-index: 2;
+}
+
+/* Opcional: reducir alto del hero para que marcas queden más arriba */
+.hero{
+  padding: 18px 20px 6px;
+}
+.hero-overlay{
+  padding: 0;
+  background: none;
+}
