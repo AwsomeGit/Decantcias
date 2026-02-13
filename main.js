@@ -183,42 +183,47 @@ function renderGrid(items, mountEl) {
     const card = document.createElement("div");
     card.className = "product";
 
-    const firstImg = (Array.isArray(p.imgs) && p.imgs.length) ? String(p.imgs[0]).trim() : "";
+    const firstImg =
+      Array.isArray(p.imgs) && p.imgs.length ? String(p.imgs[0]).trim() : "";
 
- const logo = getBrandLogo(p.marca);
+    const logo = getBrandLogo(p.marca);
 
-card.innerHTML = `
-  <div class="product-card">
-    <div class="card-thumb">
-      ${
-        firstImg
-          ? `<img src="${firstImg}"
-                 alt="${(p.marca || "")} ${(p.nombre || "")}"
-                 loading="lazy">`
-          : ""
-      }
-    </div>
+    card.innerHTML = `
+      <div class="product-card">
+        <!-- ✅ Miniatura = producto -->
+        <div class="card-thumb">
+          ${
+            firstImg
+              ? `<img src="${firstImg}"
+                     alt="${(p.marca || "")} ${(p.nombre || "")}"
+                     loading="lazy"
+                     onerror="this.style.display='none'">`
+              : ""
+          }
+        </div>
 
-    <div class="card-info">
-      ${
-        logo
-          ? `<div class="brand-logo">
-               <img src="${logo}" alt="${p.marca}">
-             </div>`
-          : ""
-      }
+        <div class="card-info">
+          <!-- ✅ Logo = marca (chico) -->
+          ${
+            logo
+              ? `<div class="brand-logo">
+                   <img src="${logo}" alt="${p.marca}" loading="lazy"
+                        onerror="this.style.display='none'">
+                 </div>`
+              : ""
+          }
 
-      <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
-      <p class="sub">${moneyAR(p.precio)}</p>
-    </div>
-  </div>
-`;
-
+          <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
+          <p class="sub">${moneyAR(p.precio)}</p>
+        </div>
+      </div>
+    `;
 
     card.addEventListener("click", () => openModalByProduct(p));
     target.appendChild(card);
   });
 }
+
 
 // ------------------------
 // ================================
