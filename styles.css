@@ -693,3 +693,12 @@ body{
   }
   .footer-right{ justify-content:center; }
 }
+.hero-logo{
+  display:block !important;
+  margin: 0 auto !important;
+  max-width: 420px !important;
+  width: 90% !important;
+  height: auto !important;
+  background: rgba(255,0,0,.12); /* debug */
+  outline: 2px solid rgba(255,0,0,.35); /* debug */
+}
