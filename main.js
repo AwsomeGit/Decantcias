@@ -63,7 +63,7 @@ function getBrandLogo(marcaRaw) {
   const map = {
     afnan: "fotos/afnan.png",
     armaf: "fotos/armaflogo.jpg",
-    lattafa: "fotos/lattafalogo.png",     // 👈 ojo: vos dijiste lattafalogo (sin .jpg)
+    lattafa: "fotos/lattafalogo.jpg",     // 👈 ojo: vos dijiste lattafalogo (sin .jpg)
     zimaya: "fotos/zimayalogo.jpg",
     "al wataniah": "fotos/alwatanialogo.png",
     "alwataniah": "fotos/alwatanialogo.png",
