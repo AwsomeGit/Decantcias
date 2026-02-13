@@ -27,11 +27,24 @@ function toNumber(raw) {
   return Number.isFinite(n) ? n : 0;
 }
 
+// Convierte distintos formatos de Google Drive a URL directa (uc)
 function driveToDirect(url) {
   if (!url) return "";
-  const m = String(url).match(/\/file\/d\/([^/]+)\//);
+  const u = String(url).trim();
+
+  // /file/d/<ID>/
+  let m = u.match(/\/file\/d\/([^/]+)\//);
   if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-  return url;
+
+  // open?id=<ID>
+  m = u.match(/[?&]id=([^&]+)/);
+  if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+
+  // uc?id=<ID>
+  m = u.match(/\/uc\?(?:.*&)?id=([^&]+)/);
+  if (m?.[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+
+  return u;
 }
 
 function getField(obj, keys) {
@@ -41,20 +54,19 @@ function getField(obj, keys) {
   return "";
 }
 
-// Si en el sheet ponés "maahir.jpg", lo convierte a "fotos/maahir.jpg".
-// Si ponés "fotos/maahir.jpg", lo deja.
-// Si ponés Drive/HTTP, lo deja (y si es Drive lo convierte a directo).
+// Logos por marca (carpeta fotos)
 function getBrandLogo(marcaRaw) {
   if (!marcaRaw) return "";
 
   const m = marcaRaw.toLowerCase().trim();
 
   const map = {
-    "afnan": "fotos/afnan.png",
-    "armaf": "fotos/armaflogo.jpg",
-    "lattafa": "fotos/lattafalogo.jpg",
-    "zimaya": "fotos/zimayalogo.jpg",
+    afnan: "fotos/afnan.png",
+    armaf: "fotos/armaflogo.jpg",
+    lattafa: "fotos/lattafalogo.png",     // 👈 ojo: vos dijiste lattafalogo (sin .jpg)
+    zimaya: "fotos/zimayalogo.jpg",
     "al wataniah": "fotos/alwatanialogo.png",
+    "alwataniah": "fotos/alwatanialogo.png",
   };
 
   for (const key in map) {
@@ -64,6 +76,10 @@ function getBrandLogo(marcaRaw) {
   return "";
 }
 
+// Normaliza imágenes del sheet:
+// - http/https o drive -> deja (drive a directo)
+// - "fotos/xxx" -> deja
+// - "xxx.jpg" -> "fotos/xxx.jpg"
 function normalizeImgPath(url) {
   if (!url) return "";
   let u = String(url).trim().replace(/^"|"$/g, "");
@@ -80,13 +96,12 @@ function normBrand(s) {
 
 function isMainBrand(brand) {
   const b = normBrand(brand);
-  return MAIN_BRANDS.some(x => normBrand(x) === b);
+  return MAIN_BRANDS.some((x) => normBrand(x) === b);
 }
 
 function prettyBrand(brand) {
-  // Devuelve la versión “bonita” según MAIN_BRANDS si coincide
   const b = normBrand(brand);
-  const found = MAIN_BRANDS.find(x => normBrand(x) === b);
+  const found = MAIN_BRANDS.find((x) => normBrand(x) === b);
   return found || String(brand || "").trim();
 }
 
@@ -157,9 +172,8 @@ function cacheDom() {
 // Render helpers
 // ------------------------
 function setMainView() {
-  // Muestra marcas (si existen) y oculta vista marca
   if (el.brandView) el.brandView.classList.add("hidden");
-  if (el.products) el.products.classList.add("hidden"); // main grid de productos lo ocultamos
+  if (el.products) el.products.classList.add("hidden");
   if (el.brands) el.brands.classList.remove("hidden");
 }
 
@@ -171,7 +185,6 @@ function setBrandView() {
 
 // ------------------------
 // GRID de productos (para lista completa o filtrada)
-// Ahora NO depende de índices globales
 // ------------------------
 function renderGrid(items, mountEl) {
   const target = mountEl || el.products;
@@ -190,7 +203,7 @@ function renderGrid(items, mountEl) {
 
     card.innerHTML = `
       <div class="product-card">
-        <!-- ✅ Miniatura = producto -->
+        <!-- Miniatura = producto -->
         <div class="card-thumb">
           ${
             firstImg
@@ -203,7 +216,7 @@ function renderGrid(items, mountEl) {
         </div>
 
         <div class="card-info">
-          <!-- ✅ Logo = marca (chico) -->
+          <!-- Logo = marca -->
           ${
             logo
               ? `<div class="brand-logo">
@@ -224,10 +237,9 @@ function renderGrid(items, mountEl) {
   });
 }
 
-
 // ------------------------
-// ================================
-
+// MARCAS (home)
+// ------------------------
 function renderBrands(products) {
   if (!el.brands) return;
 
@@ -277,7 +289,6 @@ function renderBrands(products) {
     el.brands.appendChild(card);
   });
 
-  // Manejo de vistas
   if (el.brandView && el.brandProducts) {
     setMainView();
   } else {
@@ -304,8 +315,10 @@ function closeBrand() {
 // ------------------------
 async function cargarPerfumes() {
   cacheDom();
-  if (!el.products && !el.brands)
-    return console.error("No existe #products ni #brands");
+  if (!el.products && !el.brands) {
+    console.error("No existe #products ni #brands");
+    return;
+  }
 
   try {
     const res = await fetch(sheetURL, { cache: "no-store" });
@@ -330,23 +343,11 @@ async function cargarPerfumes() {
       return {
         marca: getField(clean, ["marca", "Marca"]),
         nombre: getField(clean, ["nombre", "Nombre"]),
-        descripcion: getField(clean, [
-          "descripcion",
-          "Descripción",
-          "Descripcion",
-          "description",
-        ]),
+        descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
         stock: toNumber(getField(clean, ["stock", "Stock"])),
         precio: toNumber(getField(clean, ["precio", "Precio"])),
-        precioDecant: toNumber(
-          getField(clean, [
-            "Precio Decant",
-            "PrecioDecant",
-            "precioDecant",
-            "decant",
-          ])
-        ),
-        ml: toNumber(getField(clean, ["ml", "ML", "Ml"])),
+        precioDecant: toNumber(getField(clean, ["Precio Decant","PrecioDecant","precioDecant","decant"])),
+        ml: toNumber(getField(clean, ["ml","ML","Ml"])),
         imgs,
         raw: clean,
       };
@@ -356,7 +357,6 @@ async function cargarPerfumes() {
     if (el.brands) {
       renderBrands(PRODUCTS);
     } else {
-      // fallback: lista completa
       if (el.products) {
         el.products.classList.remove("hidden");
         renderGrid(PRODUCTS, el.products);
@@ -367,10 +367,8 @@ async function cargarPerfumes() {
     wireEvents();
   } catch (e) {
     console.error("Error cargando perfumes:", e);
-    if (el.products)
-      el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
-    if (el.brands)
-      el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
+    if (el.products) el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
+    if (el.brands) el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
 }
 
@@ -382,7 +380,7 @@ function openModalByProduct(product) {
 
   ACTIVE = product;
   activeImgIdx = 0;
-  qtyBottle = 0; // ✅ por defecto 0
+  qtyBottle = 0;
   decantEnabled = false;
   qtyDecant = 1;
 
@@ -400,8 +398,7 @@ function openModalByProduct(product) {
   // Decant 5ML + precio
   const dPrice = ACTIVE.precioDecant || 0;
   const decantPriceLabel = el.overlay.querySelector(".decant-price");
-  if (decantPriceLabel)
-    decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
+  if (decantPriceLabel) decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
 
   el.qtyVal.textContent = String(qtyBottle);
   el.decToggle.checked = false;
@@ -578,13 +575,7 @@ function buildWhatsAppMessage() {
     return `• ${cartItemLabel(it)} x${it.qty} = ${moneyAR(lineTotal)}`;
   });
 
-  return [
-    "Hola! Quiero hacer un pedido:",
-    "",
-    ...lines,
-    "",
-    `Total: ${moneyAR(total)}`,
-  ].join("\n");
+  return ["Hola! Quiero hacer un pedido:", "", ...lines, "", `Total: ${moneyAR(total)}`].join("\n");
 }
 
 function goWhatsApp() {
@@ -610,7 +601,7 @@ function wireEvents() {
   });
 
   el.qtyMinus?.addEventListener("click", () => {
-    qtyBottle = Math.max(0, qtyBottle - 1); // ✅ permite 0
+    qtyBottle = Math.max(0, qtyBottle - 1);
     el.qtyVal.textContent = String(qtyBottle);
   });
 
