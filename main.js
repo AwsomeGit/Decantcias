@@ -195,10 +195,11 @@ function renderGrid(items, mountEl) {
           ${
             firstImg
               ? `<img src="${firstImg}"
-                     alt="${(p.marca || "")} ${(p.nombre || "")}"
-                     loading="lazy"
-                     onerror="this.style.display='none'">`
-              : ""
+       alt="${(p.marca || "")} ${(p.nombre || "")}"
+       loading="lazy"
+       referrerpolicy="no-referrer"
+       onerror="this.style.display='none'">`
+: ""
           }
         </div>
 
