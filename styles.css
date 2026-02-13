@@ -596,73 +596,34 @@ body{
   }
 }
 /* =========================
-   Footer logos laterales
+   /* =========================
+   Footer logos laterales (sin brillo exagerado)
 ========================= */
-
 .footer-bar{
-  position: fixed;
-  overflow: hidden; /* evita que sobresalgan */
+  position:fixed;
+  overflow:hidden;
 }
 
-/* Imagen decorativa */
-/* =========================
-   Footer logos con brillo
-========================= */
-
-.footer-bar{
-  position: fixed;
-  overflow: hidden;
-}
-
-/* Logo decorativo */
 .footer-deco{
   position:absolute;
-  height:44px;
-  top:50%;
-  transform:translateY(-50%);
+  bottom:10px;              /* lo baja hacia el guante */
+  width:52px;
+  height:auto;
   pointer-events:none;
 
-  opacity:0.85;
-
-  /* brillo dorado */
- 
-  transition: all .4s ease;
+  background:#000;
+  padding:6px;
+  border-radius:12px;
+  border:2px solid #c9a43b;
+  box-shadow: 0 10px 22px rgba(0,0,0,.45);
+  opacity:.92;
 }
 
-/* izquierda */
-.footer-deco-left{
-  left:20px;
-}
+.footer-deco-left{ left:18px; }
+.footer-deco-right{ right:18px; transform:scaleX(-1); }
 
-/* derecha */
-.footer-deco-right{
-  right:20px;
-}
-
-/* leve animación premium */
-.footer-deco{
-  animation: footerGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes footerGlow{
-  from{
-    filter:
-      drop-shadow(0 0 4px rgba(245, 209, 122, .6))
-      drop-shadow(0 0 8px rgba(201, 164, 59, .4));
-  }
-  to{
-    filter:
-      drop-shadow(0 0 6px rgba(245, 209, 122, 1))
-      drop-shadow(0 0 16px rgba(201, 164, 59, .8))
-      drop-shadow(0 0 26px rgba(201, 164, 59, .6));
-  }
-}
-
-/* ocultar en mobile */
 @media (max-width:768px){
-  .footer-deco{
-    display:none;
-  }
+  .footer-deco{ display:none; }
 }
 
 
