@@ -247,22 +247,24 @@ body{
   z-index:20000;
 }
 
-/* ===== Modal Producto: 2 columnas ===== */
+/* =========================
+   MODAL PRODUCTO (2 columnas reales)
+========================= */
 #modalOverlay .modal-box{
   width: min(980px, 92vw);
   max-height: 85vh;
-  background: #fff;
-  color: #111;
-  border-radius: 22px;
-  padding: 24px;
-  position: relative;
+  background:#fff;
+  color:#111;
+  border-radius:22px;
+  padding:22px;
+  position:relative;
 
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  display:grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap:22px;
 
-  overflow: hidden;
-  box-shadow: 0 25px 60px rgba(0,0,0,.55);
+  overflow:hidden;
+  box-shadow:0 25px 60px rgba(0,0,0,.55);
 }
 
 #modalOverlay .modal-close{
@@ -277,20 +279,21 @@ body{
   font-weight:800;
 }
 
-/* izquierda */
+/* Columna izquierda */
+#modalOverlay .modal-left{ min-width:0; }
+
 #modalOverlay .modal-gallery{
-  grid-column:1;
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:12px;
 }
 
 #modalOverlay .modal-main-img{
   width:100%;
-  height: 300px; /* control */
-  object-fit: contain;
-  border-radius: 16px;
-  border: 2px solid #c9a43b;
+  height:320px;
+  object-fit:contain;
+  border-radius:16px;
+  border:2px solid #c9a43b;
   background:#fff;
 }
 
@@ -323,18 +326,15 @@ body{
   display:block;
 }
 
-/* derecha */
-#modalOverlay #modalTitle,
-#modalOverlay #modalDesc,
-#modalOverlay #modalPrice,
-#modalOverlay .qty-row,
-#modalOverlay .decant-row,
-#modalOverlay .btn-cart{
-  grid-column:2;
+/* Columna derecha */
+#modalOverlay .modal-right{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
 }
 
 #modalOverlay #modalTitle{
-  margin:6px 0 6px;
+  margin:2px 0 8px;
   font-size:20px;
   font-weight:900;
 }
@@ -342,7 +342,7 @@ body{
 #modalOverlay #modalDesc{
   margin:0 0 10px;
   opacity:.85;
-  max-height: 190px;
+  max-height:220px;      /* scroll solo descripción */
   overflow:auto;
   padding-right:6px;
 }
@@ -352,6 +352,15 @@ body{
   margin:6px 0 10px;
 }
 
+/* Botonera siempre abajo */
+#modalOverlay .modal-actions{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* QTY filas */
 #modalOverlay .qty-row{
   display:flex;
   align-items:center;
@@ -382,11 +391,28 @@ body{
   background:#f7f7f7;
 }
 
-#modalOverlay .decant-left{ display:flex; align-items:center; gap:10px; }
-#modalOverlay .decant-right{ font-weight:800; }
+#modalOverlay .decant-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
-#modalOverlay .switch{ position:relative; display:inline-block; width:44px; height:24px; }
-#modalOverlay .switch input{ opacity:0; width:0; height:0; }
+#modalOverlay .decant-right{
+  font-weight:800;
+}
+
+#modalOverlay .switch{
+  position:relative;
+  display:inline-block;
+  width:44px;
+  height:24px;
+}
+
+#modalOverlay .switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
 
 #modalOverlay .slider{
   position:absolute;
@@ -395,6 +421,7 @@ body{
   border-radius:999px;
   transition:.2s;
 }
+
 #modalOverlay .slider:before{
   content:"";
   position:absolute;
@@ -406,6 +433,7 @@ body{
   border-radius:50%;
   transition:.2s;
 }
+
 #modalOverlay .switch input:checked + .slider{ background:#111; }
 #modalOverlay .switch input:checked + .slider:before{ transform:translateX(20px); }
 
@@ -421,15 +449,21 @@ body{
   font-weight:900;
   cursor:pointer;
 }
+
 #modalOverlay .btn-cart:hover{ background:#000; }
 
 /* Responsive modal producto */
 @media (max-width: 900px){
   #modalOverlay .modal-box{
-    grid-template-columns: 1fr;
-    max-height: 90vh;
-    overflow: auto;
+    grid-template-columns:1fr;
+    max-height:90vh;
+    overflow:auto;
   }
+
+  #modalOverlay .modal-main-img{ height:280px; }
+  #modalOverlay #modalDesc{ max-height:160px; }
+}
+
 
   #modalOverlay #modalTitle,
   #modalOverlay #modalDesc,
