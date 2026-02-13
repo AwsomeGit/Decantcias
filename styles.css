@@ -450,7 +450,7 @@ body{
 .footer-bar{
   position:fixed;
   left:0; right:0; bottom:0;
-  z-index:40;
+  z-index:9999; /* <-- antes 40 */
   height:64px;
   display:flex;
   align-items:center;
@@ -573,7 +573,7 @@ body{
 }
 
 /* El contenido arriba (marcas, hero, etc.) */
-.hero, #brands, #brandView, #products, .cart-bar, .footer-bar{
+.hero, #brands, #brandView, #products, .cart-bar, {
   position: relative;
   z-index: 2;
 }
