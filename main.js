@@ -221,45 +221,42 @@ card.innerHTML = `
 }
 
 // ------------------------
-// MARCAS (solo MAIN_BRANDS sin repetir, pero detectadas desde sheet)
-// ------------------------
+// ================================
+
 function renderBrands(products) {
   if (!el.brands) return;
 
-  // Agrupar por marca (solo MAIN_BRANDS)
-  const map = new Map(); // key normBrand -> { brand, sampleImg }
+  // Detecta qué MAIN_BRANDS existen en el sheet (sin repetir)
+  const present = new Map(); // normBrand -> prettyBrand
   for (const p of products) {
     if (!isMainBrand(p.marca)) continue;
-    const key = normBrand(p.marca);
-    if (!map.has(key)) {
-      map.set(key, {
-        brand: prettyBrand(p.marca),
-        sampleImg: (p.imgs && p.imgs[0]) ? p.imgs[0] : ""
-      });
-    }
+    present.set(normBrand(p.marca), prettyBrand(p.marca));
   }
 
   // Orden como MAIN_BRANDS
   const brandsList = MAIN_BRANDS
-    .map(b => {
+    .map((b) => {
       const key = normBrand(b);
-      return map.get(key) ? map.get(key) : null;
+      return present.has(key) ? present.get(key) : null;
     })
     .filter(Boolean);
 
   el.brands.innerHTML = "";
-  brandsList.forEach(({ brand, sampleImg }) => {
+
+  brandsList.forEach((brand) => {
     const card = document.createElement("div");
-    card.className = "product"; // reusamos la card para que se vea igual premium
+    card.className = "product";
+
+    const logo = getBrandLogo(brand);
 
     card.innerHTML = `
       <div class="product-card">
         <div class="card-thumb">
           ${
-            sampleImg
-              ? `<img src="${sampleImg}"
+            logo
+              ? `<img src="${logo}"
                      alt="${brand}"
-                     referrerpolicy="no-referrer"
+                     loading="lazy"
                      onerror="this.style.display='none'">`
               : ""
           }
@@ -275,18 +272,17 @@ function renderBrands(products) {
     el.brands.appendChild(card);
   });
 
-  // Si no hay contenedor de vista marca, al menos mostramos productos normales
+  // Manejo de vistas
   if (el.brandView && el.brandProducts) {
     setMainView();
   } else {
-    // fallback
     if (el.products) el.products.classList.remove("hidden");
   }
 }
 
 function openBrand(brandName) {
   const key = normBrand(brandName);
-  const filtered = PRODUCTS.filter(p => normBrand(p.marca) === key);
+  const filtered = PRODUCTS.filter((p) => normBrand(p.marca) === key);
 
   if (el.brandTitle) el.brandTitle.textContent = brandName;
   if (el.brandProducts) renderGrid(filtered, el.brandProducts);
@@ -303,7 +299,8 @@ function closeBrand() {
 // ------------------------
 async function cargarPerfumes() {
   cacheDom();
-  if (!el.products && !el.brands) return console.error("No existe #products ni #brands");
+  if (!el.products && !el.brands)
+    return console.error("No existe #products ni #brands");
 
   try {
     const res = await fetch(sheetURL, { cache: "no-store" });
@@ -312,7 +309,7 @@ async function cargarPerfumes() {
     const csvText = await res.text();
     const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
-    PRODUCTS = (parsed.data || []).map(row => {
+    PRODUCTS = (parsed.data || []).map((row) => {
       const clean = {};
       for (const k in row) {
         const kk = (k || "").replace(/^\uFEFF/, "").trim();
@@ -322,27 +319,39 @@ async function cargarPerfumes() {
       const imagenRaw = getField(clean, ["imagenURL", "imagenUrl", "imagen"]);
       const imgs = String(imagenRaw || "")
         .split("|")
-        .map(s => normalizeImgPath(s))
+        .map((s) => normalizeImgPath(s))
         .filter(Boolean);
 
       return {
         marca: getField(clean, ["marca", "Marca"]),
         nombre: getField(clean, ["nombre", "Nombre"]),
-        descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
+        descripcion: getField(clean, [
+          "descripcion",
+          "Descripción",
+          "Descripcion",
+          "description",
+        ]),
         stock: toNumber(getField(clean, ["stock", "Stock"])),
         precio: toNumber(getField(clean, ["precio", "Precio"])),
-        precioDecant: toNumber(getField(clean, ["Precio Decant","PrecioDecant","precioDecant","decant"])),
-        ml: toNumber(getField(clean, ["ml","ML","Ml"])),
+        precioDecant: toNumber(
+          getField(clean, [
+            "Precio Decant",
+            "PrecioDecant",
+            "precioDecant",
+            "decant",
+          ])
+        ),
+        ml: toNumber(getField(clean, ["ml", "ML", "Ml"])),
         imgs,
         raw: clean,
       };
     });
 
-    // Si hay vista de marcas -> renderiza marcas (home)
+    // Home = marcas
     if (el.brands) {
       renderBrands(PRODUCTS);
     } else {
-      // fallback: lista completa de productos
+      // fallback: lista completa
       if (el.products) {
         el.products.classList.remove("hidden");
         renderGrid(PRODUCTS, el.products);
@@ -353,8 +362,10 @@ async function cargarPerfumes() {
     wireEvents();
   } catch (e) {
     console.error("Error cargando perfumes:", e);
-    if (el.products) el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
-    if (el.brands) el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
+    if (el.products)
+      el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
+    if (el.brands)
+      el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
 }
 
@@ -366,7 +377,7 @@ function openModalByProduct(product) {
 
   ACTIVE = product;
   activeImgIdx = 0;
-  qtyBottle = 0;
+  qtyBottle = 0; // ✅ por defecto 0
   decantEnabled = false;
   qtyDecant = 1;
 
@@ -374,17 +385,18 @@ function openModalByProduct(product) {
   el.desc.textContent = ACTIVE.descripcion || "";
   el.price.textContent = moneyAR(ACTIVE.precio);
 
-  // Perfume (X ml) desde sheet
+  // Perfume (X ml)
   const perfumeLabel = el.overlay.querySelector(".qty-row > span");
   if (perfumeLabel) {
     const ml = Number(ACTIVE.ml || 0);
     perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
   }
 
-  // Decant 5ML + precio desde sheet
+  // Decant 5ML + precio
   const dPrice = ACTIVE.precioDecant || 0;
   const decantPriceLabel = el.overlay.querySelector(".decant-price");
-  if (decantPriceLabel) decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
+  if (decantPriceLabel)
+    decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
 
   el.qtyVal.textContent = String(qtyBottle);
   el.decToggle.checked = false;
@@ -551,11 +563,11 @@ function buildWhatsAppMessage() {
   for (const it of CART) {
     const key = `${it.type}|${it.marca}|${it.nombre}|${it.ml}|${it.unitPrice}`;
     grouped[key] = grouped[key] || { ...it, qty: 0 };
-    grouped[key].qty += (it.qty || 0);
+    grouped[key].qty += it.qty || 0;
   }
 
   let total = 0;
-  const lines = Object.values(grouped).map(it => {
+  const lines = Object.values(grouped).map((it) => {
     const lineTotal = (it.unitPrice || 0) * (it.qty || 0);
     total += lineTotal;
     return `• ${cartItemLabel(it)} x${it.qty} = ${moneyAR(lineTotal)}`;
@@ -593,7 +605,7 @@ function wireEvents() {
   });
 
   el.qtyMinus?.addEventListener("click", () => {
-    qtyBottle = Math.max(0, qtyBottle - 1);
+    qtyBottle = Math.max(0, qtyBottle - 1); // ✅ permite 0
     el.qtyVal.textContent = String(qtyBottle);
   });
 
