@@ -1,12 +1,7 @@
 /* =========================
    BASE
 ========================= */
-html, body{
-  margin:0;
-  padding:0;
-  min-height:100%;
-}
-
+html, body{ margin:0; padding:0; min-height:100%; }
 *, *::before, *::after{ box-sizing:border-box; }
 
 body{
@@ -30,17 +25,17 @@ body{
   z-index:0;
   background: url("fotos/logo-footer.png") no-repeat;
   background-size: min(820px, 55vw);
-  background-position: 38% 62%; /* ajustado para quedar sobre el guante */
-  opacity:.20;
+  background-position: 22% 55%;
+  opacity:.22;
   filter:
     drop-shadow(0 0 10px rgba(245, 209, 122, .35))
     drop-shadow(0 0 22px rgba(201, 164, 59, .25));
 }
 
-/* Asegura que el contenido quede por arriba del bg-logo */
+/* Todo el contenido por encima del bg */
 .hero, #brands, #brandView, #products, .cart-bar, .footer-bar{
   position:relative;
-  z-index:1;
+  z-index:2;
 }
 
 /* =========================
@@ -165,16 +160,9 @@ body{
   transform:translateY(-6px);
   box-shadow:0 16px 36px rgba(0,0,0,.45);
 }
-.product:hover::after{
-  opacity:1;
-  transform:scale(1);
-}
+.product:hover::after{ opacity:1; transform:scale(1); }
 
-.product-card{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
+.product-card{ display:flex; gap:12px; align-items:center; }
 
 .card-thumb{
   width:70px;
@@ -194,17 +182,8 @@ body{
   display:block;
 }
 
-.card-info .title{
-  margin:0;
-  font-size:16px;
-  font-weight:700;
-}
-
-.card-info .sub{
-  margin:6px 0 0;
-  font-size:13px;
-  opacity:.7;
-}
+.card-info .title{ margin:0; font-size:16px; font-weight:700; }
+.card-info .sub{ margin:6px 0 0; font-size:13px; opacity:.7; }
 
 /* Logo marca dentro de productos */
 .brand-logo{
@@ -219,12 +198,7 @@ body{
   justify-content:center;
   margin-bottom:6px;
 }
-.brand-logo img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  display:block;
-}
+.brand-logo img{ width:100%; height:100%; object-fit:contain; display:block; }
 
 /* =========================
    CART BADGE
@@ -235,7 +209,6 @@ body{
   bottom:96px;
   z-index:9000;
 }
-
 .cart-btn{
   border:none;
   background:#111;
@@ -247,10 +220,11 @@ body{
 }
 
 /* =========================
-   MODAL PRODUCTO (2 columnas)
+   MODALS
 ========================= */
 .hidden{ display:none !important; }
 
+/* overlay (vale para modal producto y carrito) */
 .modal{
   position:fixed;
   inset:0;
@@ -262,27 +236,7 @@ body{
   z-index:20000;
 }
 
-/* =========================
-   MODAL PRODUCTO (2 columnas)
-   #modalOverlay = overlay
-   .modal-box = caja
-========================= */
-
-/* overlay */
-#modalOverlay.modal{
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  background: rgba(0,0,0,.65);
-  z-index: 20000;
-}
-
-#modalOverlay.hidden{ display:none !important; }
-
-/* caja */
+/* ===== Modal Producto: 2 columnas ===== */
 #modalOverlay .modal-box{
   width: min(980px, 92vw);
   max-height: 85vh;
@@ -300,7 +254,6 @@ body{
   box-shadow: 0 25px 60px rgba(0,0,0,.55);
 }
 
-/* cerrar */
 #modalOverlay .modal-close{
   position:absolute;
   top:10px;
@@ -313,9 +266,9 @@ body{
   font-weight:800;
 }
 
-/* ========== COLUMNA IZQUIERDA ========== */
+/* izquierda */
 #modalOverlay .modal-gallery{
-  grid-column: 1;
+  grid-column:1;
   display:flex;
   flex-direction:column;
   gap:14px;
@@ -323,7 +276,7 @@ body{
 
 #modalOverlay .modal-main-img{
   width:100%;
-  height: 320px;       /* controla tamaño */
+  height: 300px;            /* <- más chica */
   object-fit: contain;
   border-radius: 16px;
   border: 2px solid #c9a43b;
@@ -359,14 +312,14 @@ body{
   display:block;
 }
 
-/* ========== COLUMNA DERECHA ========== */
+/* derecha */
 #modalOverlay #modalTitle,
 #modalOverlay #modalDesc,
 #modalOverlay #modalPrice,
 #modalOverlay .qty-row,
 #modalOverlay .decant-row,
 #modalOverlay .btn-cart{
-  grid-column: 2;
+  grid-column:2;
 }
 
 #modalOverlay #modalTitle{
@@ -378,7 +331,7 @@ body{
 #modalOverlay #modalDesc{
   margin:0 0 10px;
   opacity:.85;
-  max-height: 160px;    /* scroll SOLO acá */
+  max-height: 190px;     /* scroll SOLO acá */
   overflow:auto;
   padding-right:6px;
 }
@@ -419,28 +372,11 @@ body{
   background:#f7f7f7;
 }
 
-#modalOverlay .decant-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
+#modalOverlay .decant-left{ display:flex; align-items:center; gap:10px; }
+#modalOverlay .decant-right{ font-weight:800; }
 
-#modalOverlay .decant-right{
-  font-weight:800;
-}
-
-#modalOverlay .switch{
-  position:relative;
-  display:inline-block;
-  width:44px;
-  height:24px;
-}
-
-#modalOverlay .switch input{
-  opacity:0;
-  width:0;
-  height:0;
-}
+#modalOverlay .switch{ position:relative; display:inline-block; width:44px; height:24px; }
+#modalOverlay .switch input{ opacity:0; width:0; height:0; }
 
 #modalOverlay .slider{
   position:absolute;
@@ -449,7 +385,6 @@ body{
   border-radius:999px;
   transition:.2s;
 }
-
 #modalOverlay .slider:before{
   content:"";
   position:absolute;
@@ -461,7 +396,6 @@ body{
   border-radius:50%;
   transition:.2s;
 }
-
 #modalOverlay .switch input:checked + .slider{ background:#111; }
 #modalOverlay .switch input:checked + .slider:before{ transform:translateX(20px); }
 
@@ -479,7 +413,7 @@ body{
 }
 #modalOverlay .btn-cart:hover{ background:#000; }
 
-/* Responsive */
+/* Responsive modal producto */
 @media (max-width: 900px){
   #modalOverlay .modal-box{
     grid-template-columns: 1fr;
@@ -493,64 +427,11 @@ body{
   #modalOverlay .qty-row,
   #modalOverlay .decant-row,
   #modalOverlay .btn-cart{
-    grid-column: 1;
+    grid-column:1;
   }
 
-  #modalOverlay .modal-main-img{ height: 280px; }
-  #modalOverlay #modalDesc{ max-height: 120px; }
-}
-
-
-.cart-item{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:14px;
-  background:#f7f7f7;
-}
-
-.cart-mini-btn{
-  border:none;
-  background:#fff;
-  border-radius:10px;
-  padding:6px 10px;
-  cursor:pointer;
-  font-weight:800;
-}
-
-.qtyline{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.cart-total{
-  margin:10px 0 12px;
-  font-weight:800;
-}
-
-.btn-whatsapp{
-  width:100%;
-  background:#25D366;
-  color:#111;
-  border:none;
-  border-radius:14px;
-  padding:12px;
-  font-weight:900;
-  cursor:pointer;
-}
-.btn-clear{
-  width:100%;
-  margin-top:10px;
-  background:#eee;
-  color:#111;
-  border:none;
-  border-radius:14px;
-  padding:12px;
-  font-weight:800;
-  cursor:pointer;
+  #modalOverlay .modal-main-img{ height: 260px; }
+  #modalOverlay #modalDesc{ max-height: 140px; }
 }
 
 /* =========================
@@ -558,17 +439,16 @@ body{
 ========================= */
 .footer-bar{
   position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
+  left:0; right:0; bottom:0;
   z-index:40;
+  height:64px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+
   background:rgba(0,0,0,.72);
   backdrop-filter: blur(10px);
   border-top:1px solid rgba(255,255,255,.08);
-  height:64px;               /* fijo, estable */
-  display:flex;
-  align-items:center;
-  overflow:hidden;           /* no “barras raras” */
 }
 
 .footer-inner{
@@ -608,18 +488,14 @@ body{
   white-space:nowrap;
 }
 
-.footer-btn.primary{
-  background:#f5d17a;
-  color:#111;
-}
-
+.footer-btn.primary{ background:#f5d17a; color:#111; }
 .footer-btn.ghost{
   background:rgba(255,255,255,.10);
   color:#fff;
   border:1px solid rgba(255,255,255,.16);
 }
 
-/* Logos laterales con brillo (sin cambiar el tamaño del footer) */
+/* Logos laterales con brillo */
 .footer-deco{
   position:absolute;
   top:50%;
@@ -629,9 +505,6 @@ body{
   pointer-events:none;
   opacity:.90;
   animation: footerGlow 3s ease-in-out infinite alternate;
-  filter:
-    drop-shadow(0 0 4px rgba(245, 209, 122, .6))
-    drop-shadow(0 0 10px rgba(201, 164, 59, .35));
 }
 
 .footer-deco-left{ left:14px; }
@@ -651,11 +524,11 @@ body{
   }
 }
 
-/* En mobile ocultamos los logos para que no molesten */
 @media (max-width: 768px){
   .footer-deco{ display:none; }
   .footer-bar{ height:auto; padding:10px 0; }
   body{ padding-bottom:96px; }
+
   .footer-inner{
     flex-direction:column;
     align-items:stretch;
@@ -664,44 +537,3 @@ body{
   }
   .footer-right{ justify-content:center; }
 }
-/* =========================
-   LOGO GRANDE SOBRE GUANTE
-========================= */
-
-/* Logo grande “sobre el guante”, detrás del contenido */
-.bg-logo{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  background: url("fotos/logo-footer.png") no-repeat;
-  background-size: min(820px, 55vw);
-  background-position: 22% 55%; /* ajusta aquí */
-  opacity:.28;
-  filter:
-    drop-shadow(0 0 10px rgba(245, 209, 122, .35))
-    drop-shadow(0 0 22px rgba(201, 164, 59, .25));
-}
-
-/* Asegura que el contenido quede por arriba del bg-logo */
-.hero, #brands, #brandView, #products, .cart-bar, .footer-bar{
-  position:relative;
-  z-index:1;
-}
-
-
-/* asegura que el contenido esté por encima */
-.hero,
-.brands-grid,
-.brand-view,
-.products-grid{
-  position: relative;
-  z-index: 5;
-}
-
-@media (max-width: 1100px){
-  .hero-logo-bg{
-    display:none;
-  }
-}
-
