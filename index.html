@@ -84,6 +84,53 @@
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="main.js?v=50" defer></script>
+<!-- PRODUCT MODAL -->
+<div id="modalOverlay" class="modal hidden">
+  <div class="modal-box">
+    <button id="modalClose">✕</button>
+
+    <img id="modalImg">
+    <div id="modalThumbs"></div>
+
+    <h2 id="modalTitle"></h2>
+    <p id="modalDesc"></p>
+    <div id="modalPrice"></div>
+
+    <div class="qty-row">
+      <span>Perfume</span>
+      <button id="qtyMinus">-</button>
+      <span id="qtyVal">0</span>
+      <button id="qtyPlus">+</button>
+    </div>
+
+    <label>
+      <input type="checkbox" id="decantToggle"> Decant 5ml
+      <span class="decant-price"></span>
+    </label>
+
+    <div class="qty-row">
+      <button id="decMinus">-</button>
+      <span id="decVal">1</span>
+      <button id="decPlus">+</button>
+    </div>
+
+    <button id="addToCartBtn">Agregar al carrito</button>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div id="cartOverlay" class="modal hidden">
+  <div class="modal-box cart-box">
+    <button id="cartClose">✕</button>
+    <h2>Carrito</h2>
+
+    <div id="cartItems"></div>
+    <div id="cartTotal">$0</div>
+
+    <button id="waBtn">Comprar por WhatsApp</button>
+    <button id="clearCartBtn">Vaciar carrito</button>
+  </div>
+</div>
 
 </body>
 </html>
