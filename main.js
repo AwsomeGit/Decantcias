@@ -2,6 +2,8 @@ const sheetURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
 const WHATSAPP_NUMBER = "5493517883411";
+
+// Solo estas marcas como “home”
 const MAIN_BRANDS = ["Lattafa", "Armaf", "Zimaya"];
 
 // ------------------------
@@ -25,6 +27,7 @@ function toNumber(raw) {
   return Number.isFinite(n) ? n : 0;
 }
 
+// Convierte distintos formatos de Google Drive a URL directa (uc)
 function driveToDirect(url) {
   if (!url) return "";
   const u = String(url).trim();
@@ -48,6 +51,7 @@ function getField(obj, keys) {
   return "";
 }
 
+// Logos por marca (carpeta fotos)
 function getBrandLogo(marcaRaw) {
   if (!marcaRaw) return "";
   const m = marcaRaw.toLowerCase().trim();
@@ -67,6 +71,7 @@ function getBrandLogo(marcaRaw) {
   return "";
 }
 
+// Imágenes del sheet
 function normalizeImgPath(url) {
   if (!url) return "";
   let u = String(url).trim().replace(/^"|"$/g, "");
@@ -112,20 +117,15 @@ const el = {};
 
 function cacheDom() {
   el.brands = document.getElementById("brands");
-
   el.brandView = document.getElementById("brandView");
   el.brandBack = document.getElementById("brandBack");
   el.brandTitle = document.getElementById("brandTitle");
   el.brandProducts = document.getElementById("brandProducts");
-
   el.products = document.getElementById("products");
-  el.goCatalogBtn = document.getElementById("goCatalogBtn");
 
-  // Product modal (overlay = .modal)
+  // Product modal
   el.overlay = document.getElementById("modalOverlay");
-  el.modalBox = el.overlay?.querySelector(".modal-box") || null;
   el.close = document.getElementById("modalClose");
-
   el.img = document.getElementById("modalImg");
   el.thumbs = document.getElementById("modalThumbs");
   el.title = document.getElementById("modalTitle");
@@ -147,7 +147,6 @@ function cacheDom() {
   el.cartCount = document.getElementById("cartCount");
   el.openCartBtn = document.getElementById("openCartBtn");
   el.cartOverlay = document.getElementById("cartOverlay");
-  el.cartBox = el.cartOverlay?.querySelector(".modal-box") || null;
   el.cartClose = document.getElementById("cartClose");
   el.cartItems = document.getElementById("cartItems");
   el.cartTotal = document.getElementById("cartTotal");
@@ -158,28 +157,33 @@ function cacheDom() {
 // ------------------------
 // Views
 // ------------------------
-function showHome() {
+function hideBrandSection() {
   el.brandView?.classList.add("hidden");
-  el.products?.classList.add("hidden");
+  if (el.brandProducts) el.brandProducts.innerHTML = "";
+  if (el.brandTitle) el.brandTitle.textContent = "";
 }
 
-function showBrandView() {
-  // marcas SIEMPRE quedan arriba (no las ocultamos)
-  el.products?.classList.add("hidden");
+function showBrandSection() {
   el.brandView?.classList.remove("hidden");
-  el.brandView?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function showAllProducts() {
-  el.brandView?.classList.add("hidden");
+function showAllCatalog(scroll = true) {
+  hideBrandSection();
   if (!el.products) return;
+
   el.products.classList.remove("hidden");
   renderGrid(PRODUCTS, el.products);
-  el.products.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  if (scroll) el.products.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function hideAllCatalog() {
+  el.products?.classList.add("hidden");
+  if (el.products) el.products.innerHTML = "";
 }
 
 // ------------------------
-// Grid
+// Render grid
 // ------------------------
 function renderGrid(items, mountEl) {
   const target = mountEl || el.products;
@@ -191,17 +195,31 @@ function renderGrid(items, mountEl) {
     const card = document.createElement("div");
     card.className = "product";
 
-    const firstImg = Array.isArray(p.imgs) && p.imgs.length ? String(p.imgs[0]).trim() : "";
+    const firstImg =
+      Array.isArray(p.imgs) && p.imgs.length ? String(p.imgs[0]).trim() : "";
+
     const logo = getBrandLogo(p.marca);
 
     card.innerHTML = `
       <div class="product-card">
         <div class="card-thumb">
-          ${firstImg ? `<img src="${firstImg}" alt="${(p.marca || "")} ${(p.nombre || "")}" loading="lazy" onerror="this.style.display='none'">` : ""}
+          ${
+            firstImg
+              ? `<img src="${firstImg}" alt="${(p.marca || "")} ${(p.nombre || "")}" loading="lazy"
+                     onerror="this.style.display='none'">`
+              : ""
+          }
         </div>
 
         <div class="card-info">
-          ${logo ? `<div class="brand-logo"><img src="${logo}" alt="${p.marca}" loading="lazy" onerror="this.style.display='none'"></div>` : ""}
+          ${
+            logo
+              ? `<div class="brand-logo">
+                   <img src="${logo}" alt="${p.marca}" loading="lazy"
+                        onerror="this.style.display='none'">
+                 </div>`
+              : ""
+          }
           <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
           <p class="sub">${moneyAR(p.precio)}</p>
         </div>
@@ -214,7 +232,7 @@ function renderGrid(items, mountEl) {
 }
 
 // ------------------------
-// Brands
+// Brands (home)
 // ------------------------
 function renderBrands(products) {
   if (!el.brands) return;
@@ -226,10 +244,7 @@ function renderBrands(products) {
   }
 
   const brandsList = MAIN_BRANDS
-    .map((b) => {
-      const key = normBrand(b);
-      return present.has(key) ? present.get(key) : null;
-    })
+    .map((b) => (present.has(normBrand(b)) ? present.get(normBrand(b)) : null))
     .filter(Boolean);
 
   el.brands.innerHTML = "";
@@ -243,7 +258,12 @@ function renderBrands(products) {
     card.innerHTML = `
       <div class="product-card">
         <div class="card-thumb">
-          ${logo ? `<img src="${logo}" alt="${brand}" loading="lazy" onerror="this.style.display='none'">` : ""}
+          ${
+            logo
+              ? `<img src="${logo}" alt="${brand}" loading="lazy"
+                     onerror="this.style.display='none'">`
+              : ""
+          }
         </div>
         <div class="card-info">
           <p class="title">${brand}</p>
@@ -252,40 +272,35 @@ function renderBrands(products) {
       </div>
     `;
 
-    // IMPORTANT: no navegación, solo despliega abajo
-    card.addEventListener("click", (e) => {
-      e.preventDefault();
-      openBrand(brand);
-    });
-
+    card.addEventListener("click", () => openBrand(brand));
     el.brands.appendChild(card);
   });
 }
 
 function openBrand(brandName) {
+  // IMPORTANTE: no “pantalla nueva”, solo muestra la sección de abajo
+  hideAllCatalog(); // para que no quede mezclado con el catálogo completo
+
   const key = normBrand(brandName);
   const filtered = PRODUCTS.filter((p) => normBrand(p.marca) === key);
 
   if (el.brandTitle) el.brandTitle.textContent = brandName;
   if (el.brandProducts) renderGrid(filtered, el.brandProducts);
 
-  showBrandView();
+  showBrandSection();
+  el.brandView?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function closeBrand() {
-  showHome();
-  el.brands?.scrollIntoView({ behavior: "smooth", block: "start" });
+  hideBrandSection();
+  // vuelve a marcas (no hacemos scroll forzado)
 }
 
 // ------------------------
-// Load
+// Load + parse
 // ------------------------
 async function cargarPerfumes() {
   cacheDom();
-  if (!el.brands) {
-    console.error("No existe #brands");
-    return;
-  }
 
   try {
     const res = await fetch(sheetURL, { cache: "no-store" });
@@ -313,8 +328,8 @@ async function cargarPerfumes() {
         descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
         stock: toNumber(getField(clean, ["stock", "Stock"])),
         precio: toNumber(getField(clean, ["precio", "Precio"])),
-        precioDecant: toNumber(getField(clean, ["Precio Decant", "PrecioDecant", "precioDecant", "decant"])),
-        ml: toNumber(getField(clean, ["ml", "ML", "Ml"])),
+        precioDecant: toNumber(getField(clean, ["Precio Decant","PrecioDecant","precioDecant","decant"])),
+        ml: toNumber(getField(clean, ["ml","ML","Ml"])),
         imgs,
         raw: clean,
       };
@@ -325,6 +340,7 @@ async function cargarPerfumes() {
     wireEvents();
   } catch (e) {
     console.error("Error cargando perfumes:", e);
+    if (el.products) el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
     if (el.brands) el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
 }
@@ -346,7 +362,7 @@ function openModalByProduct(product) {
   el.price.textContent = moneyAR(ACTIVE.precio);
 
   // Perfume (X ml)
-  const perfumeLabel = el.overlay.querySelector(".qty-row-split .qty-label");
+  const perfumeLabel = el.overlay.querySelector(".qty-label");
   if (perfumeLabel) {
     const ml = Number(ACTIVE.ml || 0);
     perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
@@ -396,7 +412,7 @@ function renderModalImages() {
 }
 
 // ------------------------
-// Cart (data)
+// Cart
 // ------------------------
 function saveCart() {
   localStorage.setItem(CART_KEY, JSON.stringify(CART));
@@ -462,17 +478,17 @@ function renderCart() {
     const row = document.createElement("div");
     row.className = "cart-item";
     row.innerHTML = `
-      <div class="cart-item-left">
-        <div class="name">${cartItemLabel(it)}</div>
-        <div class="meta">${moneyAR(it.unitPrice)} c/u</div>
+      <div>
+        <div class="name"><b>${cartItemLabel(it)}</b></div>
+        <div class="meta" style="opacity:.75">${moneyAR(it.unitPrice)} c/u</div>
       </div>
-      <div class="cart-item-right">
+      <div class="right">
         <div class="qtyline">
           <button class="cart-mini-btn" data-act="minus" data-i="${i}" type="button">−</button>
           <b>${it.qty}</b>
           <button class="cart-mini-btn" data-act="plus" data-i="${i}" type="button">+</button>
         </div>
-        <div class="line-total"><b>${moneyAR(line)}</b></div>
+        <div><b>${moneyAR(line)}</b></div>
         <button class="cart-mini-btn" data-act="del" data-i="${i}" type="button" title="Eliminar">✕</button>
       </div>
     `;
@@ -489,13 +505,9 @@ function renderCart() {
     const idx = Number(btn.dataset.i);
     if (!Number.isFinite(idx)) return;
 
-    if (act === "minus") {
-      CART[idx].qty = Math.max(1, (CART[idx].qty || 1) - 1);
-    } else if (act === "plus") {
-      CART[idx].qty = (CART[idx].qty || 1) + 1;
-    } else if (act === "del") {
-      CART.splice(idx, 1);
-    }
+    if (act === "minus") CART[idx].qty = Math.max(1, (CART[idx].qty || 1) - 1);
+    if (act === "plus") CART[idx].qty = (CART[idx].qty || 1) + 1;
+    if (act === "del") CART.splice(idx, 1);
 
     saveCart();
     updateCartBadge();
@@ -546,27 +558,28 @@ function wireEvents() {
   if (wireEvents._wired) return;
   wireEvents._wired = true;
 
-  // Brand view
+  // Volver en filtrado
   el.brandBack?.addEventListener("click", closeBrand);
 
-  // Footer: ver catálogo (muestra lista completa, sin romper home)
-  el.goCatalogBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    showAllProducts();
-    history.replaceState(null, "", "#products");
+  // Abrir catálogo (footer)
+  document.querySelectorAll('a[href="#products"]').forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      showAllCatalog(true);
+    });
   });
 
-  // Product modal: X + click afuera + ESC
+  // Modal producto: X y click afuera
   el.close?.addEventListener("click", closeModal);
   el.overlay?.addEventListener("click", (e) => {
     if (e.target === el.overlay) closeModal();
   });
 
-  // Cantidades
   el.qtyMinus?.addEventListener("click", () => {
     qtyBottle = Math.max(0, qtyBottle - 1);
     el.qtyVal.textContent = String(qtyBottle);
   });
+
   el.qtyPlus?.addEventListener("click", () => {
     qtyBottle += 1;
     el.qtyVal.textContent = String(qtyBottle);
@@ -580,6 +593,7 @@ function wireEvents() {
     qtyDecant = Math.max(1, qtyDecant - 1);
     el.decVal.textContent = String(qtyDecant);
   });
+
   el.decPlus?.addEventListener("click", () => {
     qtyDecant += 1;
     el.decVal.textContent = String(qtyDecant);
@@ -587,7 +601,7 @@ function wireEvents() {
 
   el.addBtn?.addEventListener("click", addToCart);
 
-  // Cart modal: abrir/cerrar + click afuera + ESC
+  // Cart modal
   el.openCartBtn?.addEventListener("click", openCart);
   el.cartClose?.addEventListener("click", closeCart);
   el.cartOverlay?.addEventListener("click", (e) => {
@@ -603,6 +617,7 @@ function wireEvents() {
 
   el.waBtn?.addEventListener("click", goWhatsApp);
 
+  // ESC cierra ambos
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (el.overlay && !el.overlay.classList.contains("hidden")) closeModal();
@@ -614,7 +629,6 @@ function init() {
   cacheDom();
   wireEvents();
   cargarPerfumes();
-  showHome();
 }
 
 document.addEventListener("DOMContentLoaded", init);
