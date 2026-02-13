@@ -549,3 +549,49 @@ body{
     justify-content:center;
   }
 }
+/* =========================
+   FIX: modal producto no gigante
+========================= */
+
+/* caja del modal un poco más chica y cómoda */
+#modalOverlay .modal-box{
+  width: min(820px, calc(100vw - 28px));
+  max-height: min(82vh, 720px);
+  overflow: hidden; /* el scroll lo maneja el contenido, no la caja entera */
+}
+
+/* el contenido adentro scrollea si hace falta */
+#modalOverlay .modal-box{
+  display: flex;
+  flex-direction: column;
+}
+
+#modalOverlay .modal-gallery{
+  flex: 0 0 auto;
+}
+
+/* Imagen principal: nunca gigante */
+#modalOverlay .modal-main-img{
+  width: 100%;
+  height: auto;
+  max-height: 52vh;          /* clave: limita alto en pantalla */
+  object-fit: contain;
+  border-radius: 16px;
+}
+
+/* Thumbs más compactas */
+#modalOverlay .thumb{
+  width: 64px;
+  height: 64px;
+}
+
+/* En mobile: todavía más bajo */
+@media (max-width: 640px){
+  #modalOverlay .modal-box{
+    width: calc(100vw - 18px);
+    max-height: 86vh;
+  }
+  #modalOverlay .modal-main-img{
+    max-height: 42vh;
+  }
+}
