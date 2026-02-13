@@ -550,3 +550,128 @@ body{
 
 /* Asegura que hidden realmente lo apaga */
 .hidden{ display:none !important; }
+/* =========================
+   MODALS (tu estructura actual)
+   .modal = overlay
+   .modal-box = caja
+========================= */
+.modal{
+  position: fixed !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px !important;
+  background: rgba(0,0,0,.65) !important;
+  z-index: 20000 !important;
+}
+
+.modal.hidden{ display:none !important; }
+
+.modal-box{
+  width: min(920px, 100%);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  background: #fff;
+  color: #111;
+  border-radius: 22px;
+  padding: 18px;
+  position: relative;
+}
+
+/* X de cerrar */
+.modal-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  border:none;
+  background:#eee;
+  border-radius:12px;
+  padding:8px 12px;
+  cursor:pointer;
+}
+
+/* =========================
+   DECANT SWITCH
+========================= */
+.decant-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:12px 0;
+}
+
+.decant-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.decant-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.switch{
+  position:relative;
+  display:inline-block;
+  width:44px;
+  height:24px;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#ccc;
+  border-radius:999px;
+  transition:.2s;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  height:18px;
+  width:18px;
+  left:3px;
+  top:3px;
+  background:white;
+  border-radius:50%;
+  transition:.2s;
+}
+
+.switch input:checked + .slider{
+  background:#111;
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(20px);
+}
+
+/* =========================
+   QTY ROW (en tu modal actual)
+========================= */
+.qty-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:12px 0;
+}
+
+.qty-row button{
+  width:34px;
+  height:32px;
+  border:none;
+  border-radius:10px;
+  background:#f3f3f3;
+  cursor:pointer;
+  font-weight:800;
+}
+
