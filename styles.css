@@ -595,3 +595,39 @@ body{
     max-height: 42vh;
   }
 }
+/* =========================
+   Footer logos laterales
+========================= */
+
+.footer-bar{
+  position: fixed;
+  overflow: hidden; /* evita que sobresalgan */
+}
+
+/* Imagen decorativa */
+.footer-deco{
+  position:absolute;
+  height:42px;          /* tamaño chico */
+  opacity:0.18;         /* elegante y sutil */
+  pointer-events:none;  /* no clickeable */
+  top:50%;
+  transform:translateY(-50%);
+}
+
+/* Izquierda */
+.footer-deco-left{
+  left:20px;
+}
+
+/* Derecha */
+.footer-deco-right{
+  right:20px;
+}
+
+/* En mobile los ocultamos */
+@media (max-width: 768px){
+  .footer-deco{
+    display:none;
+  }
+}
+
