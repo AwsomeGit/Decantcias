@@ -1,6 +1,6 @@
-/* -------------------------
+/* =========================
    BASE
--------------------------- */
+========================= */
 html, body{
   margin:0;
   padding:0;
@@ -27,11 +27,10 @@ body{
 
 /* =========================
    HERO
- =========================*/
+========================= */
 .hero{
   width:100%;
   padding:34px 20px 14px;
-  background:none;
 }
 
 .hero-overlay{
@@ -57,72 +56,56 @@ body{
   font-size:13px;
   opacity:.92;
   color:#eee;
-  text-shadow:0 8px 18px rgba(0,0,0,.55);
 }
 
-/* Botones HERO */
-.hero-actions{
-  margin-top:10px;
-  display:flex;
-  gap:10px;
-  justify-content:center;
-}
-
-.hero-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height:34px;
-  padding:0 14px;
-  border-radius:999px;
-  font-weight:800;
-  font-size:13px;
-  text-decoration:none;
-  letter-spacing:.2px;
-  cursor:pointer;
-  user-select:none;
-}
-
-.hero-btn-primary{
-  background:#f5d17a;
-  color:#111;
-  box-shadow:0 10px 24px rgba(0,0,0,.35);
-}
-
-.hero-btn-ghost{
-  background:rgba(0,0,0,.35);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.22);
-  backdrop-filter: blur(6px);
-}
-
-/* -------------------------
+/* =========================
    GRID
--------------------------- */
+========================= */
 .products-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   gap:18px;
   padding:18px 20px 40px;
-  align-items:start;
 }
 
-/* -------------------------
+/* =========================
    CARD
--------------------------- */
+========================= */
 .product{
+  position:relative;
   cursor:pointer;
   background:#fff;
   color:#111;
   border-radius:16px;
   padding:14px;
   box-shadow:0 10px 28px rgba(0,0,0,.25);
-  transition:.2s ease;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+
+/* Marco dorado animado */
+.product::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:22px;
+  pointer-events:none;
+  opacity:0;
+  transform:scale(.985);
+  transition:opacity .18s ease, transform .18s ease;
+  box-shadow:
+    0 0 0 2px #c9a43b,
+    0 0 0 4px #000,
+    0 0 0 6px rgba(201,164,59,.25);
 }
 
 .product:hover{
-  transform:translateY(-3px);
-  box-shadow:0 16px 36px rgba(0,0,0,.35);
+  transform:translateY(-6px);
+  box-shadow:0 16px 36px rgba(0,0,0,.45);
+}
+
+.product:hover::after{
+  opacity:1;
+  transform:scale(1);
 }
 
 .product-card{
@@ -131,26 +114,20 @@ body{
   align-items:center;
 }
 
-/* Thumb del grid: marco completo sin achicar */
+/* Miniatura grid */
 .product .card-thumb{
   width:70px;
   height:70px;
   border-radius:16px;
-  background:#000;
   overflow:hidden;
-
+  background:#000;
   border:2px solid #c9a43b;
-  box-shadow:
-    0 0 0 3px #000,
-    0 0 0 5px rgba(201,164,59,.25),
-    0 8px 18px rgba(0,0,0,.35);
 }
 
 .product .card-thumb img{
   width:100%;
   height:100%;
   object-fit:contain;
-  display:block;
   background:#fff;
 }
 
@@ -166,9 +143,9 @@ body{
   opacity:.7;
 }
 
-/* -------------------------
+/* =========================
    CART BADGE
--------------------------- */
+========================= */
 .cart-bar{
   position:fixed;
   right:16px;
@@ -186,9 +163,9 @@ body{
   font-weight:700;
 }
 
-/* -------------------------
-   MODAL (general)
--------------------------- */
+/* =========================
+   MODAL GENERAL
+========================= */
 .modal-overlay{
   position:fixed;
   inset:0;
@@ -210,20 +187,8 @@ body{
   border-radius:22px;
   padding:18px;
   position:relative;
-  animation:fadeIn .2s ease;
   max-height: calc(100vh - 36px);
   overflow:auto;
-}
-
-.cart-modal{
-  width:min(720px, 100%);
-  max-height: calc(100vh - 36px);
-  overflow:auto;
-}
-
-@keyframes fadeIn{
-  from{ transform:scale(.96); opacity:0; }
-  to{ transform:scale(1); opacity:1; }
 }
 
 .modal-close{
@@ -237,7 +202,7 @@ body{
   cursor:pointer;
 }
 
-/* Layout modal producto */
+/* Layout modal */
 .modal-grid{
   display:grid;
   grid-template-columns: 1.1fr 1fr;
@@ -248,22 +213,18 @@ body{
   .modal-grid{ grid-template-columns: 1fr; }
 }
 
-/* Imagen modal: marco negro + dorado */
+/* Imagen modal */
 .modal-img-wrap{
   width:100%;
-  height: min(420px, 55vh);
+  height:min(420px,55vh);
   border-radius:22px;
   padding:14px;
-  overflow:hidden;
-
   background: linear-gradient(180deg,#0e0e0e,#000);
-  border: 2px solid #c9a43b;
-
+  border:2px solid #c9a43b;
   box-shadow:
     0 0 0 3px #000,
     0 0 0 5px rgba(201,164,59,.35),
     0 20px 40px rgba(0,0,0,.45);
-
   display:flex;
   align-items:center;
   justify-content:center;
@@ -273,9 +234,8 @@ body{
   width:100%;
   height:100%;
   object-fit:contain;
-  display:block;
-  border-radius:14px;
   background:#fff;
+  border-radius:14px;
 }
 
 /* Miniaturas modal */
@@ -284,7 +244,6 @@ body{
   gap:10px;
   margin-top:14px;
   overflow-x:auto;
-  padding-bottom:4px;
 }
 
 .thumb{
@@ -292,10 +251,6 @@ body{
   height:80px;
   border-radius:14px;
   overflow:hidden;
-  cursor:pointer;
-  flex:0 0 auto;
-  transition:.2s ease;
-
   background:#000;
   border:2px solid #c9a43b;
 }
@@ -310,47 +265,18 @@ body{
   width:100%;
   height:100%;
   object-fit:cover;
-  display:block;
 }
 
-/* -------------------------
-   MODAL TEXT + PRICE
--------------------------- */
-.modal-title{
-  margin:0 0 8px;
-  font-size:22px;
-  font-weight:800;
-}
-
-.modal-desc{
-  margin:0 0 14px;
-  font-size:14px;
-  color:#333;
-  line-height:1.4;
-}
-
-.price-row{
-  display:flex;
-  justify-content:space-between;
-  padding:12px 0;
-  border-top:1px solid #eee;
-  border-bottom:1px solid #eee;
-  margin-bottom:12px;
-}
-
-.price-label{ color:#555; }
-.price-val{ font-weight:900; }
-
-/* -------------------------
+/* =========================
    QTY + DECANT
--------------------------- */
+========================= */
 .qty-row,
 .decant-row{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin:12px 0;
   gap:12px;
+  margin:12px 0;
 }
 
 .qty-row{
@@ -371,37 +297,15 @@ body{
   padding:6px 10px;
 }
 
-.qty.small{
-  padding:4px 8px;
-  gap:8px;
-}
-
 .qty button{
   width:34px;
   height:32px;
   border:none;
   border-radius:10px;
   background:#fff;
-  cursor:pointer;
   font-weight:800;
-  font-size:16px;
-  box-shadow:0 1px 0 rgba(0,0,0,.06);
+  cursor:pointer;
 }
-
-.decant-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.decant-right{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.decant-label{ font-weight:800; }
-.decant-price{ font-weight:900; }
 
 /* Switch */
 .switch{
@@ -439,7 +343,6 @@ body{
 
 .switch input:checked + .slider{
   background:#111;
-  box-shadow:0 0 0 2px rgba(0,0,0,.10);
 }
 
 .switch input:checked + .slider:before{
@@ -455,10 +358,8 @@ body{
   border:none;
   border-radius:16px;
   padding:14px;
-  cursor:pointer;
   font-weight:900;
-  font-size:15px;
-  transition:.2s ease;
+  cursor:pointer;
 }
 
 .btn-primary:hover{ background:#000; }
@@ -471,57 +372,13 @@ body{
   border:none;
   border-radius:16px;
   padding:12px;
-  cursor:pointer;
   font-weight:800;
-}
-
-/* Cart list */
-.cart-items{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  max-height:360px;
-  overflow:auto;
-  padding-right:6px;
-}
-
-.cart-item{
-  display:grid;
-  grid-template-columns: 1fr auto;
-  gap:10px;
-  background:#f6f6f6;
-  border-radius:14px;
-  padding:12px;
-}
-
-.cart-item .name{ font-weight:800; }
-.cart-item .meta{ font-size:12px; opacity:.75; margin-top:4px; }
-
-.cart-item .right{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:8px;
-}
-
-.cart-item .qtyline{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.cart-mini-btn{
-  width:30px;
-  height:30px;
-  border:none;
-  border-radius:10px;
-  background:#fff;
   cursor:pointer;
-  font-weight:900;
 }
 
-/* Footer */
+/* =========================
+   FOOTER
+========================= */
 footer{
   width:100%;
   margin-top:28px;
@@ -530,5 +387,4 @@ footer{
   color:#aaa;
   text-align:center;
   font-size:14px;
-  border-top:1px solid rgba(255,255,255,.06);
 }
