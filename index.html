@@ -1,139 +1,130 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Decantcias</title>
 
-  <link rel="stylesheet" href="styles.css?v=99">
-
-  <!-- FUENTES -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=100" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
-<!-- HERO -->
-<header class="hero">
-  <div class="hero-overlay">
-    <div class="hero-content">
-      <h1>DECANTCIAS</h1>
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <h1>DECANTCIAS</h1>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<!-- MARCAS -->
-<section id="brands" class="brands-grid"></section>
+  <!-- MARCAS -->
+  <section id="brands" class="brands-grid"></section>
 
-<!-- VISTA MARCA -->
-<section id="brandView" class="brand-view hidden">
-  <div class="brand-head">
-    <button id="brandBack" class="back-btn">← Volver</button>
-    <h2 id="brandTitle"></h2>
-  </div>
-  <div id="brandProducts" class="products-grid"></div>
-</section>
-
-<!-- PRODUCTOS GENERALES -->
-<section id="products" class="products-grid hidden"></section>
-
-
-<!-- BOTON CARRITO -->
-<div class="cart-bar">
-  <button id="openCartBtn" class="cart-btn">
-    🛒 <span id="cartCount">0</span>
-  </button>
-</div>
-
-
-<!-- ================= MODAL PRODUCTO ================= -->
-<div id="modalOverlay" class="modal hidden">
-  <div class="modal-box">
-
-    <button id="modalClose" class="modal-close">✕</button>
-
-    <div class="modal-gallery">
-      <img id="modalImg" class="modal-main-img">
-      <div id="modalThumbs" class="modal-thumbs"></div>
+  <!-- VISTA MARCA (SE DESPLIEGA ABAJO, SIN “PANTALLA NUEVA”) -->
+  <section id="brandView" class="brand-view hidden">
+    <div class="brand-head">
+      <button id="brandBack" class="back-btn" type="button">← Volver</button>
+      <h2 id="brandTitle"></h2>
     </div>
+    <div id="brandProducts" class="products-grid"></div>
+  </section>
 
-    <h2 id="modalTitle"></h2>
-    <p id="modalDesc"></p>
-    <div id="modalPrice" class="modal-price"></div>
+  <!-- CATÁLOGO COMPLETO (se muestra con el botón del footer) -->
+  <section id="products" class="products-grid hidden"></section>
 
-    <!-- PERFUME -->
-    <div class="qty-row">
-      <span>Perfume</span>
-      <button id="qtyMinus">-</button>
-      <span id="qtyVal">0</span>
-      <button id="qtyPlus">+</button>
-    </div>
-
-   <!-- DECANT (switch) -->
-<div class="decant-row">
-  <div class="decant-left">
-    <label class="switch">
-      <input type="checkbox" id="decantToggle">
-      <span class="slider"></span>
-    </label>
-    <span class="decant-label">Decant</span>
+  <!-- BOTON CARRITO -->
+  <div class="cart-bar">
+    <button id="openCartBtn" class="cart-btn" type="button">
+      🛒 <span id="cartCount">0</span>
+    </button>
   </div>
 
-  <div class="decant-right">
-    <span class="decant-price">Decant 5ML</span>
-  </div>
-</div>
+  <!-- ================= MODAL PRODUCTO ================= -->
+  <div id="modalOverlay" class="modal hidden">
+    <div class="modal-box" role="dialog" aria-modal="true">
 
-    <div class="qty-row">
-      <button id="decMinus">-</button>
-      <span id="decVal">1</span>
-      <button id="decPlus">+</button>
+      <button id="modalClose" class="modal-close" type="button">✕</button>
+
+      <div class="modal-gallery">
+        <img id="modalImg" class="modal-main-img" alt="">
+        <div id="modalThumbs" class="modal-thumbs"></div>
+      </div>
+
+      <h2 id="modalTitle"></h2>
+      <p id="modalDesc"></p>
+      <div id="modalPrice" class="modal-price"></div>
+
+      <!-- PERFUME -->
+      <div class="qty-row qty-row-split">
+        <span class="qty-label">Perfume</span>
+        <div class="qty-controls">
+          <button id="qtyMinus" type="button">-</button>
+          <span id="qtyVal">0</span>
+          <button id="qtyPlus" type="button">+</button>
+        </div>
+      </div>
+
+      <!-- DECANT (SWITCH) -->
+      <div class="decant-row">
+        <div class="decant-left">
+          <label class="switch">
+            <input type="checkbox" id="decantToggle">
+            <span class="slider"></span>
+          </label>
+          <span class="decant-label">Decant</span>
+        </div>
+
+        <div class="decant-right">
+          <span class="decant-price">Decant 5ML</span>
+        </div>
+      </div>
+
+      <div class="qty-row">
+        <button id="decMinus" type="button">-</button>
+        <span id="decVal">1</span>
+        <button id="decPlus" type="button">+</button>
+      </div>
+
+      <button id="addToCartBtn" class="btn-cart" type="button">Agregar al carrito</button>
     </div>
-
-    <button id="addToCartBtn" class="btn-cart">Agregar al carrito</button>
   </div>
-</div>
 
+  <!-- ================= MODAL CARRITO ================= -->
+  <div id="cartOverlay" class="modal hidden">
+    <div class="modal-box cart-box" role="dialog" aria-modal="true">
+      <button id="cartClose" class="modal-close" type="button">✕</button>
+      <h2>🛒 Carrito</h2>
 
-<!-- ================= MODAL CARRITO ================= -->
-<div id="cartOverlay" class="modal hidden">
-  <div class="modal-box cart-box">
+      <div id="cartItems" class="cart-items"></div>
 
-    <button id="cartClose" class="modal-close">✕</button>
-    <h2>🛒 Carrito</h2>
+      <div class="cart-total">
+        Total: <b id="cartTotal">$0</b>
+      </div>
 
-    <div id="cartItems" class="cart-items"></div>
-
-    <div class="cart-total">
-      Total: <b id="cartTotal">$0</b>
-    </div>
-
-    <button id="waBtn" class="btn-whatsapp">Comprar por WhatsApp</button>
-    <button id="clearCartBtn" class="btn-clear">Vaciar carrito</button>
-
-  </div>
-</div>
-
-
-<!-- FOOTER -->
-<footer class="footer-bar">
-  <div class="footer-inner">
-    <div class="footer-left">
-      © 2026 Decantcias • Perfumes árabes originales • Decants premium • Envíos a todo el país
-    </div>
-    <div class="footer-right">
-      <a href="#products" class="footer-btn primary">Ver catálogo</a>
-      <a href="https://wa.me/5493517883411" target="_blank" class="footer-btn ghost">WhatsApp</a>
+      <button id="waBtn" class="btn-whatsapp" type="button">Comprar por WhatsApp</button>
+      <button id="clearCartBtn" class="btn-clear" type="button">Vaciar carrito</button>
     </div>
   </div>
-</footer>
 
+  <!-- FOOTER -->
+  <footer class="footer-bar">
+    <div class="footer-inner">
+      <div class="footer-left">
+        © 2026 Decantcias • Perfumes árabes originales • Decants premium • Envíos a todo el país
+      </div>
+      <div class="footer-right">
+        <a href="#products" id="goCatalogBtn" class="footer-btn primary">Ver catálogo</a>
+        <a href="https://wa.me/5493517883411" target="_blank" rel="noopener" class="footer-btn ghost">WhatsApp</a>
+      </div>
+    </div>
+  </footer>
 
-<!-- LIBRERIA CSV -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- LIBRERIA CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-<!-- TU JS -->
-<script src="main.js?v=99" defer></script>
-
+  <!-- TU JS -->
+  <script src="main.js?v=100" defer></script>
 </body>
 </html>
