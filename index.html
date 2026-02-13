@@ -1,162 +1,147 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Decantcias | Perfumería Árabe</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-<style>
-:root{
---dorado:#8a6d3b;
---dorado-claro:#bfa16a;
---fondo:#faf7f2;
-}
-body{font-family:Poppins,sans-serif;background:var(--fondo);margin:0;padding-bottom:140px;color:#333}
-header{background:#fff;padding:30px;text-align:center;border-bottom:1px solid #eee}
-h1{font-family:'Playfair Display',serif;color:var(--dorado);font-size:2.5rem;margin:0;letter-spacing:2px}
-.container{max-width:1100px;margin:auto;padding:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:25px}
-.card{background:#fff;padding:15px;border-radius:18px;text-align:center;box-shadow:0 10px 20px rgba(0,0,0,.05);cursor:pointer;transition:.25s;border:1px solid #f0f0f0}
-.card:hover{transform:translateY(-5px)}
-.card img{width:100%;height:240px;object-fit:contain;border-radius:12px}
-.price{font-weight:600;color:var(--dorado-claro);font-size:1.1rem;margin-top:8px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decantcias</title>
 
-/* MODAL */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:9999}
-.modal-content{background:#fff;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:420px;border-radius:20px;padding:20px;max-height:85vh;overflow:auto;text-align:center}
-.close-btn{position:absolute;top:10px;right:10px;width:35px;height:35px;border-radius:50%;border:none;background:#eee;font-size:18px;cursor:pointer}
-.carousel{display:flex;align-items:center;justify-content:center;gap:10px;height:240px;margin-bottom:10px}
-.carousel img{max-width:100%;max-height:100%;object-fit:contain}
-.nav-btn{border:none;background:#eee;width:35px;height:35px;border-radius:50%;font-size:18px;cursor:pointer}
-.qty-box{display:flex;align-items:center;justify-content:center;gap:15px;margin:12px 0;background:#f7f7f7;padding:10px;border-radius:12px}
-.btn-qty{width:32px;height:32px;border:none;border-radius:50%;background:var(--dorado);color:#fff;font-size:18px;cursor:pointer}
-.btn-main{width:100%;padding:12px;border:none;border-radius:40px;background:var(--dorado);color:#fff;font-weight:600;cursor:pointer}
+  <link rel="stylesheet" href="styles.css?v=101">
 
-/* CARRITO BAR */
-.cart-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:90%;max-width:420px;background:var(--dorado);color:#fff;padding:12px 20px;border-radius:40px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.3);z-index:999}
-.cart-bar *{color:#fff}
-
-/* CARRITO MODAL */
-.cart-item{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:8px 0;font-size:.9rem}
-</style>
+  <!-- FUENTES -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
-<header>
-<h1>Decantcias</h1>
-<p>Perfumería Árabe Premium</p>
-</header>
+  <!-- LOGO GRANDE SOBRE EL GUANTE (detrás de todo el contenido) -->
+  <div class="bg-logo" aria-hidden="true"></div>
 
-<div class="container">
-<div class="grid" id="productGrid"></div>
-</div>
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <h1>DECANTCIAS</h1>
+      </div>
+    </div>
+  </header>
 
-<!-- PRODUCT MODAL -->
-<div id="productModal" class="modal">
-<div class="modal-content">
-<button class="close-btn" onclick="closeModals()">✕</button>
-<div class="carousel">
-<button class="nav-btn" onclick="changeImg(-1)">‹</button>
-<img id="modal-img">
-<button class="nav-btn" onclick="changeImg(1)">›</button>
-</div>
-<h2 id="modal-title"></h2>
-<div id="modal-price" class="price"></div>
-<div class="qty-box">
-<button class="btn-qty" onclick="updateQty(-1)">-</button>
-<strong id="prod-qty">1</strong>
-<button class="btn-qty" onclick="updateQty(1)">+</button>
-</div>
-<p id="modal-desc" style="text-align:left;font-size:.85rem;color:#555"></p>
-<button class="btn-main" onclick="addToCart()">Añadir al carrito</button>
-</div>
-</div>
+  <!-- MARCAS -->
+  <section id="brands" class="brands-grid"></section>
 
-<!-- CART MODAL -->
-<div id="cartModal" class="modal">
-<div class="modal-content">
-<button class="close-btn" onclick="closeModals()">✕</button>
-<h2>Tu pedido</h2>
-<div id="cart-list"></div>
-<h3>Total: <span id="modal-total">$0</span></h3>
-<button class="btn-main" onclick="sendWhatsApp()">Enviar por WhatsApp</button>
-</div>
-</div>
+  <!-- LISTA FILTRADA -->
+  <section id="brandView" class="brand-view hidden">
+    <div class="brand-head">
+      <button id="brandBack" class="back-btn" type="button">← Volver</button>
+      <h2 id="brandTitle"></h2>
+    </div>
+    <div id="brandProducts" class="products-grid"></div>
+  </section>
 
-<!-- CART BAR -->
-<div class="cart-bar" onclick="openCart()">
-<div>🛒 <strong id="cart-count">0</strong> productos</div>
-<div>$<strong id="cart-total">0</strong></div>
-</div>
+  <!-- CATÁLOGO COMPLETO -->
+  <section id="products" class="products-grid hidden"></section>
 
-<script>
-const products=[
-{ id:1,name:"Lattafa Asad",price:60000,imgs:["img/asad.jpg","img/asad2.jpg","img/asad3.jpg"],desc:"Pimienta negra, piña y vainilla."},
-{ id:2,name:"Lattafa Yara Tous",price:52000,imgs:["img/yaratous1.jpg","img/yaratous2.jpg","img/yaratous3.jpg"],desc:"Floral dulce tropical."},
-{ id:3,name:"Lattafa Yara Candy",price:52000,imgs:["img/yaracandy1.jpg","img/yaracandy2.jpg","img/yaracandy3.jpg"],desc:"Dulce gourmand femenino."},
-{ id:4,name:"Lattafa Yara Moi",price:52000,imgs:["img/yaramoi1.jpg","img/yaramoi2.jpg","img/yaramoi3.jpg"],desc:"Cremoso y floral elegante."},
-{ id:5,name:"Lattafa Qaed Al Fursan",price:50000,imgs:["img/qaed1.jpg","img/qaed2.jpg","img/qaed3.jpg"],desc:"Piña ahumada y madera."},
-{ id:6,name:"Lattafa Eclaire",price:55000,imgs:["img/eclaire1.jpg","img/eclaire2.jpg","img/eclaire3.jpg"],desc:"Vainilla cremosa tipo Bianco Latte."},
-{ id:7,name:"Lattafa Badee Al Oud Sublime",price:70000,imgs:["img/sublime1.jpg","img/sublime2.jpg","img/sublime3.jpg"],desc:"Oud frutal elegante."},
-{ id:8,name:"Lattafa Badee Al Oud Honor & Glory",price:70000,imgs:["img/honor1.jpg","img/honor2.jpg","img/honor3.jpg"],desc:"Piña cremosa y especias."},
-{ id:9,name:"Lattafa Hayaati Black",price:48000,imgs:["img/hayaati1.jpg","img/hayaati2.jpg","img/hayaati3.jpg"],desc:"Dulce masculino moderno."},
-{ id:10,name:"Lattafa Confidential Gold",price:65000,imgs:["img/conf1.jpg","img/conf2.jpg","img/conf3.jpg"],desc:"Dorado elegante oriental."},
-{ id:11,name:"Lattafa Maahir Legacy",price:65000,imgs:["img/maahir1.jpg","img/maahir2.jpg","img/maahir3.jpg"],desc:"Cítrico fresco premium."},
-{ id:12,name:"Lattafa Fakhar Silver",price:50000,imgs:["img/fakhar1.jpg","img/fakhar2.jpg","img/fakhar3.jpg"],desc:"Tipo Y EDP masculino."},
-{ id:13,name:"Lattafa Khamrah Qahwa",price:58000,imgs:["img/khamrah_qhawa1.jpg","img/khamrah_qhawa2.jpg","img/khamrah_qhawa3.jpg"],desc:"Tremenda bomba de cafe."}
-];
+  <!-- BOTON CARRITO -->
+  <div class="cart-bar">
+    <button id="openCartBtn" class="cart-btn" type="button">
+      🛒 <span id="cartCount">0</span>
+    </button>
+  </div>
 
-const grid=document.getElementById("productGrid");
-products.forEach(p=>{
-const c=document.createElement("div");
-c.className="card";
-c.onclick=()=>openProduct(p.id);
-c.innerHTML=`<img src='${p.imgs[0]}'><h3>${p.name}</h3><div class='price'>$${p.price.toLocaleString()}</div>`;
-grid.appendChild(c);
-});
+  <!-- ================= MODAL PRODUCTO (CORREGIDO) ================= -->
+  <div id="modalOverlay" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box" role="document">
+      <button id="modalClose" class="modal-close" type="button" aria-label="Cerrar">✕</button>
 
-let currentProduct=null,currentImgIdx=0,currentQty=1,cart=[];
+      <div class="modal-left">
+        <div class="modal-gallery">
+          <img id="modalImg" class="modal-main-img" alt="">
+          <div id="modalThumbs" class="modal-thumbs"></div>
+        </div>
+      </div>
 
-function openProduct(id){
-currentProduct=products.find(p=>p.id===id);
-currentImgIdx=0;currentQty=1;
-document.getElementById("modal-img").src=currentProduct.imgs[0];
-document.getElementById("modal-title").innerText=currentProduct.name;
-document.getElementById("modal-price").innerText="$"+currentProduct.price.toLocaleString();
-document.getElementById("modal-desc").innerText=currentProduct.desc;
-document.getElementById("prod-qty").innerText=currentQty;
-document.getElementById("productModal").style.display="block";
-}
-function changeImg(s){
-currentImgIdx=(currentImgIdx+s+currentProduct.imgs.length)%currentProduct.imgs.length;
-document.getElementById("modal-img").src=currentProduct.imgs[currentImgIdx];
-}
-function updateQty(v){currentQty=Math.max(1,currentQty+v);document.getElementById("prod-qty").innerText=currentQty;}
-function closeModals(){document.getElementById("productModal").style.display="none";document.getElementById("cartModal").style.display="none";}
+      <div class="modal-right">
+        <h2 id="modalTitle" class="modal-title"></h2>
+        <p id="modalDesc" class="modal-desc"></p>
+        <div id="modalPrice" class="modal-price"></div>
 
-function addToCart(){cart.push({...currentProduct,qty:currentQty,idc:Date.now()});updateCart();closeModals();}
+        <!-- BOTONERA abajo -->
+        <div class="modal-actions">
+          <!-- PERFUME -->
+          <div class="qty-row qty-row-split">
+            <span id="perfumeLabel" class="qty-label">Perfume</span>
+            <div class="qty-controls">
+              <button id="qtyMinus" type="button">-</button>
+              <span id="qtyVal">0</span>
+              <button id="qtyPlus" type="button">+</button>
+            </div>
+          </div>
 
-function updateCart(){
-let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-document.getElementById("cart-total").innerText=total.toLocaleString();
-document.getElementById("modal-total").innerText=total.toLocaleString();
-document.getElementById("cart-count").innerText=cart.length;
-document.getElementById("cart-list").innerHTML=cart.map(i=>`<div class='cart-item'><span>${i.qty}x ${i.name}</span><button onclick='removeItem(${i.idc})'>✕</button></div>`).join("");
-}
-function removeItem(id){cart=cart.filter(i=>i.idc!==id);updateCart();}
-function openCart(){document.getElementById("cartModal").style.display="block";}
+          <!-- DECANT (switch) -->
+          <div class="decant-row">
+            <div class="decant-left">
+              <label class="switch" aria-label="Activar decant">
+                <input type="checkbox" id="decantToggle">
+                <span class="slider"></span>
+              </label>
+              <span class="decant-label">Decant</span>
+            </div>
 
-function sendWhatsApp(){
-if(!cart.length)return;
-let msg="Pedido Decantcias%0A%0A";
-cart.forEach(i=>msg+=`${i.qty}x ${i.name}%0A`);
-let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-msg+=`%0ATotal: $${total}`;
-window.open(`https://wa.me/5493517883411?text=${msg}`);
-}
+            <div class="decant-right">
+              <span id="decantPriceLabel" class="decant-price">Decant 5ML</span>
+            </div>
+          </div>
 
-window.onclick=e=>{if(e.target.className==="modal")closeModals();};
-</script>
+          <div class="qty-row qty-row-split">
+            <span class="qty-label">Cantidad decant</span>
+            <div class="qty-controls">
+              <button id="decMinus" type="button">-</button>
+              <span id="decVal">1</span>
+              <button id="decPlus" type="button">+</button>
+            </div>
+          </div>
+
+          <button id="addToCartBtn" class="btn-cart" type="button">Agregar al carrito</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL CARRITO ================= -->
+  <div id="cartOverlay" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box cart-box" role="document">
+      <button id="cartClose" class="modal-close" type="button">✕</button>
+      <h2 class="modal-title">🛒 Carrito</h2>
+
+      <div id="cartItems" class="cart-items"></div>
+
+      <div class="cart-total">
+        Total: <b id="cartTotal">$0</b>
+      </div>
+
+      <button id="waBtn" class="btn-whatsapp" type="button">Comprar por WhatsApp</button>
+      <button id="clearCartBtn" class="btn-clear" type="button">Vaciar carrito</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer-bar">
+    <img class="footer-deco footer-deco-left" src="fotos/logo-footer.png" alt="" aria-hidden="true">
+    <img class="footer-deco footer-deco-right" src="fotos/logo-footer.png" alt="" aria-hidden="true">
+
+    <div class="footer-inner">
+      <div class="footer-left">
+        © 2026 Decantcias • Perfumes árabes originales • Decants premium • Envíos a todo el país
+      </div>
+      <div class="footer-right">
+        <a href="#products" class="footer-btn primary">Ver catálogo</a>
+        <a href="https://wa.me/5493517883411" target="_blank" rel="noopener" class="footer-btn ghost">WhatsApp</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- LIBRERIA CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <!-- TU JS -->
+  <script src="main.js?v=101" defer></script>
 </body>
 </html>
-
-
