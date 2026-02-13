@@ -4,10 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Decantcias</title>
-  <link rel="stylesheet" href="styles.css?v=50">
+
+  <link rel="stylesheet" href="styles.css?v=99">
+
+  <!-- FUENTES -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
+<!-- HERO -->
 <header class="hero">
   <div class="hero-overlay">
     <div class="hero-content">
@@ -31,71 +37,31 @@
 <!-- PRODUCTOS GENERALES -->
 <section id="products" class="products-grid hidden"></section>
 
-<!-- CARRITO -->
+
+<!-- BOTON CARRITO -->
 <div class="cart-bar">
   <button id="openCartBtn" class="cart-btn">
     🛒 <span id="cartCount">0</span>
   </button>
-  <div id="cartPanel" class="cart-panel hidden">
-  <div class="cart-header">
-    <h2>🛒 Carrito</h2>
-    <button id="closeCart">✕</button>
-  </div>
-  <div id="cartItems"></div>
-  <div class="cart-footer">
-    <div id="cartTotal">$0</div>
-    <button id="checkoutBtn">Comprar por WhatsApp</button>
-  </div>
 </div>
 
-</div>
-<!-- PRODUCT POPUP -->
-<div id="productModal" class="modal hidden">
-  <div class="modal-box">
-    <button id="closeModal">✕</button>
-    <img id="modalImg">
-    <h2 id="modalTitle"></h2>
-    <p id="modalDesc"></p>
-    <div class="modal-price" id="modalPrice"></div>
 
-    <div class="qty-box">
-      <button id="qtyMinus">-</button>
-      <span id="qtyValue">1</span>
-      <button id="qtyPlus">+</button>
-    </div>
-
-    <button id="addToCartBtn">Añadir al carrito</button>
-  </div>
-</div>
-
-<!-- FOOTER FIJO -->
-<footer class="footer-bar">
-  <div class="footer-inner">
-    <div class="footer-left">
-      © 2026 Decantcias • Perfumes árabes originales • 🔥 Decants premium 🔥 • Envíos a todo el país
-    </div>
-
-    <div class="footer-right">
-      <a href="#products" class="footer-btn primary">Ver catálogo</a>
-      <a href="https://wa.me/5493517883411" target="_blank" class="footer-btn ghost">WhatsApp</a>
-    </div>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="main.js?v=50" defer></script>
-<!-- PRODUCT MODAL -->
+<!-- ================= MODAL PRODUCTO ================= -->
 <div id="modalOverlay" class="modal hidden">
   <div class="modal-box">
-    <button id="modalClose">✕</button>
 
-    <img id="modalImg">
-    <div id="modalThumbs"></div>
+    <button id="modalClose" class="modal-close">✕</button>
+
+    <div class="modal-gallery">
+      <img id="modalImg" class="modal-main-img">
+      <div id="modalThumbs" class="modal-thumbs"></div>
+    </div>
 
     <h2 id="modalTitle"></h2>
     <p id="modalDesc"></p>
-    <div id="modalPrice"></div>
+    <div id="modalPrice" class="modal-price"></div>
 
+    <!-- PERFUME -->
     <div class="qty-row">
       <span>Perfume</span>
       <button id="qtyMinus">-</button>
@@ -103,9 +69,10 @@
       <button id="qtyPlus">+</button>
     </div>
 
-    <label>
-      <input type="checkbox" id="decantToggle"> Decant 5ml
-      <span class="decant-price"></span>
+    <!-- DECANT -->
+    <label class="decant-row">
+      <input type="checkbox" id="decantToggle">
+      <span class="decant-price">Decant 5ML</span>
     </label>
 
     <div class="qty-row">
@@ -114,23 +81,50 @@
       <button id="decPlus">+</button>
     </div>
 
-    <button id="addToCartBtn">Agregar al carrito</button>
+    <button id="addToCartBtn" class="btn-cart">Agregar al carrito</button>
   </div>
 </div>
 
-<!-- CART MODAL -->
+
+<!-- ================= MODAL CARRITO ================= -->
 <div id="cartOverlay" class="modal hidden">
   <div class="modal-box cart-box">
-    <button id="cartClose">✕</button>
-    <h2>Carrito</h2>
 
-    <div id="cartItems"></div>
-    <div id="cartTotal">$0</div>
+    <button id="cartClose" class="modal-close">✕</button>
+    <h2>🛒 Carrito</h2>
 
-    <button id="waBtn">Comprar por WhatsApp</button>
-    <button id="clearCartBtn">Vaciar carrito</button>
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="cart-total">
+      Total: <b id="cartTotal">$0</b>
+    </div>
+
+    <button id="waBtn" class="btn-whatsapp">Comprar por WhatsApp</button>
+    <button id="clearCartBtn" class="btn-clear">Vaciar carrito</button>
+
   </div>
 </div>
+
+
+<!-- FOOTER -->
+<footer class="footer-bar">
+  <div class="footer-inner">
+    <div class="footer-left">
+      © 2026 Decantcias • Perfumes árabes originales • Decants premium • Envíos a todo el país
+    </div>
+    <div class="footer-right">
+      <a href="#products" class="footer-btn primary">Ver catálogo</a>
+      <a href="https://wa.me/5493517883411" target="_blank" class="footer-btn ghost">WhatsApp</a>
+    </div>
+  </div>
+</footer>
+
+
+<!-- LIBRERIA CSV -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<!-- TU JS -->
+<script src="main.js?v=99" defer></script>
 
 </body>
 </html>
