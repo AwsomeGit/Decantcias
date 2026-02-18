@@ -387,11 +387,14 @@ function openModalByProduct(product) {
 
   renderModalImages();
   el.overlay.classList.remove("hidden");
+  toggleSearchVisibility(false);
 }
 
 function closeModal() {
   el.overlay?.classList.add("hidden");
+  toggleSearchVisibility(true);
 }
+
 
 function renderModalImages() {
   const imgs = ACTIVE?.imgs || [];
@@ -527,10 +530,12 @@ function openCart() {
   if (!el.cartOverlay) return;
   renderCart();
   el.cartOverlay.classList.remove("hidden");
+  toggleSearchVisibility(false);
 }
 
 function closeCart() {
   el.cartOverlay?.classList.add("hidden");
+  toggleSearchVisibility(true);
 }
 
 function buildWhatsAppMessage() {
@@ -610,6 +615,12 @@ function initFloatingSearch() {
     if (e.key !== "Escape") return;
     if (fs.classList.contains("active")) closeSearch();
   });
+}
+function toggleSearchVisibility(show) {
+  const fs = document.getElementById("floatingSearch");
+  if (!fs) return;
+
+  fs.style.display = show ? "flex" : "none";
 }
 
 function wireEvents() {
