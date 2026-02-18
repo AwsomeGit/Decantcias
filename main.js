@@ -62,7 +62,7 @@ function getBrandLogo(marcaRaw) {
     lattafa: "fotos/lattafalogo.jpg",
     zimaya: "fotos/zimayalogo.jpg",
     "al wataniah": "fotos/alwatanialogo.png",
-    "alwataniah": "fotos/alwatanialogo.png",
+    alwataniah: "fotos/alwatanialogo.png",
     "maison alhambra": "fotos/maisonalhambra.png",
   };
 
@@ -78,7 +78,8 @@ function normalizeImgPath(url) {
   let u = String(url).trim().replace(/^"|"$/g, "");
   if (!u) return "";
 
-  if (/^https?:\/\//i.test(u) || u.includes("drive.google.com")) return driveToDirect(u);
+  if (/^https?:\/\//i.test(u) || u.includes("drive.google.com"))
+    return driveToDirect(u);
   if (u.startsWith("fotos/")) return u;
   return `fotos/${u}`;
 }
@@ -156,6 +157,23 @@ function cacheDom() {
 }
 
 // ------------------------
+// Floating Search visibility helper
+// ------------------------
+function toggleSearchVisibility(show) {
+  const fs = document.getElementById("floatingSearch");
+  const fsInput = document.getElementById("floatingSearchInput");
+  if (!fs) return;
+
+  if (!show) {
+    // al ocultar, también lo cerramos y limpiamos
+    fs.classList.remove("active");
+    if (fsInput) fsInput.value = "";
+  }
+
+  fs.style.display = show ? "flex" : "none";
+}
+
+// ------------------------
 // Views
 // ------------------------
 function hideBrandSection() {
@@ -170,6 +188,8 @@ function showBrandSection() {
 
 function showAllCatalog(scroll = true) {
   hideBrandSection();
+  toggleSearchVisibility(true); // ✅ visible en catálogo completo
+
   if (!el.products) return;
 
   el.products.classList.remove("hidden");
@@ -244,12 +264,10 @@ function renderBrands(products) {
     present.set(normBrand(p.marca), prettyBrand(p.marca));
   }
 
- const brandsList = MAIN_BRANDS
-  .map((b) => (present.has(normBrand(b)) ? present.get(normBrand(b)) : null))
-  .filter(Boolean)
-  .sort((a, b) =>
-    a.localeCompare(b, "es", { sensitivity: "base" })
-  );
+  const brandsList = MAIN_BRANDS
+    .map((b) => (present.has(normBrand(b)) ? present.get(normBrand(b)) : null))
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
 
   el.brands.innerHTML = "";
 
@@ -279,21 +297,26 @@ function renderBrands(products) {
     card.addEventListener("click", () => openBrand(brand));
     el.brands.appendChild(card);
   });
+
+  // ✅ visible en home
+  toggleSearchVisibility(true);
 }
 
 function openBrand(brandName) {
+  // ✅ ocultar search dentro de vista de marca
+  toggleSearchVisibility(false);
+
   // IMPORTANTE: no “pantalla nueva”, solo muestra la sección de abajo
   hideAllCatalog(); // para que no quede mezclado con el catálogo completo
 
   const key = normBrand(brandName);
   const filtered = PRODUCTS
-  .filter((p) => normBrand(p.marca) === key)
-  .sort((a, b) =>
-    (a.nombre || "").localeCompare(b.nombre || "", "es", {
-      sensitivity: "base",
-    })
-  );
-
+    .filter((p) => normBrand(p.marca) === key)
+    .sort((a, b) =>
+      (a.nombre || "").localeCompare(b.nombre || "", "es", {
+        sensitivity: "base",
+      })
+    );
 
   if (el.brandTitle) el.brandTitle.textContent = brandName;
   if (el.brandProducts) renderGrid(filtered, el.brandProducts);
@@ -304,13 +327,17 @@ function openBrand(brandName) {
 
 function closeBrand() {
   hideBrandSection();
-  // vuelve a marcas (no hacemos scroll forzado)
+  // ✅ vuelve a home (muestra lupa)
+  toggleSearchVisibility(true);
 }
 
 // ------------------------
 // Load + parse
 // ------------------------
 async function cargarPerfumes() {
+  // ✅ asegurar DOM cacheado aunque llamen cargarPerfumes() directo
+  cacheDom();
+
   try {
     const res = await fetch(sheetURL, { cache: "no-store" });
     if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
@@ -334,11 +361,23 @@ async function cargarPerfumes() {
       return {
         marca: getField(clean, ["marca", "Marca"]),
         nombre: getField(clean, ["nombre", "Nombre"]),
-        descripcion: getField(clean, ["descripcion", "Descripción", "Descripcion", "description"]),
+        descripcion: getField(clean, [
+          "descripcion",
+          "Descripción",
+          "Descripcion",
+          "description",
+        ]),
         stock: toNumber(getField(clean, ["stock", "Stock"])),
         precio: toNumber(getField(clean, ["precio", "Precio"])),
-        precioDecant: toNumber(getField(clean, ["Precio Decant","PrecioDecant","precioDecant","decant"])),
-        ml: toNumber(getField(clean, ["ml","ML","Ml"])),
+        precioDecant: toNumber(
+          getField(clean, [
+            "Precio Decant",
+            "PrecioDecant",
+            "precioDecant",
+            "decant",
+          ])
+        ),
+        ml: toNumber(getField(clean, ["ml", "ML", "Ml"])),
         imgs,
         raw: clean,
       };
@@ -346,10 +385,12 @@ async function cargarPerfumes() {
 
     renderBrands(PRODUCTS);
     updateCartBadge();
-    } catch (e) {
+  } catch (e) {
     console.error("Error cargando perfumes:", e);
-    if (el.products) el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
-    if (el.brands) el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
+    if (el.products)
+      el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
+    if (el.brands)
+      el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
   }
 }
 
@@ -379,7 +420,8 @@ function openModalByProduct(product) {
   // Decant 5ML + precio
   const dPrice = ACTIVE.precioDecant || 0;
   const decantPriceLabel = el.overlay.querySelector(".decant-price");
-  if (decantPriceLabel) decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
+  if (decantPriceLabel)
+    decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
 
   el.qtyVal.textContent = String(qtyBottle);
   el.decToggle.checked = false;
@@ -387,14 +429,17 @@ function openModalByProduct(product) {
 
   renderModalImages();
   el.overlay.classList.remove("hidden");
+
+  // ✅ ocultar lupa con modal abierto
   toggleSearchVisibility(false);
 }
 
 function closeModal() {
   el.overlay?.classList.add("hidden");
+
+  // ✅ mostrar lupa al cerrar modal (siempre)
   toggleSearchVisibility(true);
 }
-
 
 function renderModalImages() {
   const imgs = ACTIVE?.imgs || [];
@@ -465,7 +510,8 @@ function updateCartBadge() {
 }
 
 function cartItemLabel(it) {
-  const mlTxt = it.type === "decant" ? "Decant 5ML" : `Perfume (${it.ml || 0} ml)`;
+  const mlTxt =
+    it.type === "decant" ? "Decant 5ML" : `Perfume (${it.ml || 0} ml)`;
   return `${it.marca} ${it.nombre} • ${mlTxt}`;
 }
 
@@ -528,13 +574,18 @@ function renderCart() {
 
 function openCart() {
   if (!el.cartOverlay) return;
+
   renderCart();
   el.cartOverlay.classList.remove("hidden");
+
+  // ✅ ocultar lupa con carrito abierto
   toggleSearchVisibility(false);
 }
 
 function closeCart() {
   el.cartOverlay?.classList.add("hidden");
+
+  // ✅ mostrar lupa al cerrar carrito
   toggleSearchVisibility(true);
 }
 
@@ -555,7 +606,9 @@ function buildWhatsAppMessage() {
     return `• ${cartItemLabel(it)} x${it.qty} = ${moneyAR(lineTotal)}`;
   });
 
-  return ["Hola! Quiero hacer un pedido:", "", ...lines, "", `Total: ${moneyAR(total)}`].join("\n");
+  return ["Hola! Quiero hacer un pedido:", "", ...lines, "", `Total: ${moneyAR(total)}`].join(
+    "\n"
+  );
 }
 
 function goWhatsApp() {
@@ -602,7 +655,9 @@ function initFloatingSearch() {
     const results = PRODUCTS
       .filter((p) => `${p.marca} ${p.nombre}`.toLowerCase().includes(q))
       .sort((a, b) =>
-        (`${a.marca} ${a.nombre}`).localeCompare(`${b.marca} ${b.nombre}`, "es", { sensitivity: "base" })
+        `${a.marca} ${a.nombre}`.localeCompare(`${b.marca} ${b.nombre}`, "es", {
+          sensitivity: "base",
+        })
       );
 
     hideBrandSection();
@@ -615,12 +670,6 @@ function initFloatingSearch() {
     if (e.key !== "Escape") return;
     if (fs.classList.contains("active")) closeSearch();
   });
-}
-function toggleSearchVisibility(show) {
-  const fs = document.getElementById("floatingSearch");
-  if (!fs) return;
-
-  fs.style.display = show ? "flex" : "none";
 }
 
 function wireEvents() {
@@ -697,8 +746,11 @@ function wireEvents() {
 function init() {
   cacheDom();
   wireEvents();
-  initFloatingSearch();   // 👈 esta línea
+  initFloatingSearch();
   cargarPerfumes();
+
+  // ✅ default: visible
+  toggleSearchVisibility(true);
 }
 
 document.addEventListener("DOMContentLoaded", init);
