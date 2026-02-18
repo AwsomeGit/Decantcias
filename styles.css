@@ -820,6 +820,21 @@ body{
   place-items: center;
   transition: transform .15s ease, background .15s ease;
 }
+@media (max-width: 480px) {
+  .floating-search {
+    top: 12px;
+    right: 12px;
+  }
+
+  .floating-search.active input {
+    width: 160px;
+  }
+
+  .floating-search button {
+    width: 36px;
+    height: 36px;
+  }
+}
 
 .floating-search button:hover {
   transform: scale(1.05);
