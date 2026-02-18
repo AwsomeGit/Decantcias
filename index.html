@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Decantcias</title>
 
-  <link rel="icon" type="image/png" sizes="16x16" href="fotos/favicon16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="fotos/favicon32x32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="fotos/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="fotos/favicon16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="fotos/favicon32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="fotos/apple-touch-icon.png" />
 
-  <link rel="stylesheet" href="styles.css?v=1012">
+  <link rel="stylesheet" href="styles.css?v=1012" />
 
   <!-- FUENTES -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
@@ -24,17 +24,17 @@
       placeholder="Buscar perfume..."
       autocomplete="off"
     />
-    <button id="floatingSearchBtn" aria-label="Buscar">🔍</button>
+    <button id="floatingSearchBtn" aria-label="Buscar" type="button">🔍</button>
   </div>
 
   <!-- LOGO GRANDE SOBRE EL GUANTE (detrás de todo el contenido) -->
   <div class="bg-logo" aria-hidden="true"></div>
 
   <!-- HERO -->
-  <header class="hero">
+  <header class="hero" id="top">
     <div class="hero-overlay">
       <div class="hero-content">
-        <img src="fotos/logodecant.png" alt="Decantcias" class="hero-logo">
+        <img src="fotos/logodecant.png" alt="Decantcias" class="hero-logo" />
       </div>
     </div>
   </header>
@@ -68,7 +68,7 @@
 
       <div class="modal-left">
         <div class="modal-gallery">
-          <img id="modalImg" class="modal-main-img" alt="">
+          <img id="modalImg" class="modal-main-img" alt="" />
           <div id="modalThumbs" class="modal-thumbs"></div>
         </div>
       </div>
@@ -91,7 +91,7 @@
           <div class="decant-row">
             <div class="decant-left">
               <label class="switch" aria-label="Activar decant">
-                <input type="checkbox" id="decantToggle">
+                <input type="checkbox" id="decantToggle" />
                 <span class="slider"></span>
               </label>
               <span class="decant-label">Decant</span>
@@ -136,8 +136,8 @@
 
   <!-- FOOTER -->
   <footer class="footer-bar">
-    <img class="footer-deco footer-deco-left" src="fotos/logo-footer.png" alt="" aria-hidden="true">
-    <img class="footer-deco footer-deco-right" src="fotos/logo-footer.png" alt="" aria-hidden="true">
+    <img class="footer-deco footer-deco-left" src="fotos/logo-footer.png" alt="" aria-hidden="true" />
+    <img class="footer-deco footer-deco-right" src="fotos/logo-footer.png" alt="" aria-hidden="true" />
 
     <div class="footer-inner">
       <div class="footer-left">
@@ -162,4 +162,19 @@
              href="https://www.tiktok.com/@agudeparfum"
              target="_blank" rel="noopener"
              aria-label="TikTok">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 2
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M16 3c.5 2.3 2.3 4 4.6 4.3v3c-1.6 0-3.2-.5-4.6-1.4v6.3c0 3.6-2.9 6.5-6.5 6.5S3 18.8 3 15.2 5.9 8.7 9.5 8.7c.4 0 .8 0 1.2.1v3.1c-.4-.2-.8-.3-1.2-.3-1.9 0-3.4 1.5-3.4 3.4s1.5 3.4 3.4 3.4 3.4-1.5 3.4-3.4V3H16z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- LIBRERIA CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <!-- TU JS -->
+  <script src="main.js?v=101"></script>
+</body>
+</html>
