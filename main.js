@@ -244,9 +244,12 @@ function renderBrands(products) {
     present.set(normBrand(p.marca), prettyBrand(p.marca));
   }
 
-  const brandsList = MAIN_BRANDS
-    .map((b) => (present.has(normBrand(b)) ? present.get(normBrand(b)) : null))
-    .filter(Boolean);
+ const brandsList = MAIN_BRANDS
+  .map((b) => (present.has(normBrand(b)) ? present.get(normBrand(b)) : null))
+  .filter(Boolean)
+  .sort((a, b) =>
+    a.localeCompare(b, "es", { sensitivity: "base" })
+  );
 
   el.brands.innerHTML = "";
 
