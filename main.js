@@ -311,8 +311,6 @@ function closeBrand() {
 // Load + parse
 // ------------------------
 async function cargarPerfumes() {
-  cacheDom();
-
   try {
     const res = await fetch(sheetURL, { cache: "no-store" });
     if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
@@ -348,8 +346,7 @@ async function cargarPerfumes() {
 
     renderBrands(PRODUCTS);
     updateCartBadge();
-    wireEvents();
-  } catch (e) {
+    } catch (e) {
     console.error("Error cargando perfumes:", e);
     if (el.products) el.products.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
     if (el.brands) el.brands.innerHTML = `<p style="padding:12px">No se pudo cargar el catálogo.</p>`;
@@ -565,6 +562,56 @@ function goWhatsApp() {
 // ------------------------
 // Events
 // ------------------------
+function initFloatingSearch() {
+  const fs = document.getElementById("floatingSearch");
+  const fsBtn = document.getElementById("floatingSearchBtn");
+  const fsInput = document.getElementById("floatingSearchInput");
+
+  if (!fs || !fsBtn || !fsInput) return;
+
+  if (initFloatingSearch._wired) return;
+  initFloatingSearch._wired = true;
+
+  const closeSearch = () => {
+    fs.classList.remove("active");
+    fsInput.value = "";
+    hideBrandSection();
+    hideAllCatalog();
+  };
+
+  fsBtn.addEventListener("click", () => {
+    fs.classList.toggle("active");
+    if (fs.classList.contains("active")) fsInput.focus();
+    else closeSearch();
+  });
+
+  fsInput.addEventListener("input", (e) => {
+    const q = String(e.target.value || "").toLowerCase().trim();
+
+    if (!q) {
+      hideBrandSection();
+      hideAllCatalog();
+      return;
+    }
+
+    const results = PRODUCTS
+      .filter((p) => `${p.marca} ${p.nombre}`.toLowerCase().includes(q))
+      .sort((a, b) =>
+        (`${a.marca} ${a.nombre}`).localeCompare(`${b.marca} ${b.nombre}`, "es", { sensitivity: "base" })
+      );
+
+    hideBrandSection();
+    el.products.classList.remove("hidden");
+    renderGrid(results, el.products);
+  });
+
+  // Escape: si el search está abierto, cerralo (sin interferir con modal/carrito)
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (fs.classList.contains("active")) closeSearch();
+  });
+}
+
 function wireEvents() {
   if (wireEvents._wired) return;
   wireEvents._wired = true;
@@ -639,6 +686,7 @@ function wireEvents() {
 function init() {
   cacheDom();
   wireEvents();
+  initFloatingSearch();   // 👈 esta línea
   cargarPerfumes();
 }
 
