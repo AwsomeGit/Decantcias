@@ -286,7 +286,14 @@ function openBrand(brandName) {
   hideAllCatalog(); // para que no quede mezclado con el catálogo completo
 
   const key = normBrand(brandName);
-  const filtered = PRODUCTS.filter((p) => normBrand(p.marca) === key);
+  const filtered = PRODUCTS
+  .filter((p) => normBrand(p.marca) === key)
+  .sort((a, b) =>
+    (a.nombre || "").localeCompare(b.nombre || "", "es", {
+      sensitivity: "base",
+    })
+  );
+
 
   if (el.brandTitle) el.brandTitle.textContent = brandName;
   if (el.brandProducts) renderGrid(filtered, el.brandProducts);
