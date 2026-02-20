@@ -835,6 +835,23 @@ body{
     height: 36px;
   }
 }
+.stock-line{
+  font-size:12px;
+  margin-top:6px;
+  opacity:.85;
+}
+
+.badge-decant{
+  margin-top:8px;
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  background: rgba(246,173,85,0.18);
+  border: 1px solid rgba(246,173,85,0.6);
+  color:#FBD38D;
+}
 
 .floating-search button:hover {
   transform: scale(1.05);
