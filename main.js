@@ -99,6 +99,11 @@ function prettyBrand(brand) {
   return found || String(brand || "").trim();
 }
 
+function toBoolSi(raw) {
+  const s = String(raw ?? "").trim().toLowerCase();
+  return s === "si" || s === "sí";
+}
+
 // ------------------------
 // State
 // ------------------------
@@ -165,7 +170,6 @@ function toggleSearchVisibility(show) {
   if (!fs) return;
 
   if (!show) {
-    // al ocultar, también lo cerramos y limpiamos
     fs.classList.remove("active");
     if (fsInput) fsInput.value = "";
   }
@@ -188,7 +192,7 @@ function showBrandSection() {
 
 function showAllCatalog(scroll = true) {
   hideBrandSection();
-  toggleSearchVisibility(true); // ✅ visible en catálogo completo
+  toggleSearchVisibility(true);
 
   if (!el.products) return;
 
@@ -221,6 +225,14 @@ function renderGrid(items, mountEl) {
 
     const logo = getBrandLogo(p.marca);
 
+    // ✅ Stock + Decant disponible (para la CARD)
+    const sinStock = Number(p.stock || 0) <= 0;
+    const stockLabel = sinStock ? "Sin stock" : `Stock: ${p.stock}`;
+    const decantBadge =
+      sinStock && p.decantDisponible
+        ? `<div class="badge-decant">Aun así podés llevar un Decant!</div>`
+        : "";
+
     card.innerHTML = `
       <div class="product-card">
         <div class="card-thumb">
@@ -243,6 +255,9 @@ function renderGrid(items, mountEl) {
           }
           <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
           <p class="sub">${moneyAR(p.precio)}</p>
+
+          <p class="stock-line">${stockLabel}</p>
+          ${decantBadge}
         </div>
       </div>
     `;
@@ -298,16 +313,12 @@ function renderBrands(products) {
     el.brands.appendChild(card);
   });
 
-  // ✅ visible en home
   toggleSearchVisibility(true);
 }
 
 function openBrand(brandName) {
-  // ✅ ocultar search dentro de vista de marca
   toggleSearchVisibility(false);
-
-  // IMPORTANTE: no “pantalla nueva”, solo muestra la sección de abajo
-  hideAllCatalog(); // para que no quede mezclado con el catálogo completo
+  hideAllCatalog();
 
   const key = normBrand(brandName);
   const filtered = PRODUCTS
@@ -327,7 +338,6 @@ function openBrand(brandName) {
 
 function closeBrand() {
   hideBrandSection();
-  // ✅ vuelve a home (muestra lupa)
   toggleSearchVisibility(true);
 }
 
@@ -335,7 +345,6 @@ function closeBrand() {
 // Load + parse
 // ------------------------
 async function cargarPerfumes() {
-  // ✅ asegurar DOM cacheado aunque llamen cargarPerfumes() directo
   cacheDom();
 
   try {
@@ -358,6 +367,16 @@ async function cargarPerfumes() {
         .map((s) => normalizeImgPath(s))
         .filter(Boolean);
 
+      // ✅ Lee "decant disponible" del sheet
+      const decantDisponible = toBoolSi(
+        getField(clean, [
+          "decant disponible",
+          "Decant disponible",
+          "decant_disponible",
+          "Decant_disponible",
+        ])
+      );
+
       return {
         marca: getField(clean, ["marca", "Marca"]),
         nombre: getField(clean, ["nombre", "Nombre"]),
@@ -378,6 +397,7 @@ async function cargarPerfumes() {
           ])
         ),
         ml: toNumber(getField(clean, ["ml", "ML", "Ml"])),
+        decantDisponible,
         imgs,
         raw: clean,
       };
@@ -430,14 +450,11 @@ function openModalByProduct(product) {
   renderModalImages();
   el.overlay.classList.remove("hidden");
 
-  // ✅ ocultar lupa con modal abierto
   toggleSearchVisibility(false);
 }
 
 function closeModal() {
   el.overlay?.classList.add("hidden");
-
-  // ✅ mostrar lupa al cerrar modal (siempre)
   toggleSearchVisibility(true);
 }
 
@@ -577,15 +594,11 @@ function openCart() {
 
   renderCart();
   el.cartOverlay.classList.remove("hidden");
-
-  // ✅ ocultar lupa con carrito abierto
   toggleSearchVisibility(false);
 }
 
 function closeCart() {
   el.cartOverlay?.classList.add("hidden");
-
-  // ✅ mostrar lupa al cerrar carrito
   toggleSearchVisibility(true);
 }
 
@@ -665,7 +678,6 @@ function initFloatingSearch() {
     renderGrid(results, el.products);
   });
 
-  // Escape: si el search está abierto, cerralo (sin interferir con modal/carrito)
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (fs.classList.contains("active")) closeSearch();
@@ -676,10 +688,8 @@ function wireEvents() {
   if (wireEvents._wired) return;
   wireEvents._wired = true;
 
-  // Volver en filtrado
   el.brandBack?.addEventListener("click", closeBrand);
 
-  // Abrir catálogo (footer)
   document.querySelectorAll('a[href="#products"]').forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
@@ -687,7 +697,6 @@ function wireEvents() {
     });
   });
 
-  // Modal producto: X y click afuera
   el.close?.addEventListener("click", closeModal);
   el.overlay?.addEventListener("click", (e) => {
     if (e.target === el.overlay) closeModal();
@@ -719,7 +728,6 @@ function wireEvents() {
 
   el.addBtn?.addEventListener("click", addToCart);
 
-  // Cart modal
   el.openCartBtn?.addEventListener("click", openCart);
   el.cartClose?.addEventListener("click", closeCart);
   el.cartOverlay?.addEventListener("click", (e) => {
@@ -735,7 +743,6 @@ function wireEvents() {
 
   el.waBtn?.addEventListener("click", goWhatsApp);
 
-  // ESC cierra ambos
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (el.overlay && !el.overlay.classList.contains("hidden")) closeModal();
@@ -748,8 +755,6 @@ function init() {
   wireEvents();
   initFloatingSearch();
   cargarPerfumes();
-
-  // ✅ default: visible
   toggleSearchVisibility(true);
 }
 
