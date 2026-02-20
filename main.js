@@ -104,6 +104,10 @@ function toBoolSi(raw) {
   return s === "si" || s === "sí";
 }
 
+function hasStock(p) {
+  return Number(p?.stock || 0) > 0;
+}
+
 // ------------------------
 // State
 // ------------------------
@@ -225,14 +229,7 @@ function renderGrid(items, mountEl) {
 
     const logo = getBrandLogo(p.marca);
 
-    // ✅ Stock + Decant disponible (para la CARD)
-    const sinStock = Number(p.stock || 0) <= 0;
-    const stockLabel = sinStock ? "Sin stock" : `Stock: ${p.stock}`;
-    const decantBadge =
-      sinStock && p.decantDisponible
-        ? `<div class="badge-decant">Aun así podés llevar un Decant!</div>`
-        : "";
-
+    // ✅ NO mostramos stock en la card (solo en modal)
     card.innerHTML = `
       <div class="product-card">
         <div class="card-thumb">
@@ -255,9 +252,6 @@ function renderGrid(items, mountEl) {
           }
           <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
           <p class="sub">${moneyAR(p.precio)}</p>
-
-          <p class="stock-line">${stockLabel}</p>
-          ${decantBadge}
         </div>
       </div>
     `;
@@ -426,9 +420,23 @@ function openModalByProduct(product) {
   decantEnabled = false;
   qtyDecant = 1;
 
+  const sinStock = !hasStock(ACTIVE);
+  const decantSi = !!ACTIVE.decantDisponible;
+
   el.title.textContent = `${ACTIVE.marca} ${ACTIVE.nombre}`;
   el.desc.textContent = ACTIVE.descripcion || "";
-  el.price.textContent = moneyAR(ACTIVE.precio);
+
+  // ✅ Precio + aviso stock SOLO en modal
+  const basePrice = moneyAR(ACTIVE.precio);
+  let extraMsg = "";
+
+  if (sinStock && decantSi) {
+    extraMsg = `<div class="modal-stock-line">Sin stock • <span class="badge-decant-inline">Aun así podés llevar un Decant!</span></div>`;
+  } else if (sinStock) {
+    extraMsg = `<div class="modal-stock-line">Sin stock</div>`;
+  }
+
+  el.price.innerHTML = `<div>${basePrice}</div>${extraMsg}`;
 
   // Perfume (X ml)
   const perfumeLabel = el.overlay.querySelector(".qty-label");
@@ -443,9 +451,25 @@ function openModalByProduct(product) {
   if (decantPriceLabel)
     decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
 
+  // Reset UI qtys
   el.qtyVal.textContent = String(qtyBottle);
   el.decToggle.checked = false;
   el.decVal.textContent = String(qtyDecant);
+
+  // ✅ Si no hay stock: bloquear controles de Perfume
+  if (sinStock) {
+    qtyBottle = 0;
+    el.qtyVal.textContent = "0";
+    if (el.qtyMinus) el.qtyMinus.disabled = true;
+    if (el.qtyPlus) el.qtyPlus.disabled = true;
+
+    // Si no hay decant, deshabilita agregar
+    if (el.addBtn) el.addBtn.disabled = !decantSi;
+  } else {
+    if (el.qtyMinus) el.qtyMinus.disabled = false;
+    if (el.qtyPlus) el.qtyPlus.disabled = false;
+    if (el.addBtn) el.addBtn.disabled = false;
+  }
 
   renderModalImages();
   el.overlay.classList.remove("hidden");
@@ -494,7 +518,10 @@ function saveCart() {
 function addToCart() {
   if (!ACTIVE) return;
 
-  if (qtyBottle > 0) {
+  const sinStock = !hasStock(ACTIVE);
+
+  // ✅ No agrego botella si está sin stock
+  if (!sinStock && qtyBottle > 0) {
     CART.push({
       type: "bottle",
       marca: ACTIVE.marca,
@@ -505,6 +532,7 @@ function addToCart() {
     });
   }
 
+  // Decant (si está habilitado)
   if (decantEnabled && qtyDecant > 0) {
     CART.push({
       type: "decant",
@@ -619,9 +647,13 @@ function buildWhatsAppMessage() {
     return `• ${cartItemLabel(it)} x${it.qty} = ${moneyAR(lineTotal)}`;
   });
 
-  return ["Hola! Quiero hacer un pedido:", "", ...lines, "", `Total: ${moneyAR(total)}`].join(
-    "\n"
-  );
+  return [
+    "Hola! Quiero hacer un pedido:",
+    "",
+    ...lines,
+    "",
+    `Total: ${moneyAR(total)}`,
+  ].join("\n");
 }
 
 function goWhatsApp() {
@@ -703,11 +735,13 @@ function wireEvents() {
   });
 
   el.qtyMinus?.addEventListener("click", () => {
+    if (el.qtyMinus?.disabled) return;
     qtyBottle = Math.max(0, qtyBottle - 1);
     el.qtyVal.textContent = String(qtyBottle);
   });
 
   el.qtyPlus?.addEventListener("click", () => {
+    if (el.qtyPlus?.disabled) return;
     qtyBottle += 1;
     el.qtyVal.textContent = String(qtyBottle);
   });
@@ -728,6 +762,7 @@ function wireEvents() {
 
   el.addBtn?.addEventListener("click", addToCart);
 
+  // Cart modal
   el.openCartBtn?.addEventListener("click", openCart);
   el.cartClose?.addEventListener("click", closeCart);
   el.cartOverlay?.addEventListener("click", (e) => {
@@ -743,6 +778,7 @@ function wireEvents() {
 
   el.waBtn?.addEventListener("click", goWhatsApp);
 
+  // ESC cierra ambos
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (el.overlay && !el.overlay.classList.contains("hidden")) closeModal();
