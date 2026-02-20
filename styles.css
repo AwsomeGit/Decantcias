@@ -857,3 +857,25 @@ body{
   transform: scale(1.05);
   background: #FBD38D;
 }
+.modal-stock-line{
+  margin-top:8px;
+  font-size:13px;
+  font-weight:600;
+  opacity:.9;
+}
+
+.badge-decant-inline{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:12px;
+  background: rgba(246,173,85,0.18);
+  border: 1px solid rgba(246,173,85,0.6);
+  color:#FBD38D;
+  margin-left:6px;
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
