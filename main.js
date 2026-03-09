@@ -411,6 +411,38 @@ async function cargarPerfumes() {
 // ------------------------
 // Product Modal
 // ------------------------
+function setDecantAvailabilityUI() {
+  if (!el.overlay || !el.decToggle) return;
+
+  const decantSi = !!ACTIVE?.decantDisponible;
+  const decantRow =
+    el.decToggle.closest(".qty-row") ||
+    el.decToggle.closest(".decant-row") ||
+    el.decToggle.parentElement?.parentElement;
+
+  const decantPriceLabel = el.overlay.querySelector(".decant-price");
+
+  el.decToggle.disabled = !decantSi;
+  el.decToggle.checked = decantSi ? decantEnabled : false;
+  decantEnabled = decantSi ? decantEnabled : false;
+
+  if (el.decMinus) el.decMinus.disabled = !decantSi;
+  if (el.decPlus) el.decPlus.disabled = !decantSi;
+  if (el.decVal) el.decVal.textContent = String(qtyDecant);
+
+  if (decantRow) {
+    decantRow.classList.toggle("decant-disabled", !decantSi);
+  }
+
+  if (decantPriceLabel) {
+    if (decantSi) {
+      decantPriceLabel.innerHTML = `Decant 5ML ${moneyAR(ACTIVE.precioDecant || 0)}`;
+    } else {
+      decantPriceLabel.innerHTML = `<small class="decant-unavailable-text">No disponible</small>`;
+    }
+  }
+}
+
 function openModalByProduct(product) {
   if (!el.overlay) return;
 
@@ -445,16 +477,11 @@ function openModalByProduct(product) {
     perfumeLabel.textContent = ml > 0 ? `Perfume (${ml} ml)` : "Perfume";
   }
 
-  // Decant 5ML + precio
-  const dPrice = ACTIVE.precioDecant || 0;
-  const decantPriceLabel = el.overlay.querySelector(".decant-price");
-  if (decantPriceLabel)
-    decantPriceLabel.textContent = `Decant 5ML ${moneyAR(dPrice)}`;
-
   // Reset UI qtys
   el.qtyVal.textContent = String(qtyBottle);
-  el.decToggle.checked = false;
   el.decVal.textContent = String(qtyDecant);
+
+  setDecantAvailabilityUI();
 
   // ✅ Si no hay stock: bloquear controles de Perfume
   if (sinStock) {
@@ -532,8 +559,8 @@ function addToCart() {
     });
   }
 
-  // Decant (si está habilitado)
-  if (decantEnabled && qtyDecant > 0) {
+  // ✅ Decant solo si realmente está disponible
+  if (ACTIVE.decantDisponible && decantEnabled && qtyDecant > 0) {
     CART.push({
       type: "decant",
       marca: ACTIVE.marca,
@@ -747,15 +774,22 @@ function wireEvents() {
   });
 
   el.decToggle?.addEventListener("change", () => {
+    if (el.decToggle.disabled || !ACTIVE?.decantDisponible) {
+      el.decToggle.checked = false;
+      decantEnabled = false;
+      return;
+    }
     decantEnabled = el.decToggle.checked;
   });
 
   el.decMinus?.addEventListener("click", () => {
+    if (el.decMinus?.disabled) return;
     qtyDecant = Math.max(1, qtyDecant - 1);
     el.decVal.textContent = String(qtyDecant);
   });
 
   el.decPlus?.addEventListener("click", () => {
+    if (el.decPlus?.disabled) return;
     qtyDecant += 1;
     el.decVal.textContent = String(qtyDecant);
   });
