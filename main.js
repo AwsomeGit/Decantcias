@@ -460,7 +460,7 @@ function openModalByProduct(product) {
   el.title.textContent = `${ACTIVE.marca} ${ACTIVE.nombre}`;
   el.desc.textContent = ACTIVE.descripcion || "";
 
-  // ✅ Precio + aviso stock SOLO en modal
+  // Precio + aviso stock SOLO en modal
   const basePrice = moneyAR(ACTIVE.precio);
   let extraMsg = "";
 
@@ -489,7 +489,7 @@ function openModalByProduct(product) {
 
   setDecantAvailabilityUI();
 
-  // ✅ Si no hay stock: bloquear controles de Perfume
+  // Si no hay stock: bloquear controles de Perfume
   if (sinStock) {
     qtyBottle = 0;
     el.qtyVal.textContent = "0";
@@ -506,9 +506,14 @@ function openModalByProduct(product) {
 
   renderModalImages();
   el.overlay.classList.remove("hidden");
-
   toggleSearchVisibility(false);
 }
+
+function closeModal() {
+  el.overlay?.classList.add("hidden");
+  toggleSearchVisibility(true);
+}
+
 function renderModalImages() {
   const imgs = ACTIVE?.imgs || [];
   const current = imgs[activeImgIdx];
@@ -537,6 +542,7 @@ function renderModalImages() {
     el.thumbs.appendChild(t);
   });
 }
+
 // ------------------------
 // Cart
 // ------------------------
