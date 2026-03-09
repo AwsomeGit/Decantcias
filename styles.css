@@ -798,7 +798,6 @@ body{
   font-size: 14px;
   transition: width .25s ease, opacity .2s ease, padding .25s ease;
 }
-
 /* expandido */
 .floating-search.active input {
   width: 220px;
@@ -820,6 +819,7 @@ body{
   place-items: center;
   transition: transform .15s ease, background .15s ease;
 }
+
 @media (max-width: 480px) {
   .floating-search {
     top: 12px;
@@ -835,6 +835,7 @@ body{
     height: 36px;
   }
 }
+
 .stock-line{
   font-size:12px;
   margin-top:6px;
@@ -857,6 +858,7 @@ body{
   transform: scale(1.05);
   background: #FBD38D;
 }
+
 .modal-stock-line{
   margin-top:8px;
   font-size:13px;
@@ -879,17 +881,33 @@ button:disabled{
   opacity:.45;
   cursor:not-allowed;
 }
-.decant-disabled {
-  opacity: 0.6;
+
+/* =========================
+   DECANT BLOQUEADO
+========================= */
+
+.decant-disabled{
+  opacity:0.58;
 }
 
-.decant-disabled .switch {
-  pointer-events: none;
+.decant-disabled .switch{
+  pointer-events:none;
 }
 
-.decant-unavailable-text {
-  font-size: 12px;
-  font-weight: 500;
-  color: #777;
-  display: inline-block;
+.decant-disabled .slider{
+  cursor:not-allowed;
+}
+
+.decant-disabled span,
+.decant-disabled label{
+  color:#8a8a8a !important;
+}
+
+.decant-unavailable-text{
+  font-size:12px;
+  font-weight:500;
+  color:#8a8a8a;
+  display:inline-block;
+  line-height:1.1;
+}
 }
