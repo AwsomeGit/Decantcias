@@ -509,7 +509,34 @@ function openModalByProduct(product) {
 
   toggleSearchVisibility(false);
 }
+function renderModalImages() {
+  const imgs = ACTIVE?.imgs || [];
+  const current = imgs[activeImgIdx];
 
+  if (current) {
+    el.img.src = current;
+    el.img.style.display = "block";
+  } else {
+    el.img.removeAttribute("src");
+    el.img.style.display = "none";
+  }
+
+  el.thumbs.innerHTML = "";
+
+  imgs.forEach((src, i) => {
+    const t = document.createElement("div");
+    t.className = "thumb" + (i === activeImgIdx ? " active" : "");
+    t.innerHTML = `<img src="${src}" alt="">`;
+
+    t.addEventListener("click", (e) => {
+      e.stopPropagation();
+      activeImgIdx = i;
+      renderModalImages();
+    });
+
+    el.thumbs.appendChild(t);
+  });
+}
 // ------------------------
 // Cart
 // ------------------------
