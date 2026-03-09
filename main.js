@@ -452,7 +452,9 @@ function openModalByProduct(product) {
   decantEnabled = false;
   qtyDecant = 1;
 
-  const sinStock = !hasStock(ACTIVE);
+  const stockActual = Number(ACTIVE.stock || 0);
+  const sinStock = stockActual <= 0;
+  const ultimaUnidad = stockActual === 1;
   const decantSi = !!ACTIVE.decantDisponible;
 
   el.title.textContent = `${ACTIVE.marca} ${ACTIVE.nombre}`;
@@ -466,6 +468,10 @@ function openModalByProduct(product) {
     extraMsg = `<div class="modal-stock-line">Sin stock • <span class="badge-decant-inline">Aun así podés llevar un Decant!</span></div>`;
   } else if (sinStock) {
     extraMsg = `<div class="modal-stock-line">Sin stock</div>`;
+  } else if (ultimaUnidad) {
+    extraMsg = `<div class="modal-stock-line stock-last-unit">¡Última disponible!</div>`;
+  } else {
+    extraMsg = `<div class="modal-stock-line">Stock disponible: ${stockActual}</div>`;
   }
 
   el.price.innerHTML = `<div>${basePrice}</div>${extraMsg}`;
@@ -502,37 +508,6 @@ function openModalByProduct(product) {
   el.overlay.classList.remove("hidden");
 
   toggleSearchVisibility(false);
-}
-
-function closeModal() {
-  el.overlay?.classList.add("hidden");
-  toggleSearchVisibility(true);
-}
-
-function renderModalImages() {
-  const imgs = ACTIVE?.imgs || [];
-  const current = imgs[activeImgIdx];
-
-  if (current) {
-    el.img.src = current;
-    el.img.style.display = "block";
-  } else {
-    el.img.removeAttribute("src");
-    el.img.style.display = "none";
-  }
-
-  el.thumbs.innerHTML = "";
-  imgs.forEach((src, i) => {
-    const t = document.createElement("div");
-    t.className = "thumb" + (i === activeImgIdx ? " active" : "");
-    t.innerHTML = `<img src="${src}" alt="">`;
-    t.addEventListener("click", (e) => {
-      e.stopPropagation();
-      activeImgIdx = i;
-      renderModalImages();
-    });
-    el.thumbs.appendChild(t);
-  });
 }
 
 // ------------------------
@@ -767,11 +742,15 @@ function wireEvents() {
     el.qtyVal.textContent = String(qtyBottle);
   });
 
-  el.qtyPlus?.addEventListener("click", () => {
-    if (el.qtyPlus?.disabled) return;
-    qtyBottle += 1;
-    el.qtyVal.textContent = String(qtyBottle);
-  });
+ el.qtyPlus?.addEventListener("click", () => {
+  if (el.qtyPlus?.disabled) return;
+
+  const stockActual = Number(ACTIVE?.stock || 0);
+  if (qtyBottle >= stockActual) return;
+
+  qtyBottle += 1;
+  el.qtyVal.textContent = String(qtyBottle);
+});
 
   el.decToggle?.addEventListener("change", () => {
     if (el.decToggle.disabled || !ACTIVE?.decantDisponible) {
