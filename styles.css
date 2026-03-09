@@ -911,3 +911,7 @@ button:disabled{
   line-height:1.1;
 }
 }
+.stock-last-unit{
+  color:#FBD38D;
+  font-weight:700;
+}
