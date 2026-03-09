@@ -879,3 +879,17 @@ button:disabled{
   opacity:.45;
   cursor:not-allowed;
 }
+.decant-disabled {
+  opacity: 0.6;
+}
+
+.decant-disabled .switch {
+  pointer-events: none;
+}
+
+.decant-unavailable-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #777;
+  display: inline-block;
+}
