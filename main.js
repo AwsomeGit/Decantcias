@@ -277,6 +277,7 @@ function renderGrid(items, mountEl) {
   card.addEventListener("click", () => openModalByProduct(p));
   target.appendChild(card);
 });
+  }
 // ------------------------
 // Brands (home)
 // ------------------------
