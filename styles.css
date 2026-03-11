@@ -915,3 +915,43 @@ button:disabled{
   color:#FBD38D;
   font-weight:700;
 }
+.solo-decant-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin: 2px 0 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  color: #FBD38D;
+  background: rgba(246,173,85,0.14);
+  border: 1px solid rgba(246,173,85,0.55);
+  box-shadow: 0 0 0 rgba(246,173,85,0.0);
+  animation: soloDecantPulse 1.8s ease-in-out infinite;
+}
+
+.solo-decant-badge::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#F6AD55;
+  box-shadow:0 0 10px rgba(246,173,85,.75);
+}
+
+@keyframes soloDecantPulse{
+  0%{
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(246,173,85,0.18);
+  }
+  50%{
+    transform: scale(1.03);
+    box-shadow: 0 0 0 6px rgba(246,173,85,0.00);
+  }
+  100%{
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(246,173,85,0.00);
+  }
+}
