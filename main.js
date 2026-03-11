@@ -65,7 +65,7 @@ function getBrandLogo(marcaRaw) {
     alwataniah: "fotos/alwatanialogo.png",
     "maison alhambra": "fotos/maisonalhambra.png",
     "fragance world": "fotos/fraganceworldlogo.webp",
-    "rasasi": "fotos/rassasi.webp",
+    "rasasi": "fotos/rasassilogo.webp",
     "asdaaf": "fotos/asdaaflogo.webp",
   };
 
