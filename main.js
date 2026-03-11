@@ -232,7 +232,9 @@ function renderGrid(items, mountEl) {
 
     const logo = getBrandLogo(p.marca);
 
-    // ✅ NO mostramos stock en la card (solo en modal)
+    const stockActual = Number(p?.stock || 0);
+    const soloDecant = stockActual <= 0 && !!p.decantDisponible;
+
     card.innerHTML = `
       <div class="product-card">
         <div class="card-thumb">
@@ -253,6 +255,13 @@ function renderGrid(items, mountEl) {
                  </div>`
               : ""
           }
+
+          ${
+            soloDecant
+              ? `<div class="solo-decant-badge">Solo Decant</div>`
+              : ""
+          }
+
           <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
           <p class="sub">${moneyAR(p.precio)}</p>
         </div>
@@ -263,7 +272,6 @@ function renderGrid(items, mountEl) {
     target.appendChild(card);
   });
 }
-
 // ------------------------
 // Brands (home)
 // ------------------------
