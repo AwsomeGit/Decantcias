@@ -4,7 +4,7 @@ const sheetURL =
 const WHATSAPP_NUMBER = "5493517883411";
 
 // Solo estas marcas como “home”
-const MAIN_BRANDS = ["Lattafa", "Armaf", "Zimaya", "Afnan", "Maison Alhambra"];
+const MAIN_BRANDS = ["Lattafa", "Armaf", "Zimaya", "Afnan", "Maison Alhambra" "Fragance World", "Asdaaf", "Rasassi", ];
 
 // ------------------------
 // Util
@@ -64,6 +64,9 @@ function getBrandLogo(marcaRaw) {
     "al wataniah": "fotos/alwatanialogo.png",
     alwataniah: "fotos/alwatanialogo.png",
     "maison alhambra": "fotos/maisonalhambra.png",
+    "fragance world": "fotos/fraganceworldlogo.png",
+    "rassasi": "fotos/rassasi.png",
+    "asdaaf": "fotos/asdaaf.png",
   };
 
   for (const key in map) {
