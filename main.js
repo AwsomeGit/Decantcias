@@ -223,55 +223,60 @@ function renderGrid(items, mountEl) {
 
   target.innerHTML = "";
 
-  items.forEach((p) => {
-    const card = document.createElement("div");
-    card.className = "product";
+ items.forEach((p) => {
+  const stockActual = Number(p?.stock || 0);
+  const decantDisponible = !!p.decantDisponible;
 
-    const firstImg =
-      Array.isArray(p.imgs) && p.imgs.length ? String(p.imgs[0]).trim() : "";
+  // Ocultar si no hay stock y tampoco decant
+  if (stockActual <= 0 && !decantDisponible) {
+    return;
+  }
 
-    const logo = getBrandLogo(p.marca);
+  const card = document.createElement("div");
+  card.className = "product";
 
-    const stockActual = Number(p?.stock || 0);
-    const soloDecant = stockActual <= 0 && !!p.decantDisponible;
+  const firstImg =
+    Array.isArray(p.imgs) && p.imgs.length ? String(p.imgs[0]).trim() : "";
 
-    card.innerHTML = `
-      <div class="product-card">
-        <div class="card-thumb">
-          ${
-            firstImg
-              ? `<img src="${firstImg}" alt="${(p.marca || "")} ${(p.nombre || "")}" loading="lazy"
-                     onerror="this.style.display='none'">`
-              : ""
-          }
-        </div>
+  const logo = getBrandLogo(p.marca);
+  const soloDecant = stockActual <= 0 && decantDisponible;
 
-        <div class="card-info">
-          ${
-            logo
-              ? `<div class="brand-logo">
-                   <img src="${logo}" alt="${p.marca}" loading="lazy"
-                        onerror="this.style.display='none'">
-                 </div>`
-              : ""
-          }
-
-          ${
-            soloDecant
-              ? `<div class="solo-decant-badge">Solo Decant</div>`
-              : ""
-          }
-
-          <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
-          <p class="sub">${moneyAR(p.precio)}</p>
-        </div>
+  card.innerHTML = `
+    <div class="product-card">
+      <div class="card-thumb">
+        ${
+          firstImg
+            ? `<img src="${firstImg}" alt="${(p.marca || "")} ${(p.nombre || "")}" loading="lazy"
+                   onerror="this.style.display='none'">`
+            : ""
+        }
       </div>
-    `;
 
-    card.addEventListener("click", () => openModalByProduct(p));
-    target.appendChild(card);
-  });
-}
+      <div class="card-info">
+        ${
+          logo
+            ? `<div class="brand-logo">
+                 <img src="${logo}" alt="${p.marca}" loading="lazy"
+                      onerror="this.style.display='none'">
+               </div>`
+            : ""
+        }
+
+        ${
+          soloDecant
+            ? `<div class="solo-decant-badge">Solo Decant</div>`
+            : ""
+        }
+
+        <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
+        <p class="sub">${moneyAR(p.precio)}</p>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => openModalByProduct(p));
+  target.appendChild(card);
+});
 // ------------------------
 // Brands (home)
 // ------------------------
