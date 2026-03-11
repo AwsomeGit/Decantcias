@@ -64,9 +64,9 @@ function getBrandLogo(marcaRaw) {
     "al wataniah": "fotos/alwatanialogo.png",
     alwataniah: "fotos/alwatanialogo.png",
     "maison alhambra": "fotos/maisonalhambra.png",
-    "fragance world": "fotos/fraganceworldlogo.png",
-    "rassasi": "fotos/rassasi.png",
-    "asdaaf": "fotos/asdaaf.png",
+    "fragance world": "fotos/fraganceworldlogo.webp",
+    "rassasi": "fotos/rassasi.webp",
+    "asdaaf": "fotos/asdaaf.webp",
   };
 
   for (const key in map) {
