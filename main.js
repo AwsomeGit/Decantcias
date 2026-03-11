@@ -66,7 +66,7 @@ function getBrandLogo(marcaRaw) {
     "maison alhambra": "fotos/maisonalhambra.png",
     "fragance world": "fotos/fraganceworldlogo.webp",
     "rassasi": "fotos/rassasi.webp",
-    "asdaaf": "fotos/asdaaf.webp",
+    "asdaaf": "fotos/asdaaflogo.webp",
   };
 
   for (const key in map) {
