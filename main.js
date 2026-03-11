@@ -302,7 +302,14 @@ function renderBrands(products) {
   if (!el.brands) return;
 
   const present = new Map();
+
   for (const p of products) {
+    const stockActual = Number(p?.stock || 0);
+    const decantDisponible = p.decantDisponible === true;
+
+    // Oculta productos sin stock y sin decant
+    if (stockActual <= 0 && !decantDisponible) continue;
+
     if (!isMainBrand(p.marca)) continue;
     present.set(normBrand(p.marca), prettyBrand(p.marca));
   }
