@@ -225,7 +225,24 @@ function renderGrid(items, mountEl) {
 
  items.forEach((p) => {
   const stockActual = Number(p?.stock || 0);
-  const decantDisponible = !!p.decantDisponible;
+  const decantDisponible = p.decantDisponible === true;
+
+  if ((p.marca || "").toLowerCase().includes("zimaya") && (p.nombre || "").toLowerCase().includes("fatima rose")) {
+    console.log("DEBUG FATIMA ROSE", {
+      marca: p.marca,
+      nombre: p.nombre,
+      stock: p.stock,
+      stockActual,
+      decantDisponible: p.decantDisponible,
+      decantDisponibleNormalizado: decantDisponible,
+      raw: p.raw
+    });
+  }
+
+  // Ocultar si no hay stock y tampoco decant
+  if (stockActual <= 0 && !decantDisponible) {
+    return;
+  }
 
   // Ocultar si no hay stock y tampoco decant
   if (stockActual <= 0 && !decantDisponible) {
