@@ -122,8 +122,13 @@ let decantEnabled = false;
 let qtyDecant = 1;
 
 const CART_KEY = "decantcias_cart_v1";
-let CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-
+let CART = [];
+try {
+  CART = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+} catch (e) {
+  CART = [];
+  localStorage.removeItem(CART_KEY);
+}
 // ------------------------
 // DOM refs
 // ------------------------
