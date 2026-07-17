@@ -139,7 +139,10 @@ function cacheDom() {
   el.brandView = document.getElementById("brandView");
   el.brandBack = document.getElementById("brandBack");
   el.brandTitle = document.getElementById("brandTitle");
-  el.brandProducts = document.getElementById("brandProducts");
+el.brandProducts = document.getElementById("brandProducts");
+  el.designerView = document.getElementById("designerView");
+  el.designerBack = document.getElementById("designerBack");
+  el.designerBrands = document.getElementById("designerBrands");
   el.products = document.getElementById("products");
 
   // Product modal
@@ -349,10 +352,93 @@ function renderBrands(products) {
       </div>
     `;
 
-    card.addEventListener("click", () => openBrand(brand));
+   card.addEventListener("click", () => openBrand(brand));
     el.brands.appendChild(card);
   });
 
+  // Card especial "Diseñador"
+  const designerCard = document.createElement("div");
+  designerCard.className = "product";
+  designerCard.innerHTML = `
+    <div class="product-card">
+      <div class="card-thumb"></div>
+      <div class="card-info">
+        <p class="title">Diseñador</p>
+        <p class="sub">Ver marcas</p>
+      </div>
+    </div>
+  `;
+  designerCard.addEventListener("click", () => openDesignerView());
+  el.brands.appendChild(designerCard);
+
+  toggleSearchVisibility(true);
+}
+
+function getOtherBrands(products) {
+  const present = new Map();
+
+  for (const p of products) {
+    const stockActual = Number(p?.stock || 0);
+    const decantDisponible = p.decantDisponible === true;
+
+    if (stockActual <= 0 && !decantDisponible) continue;
+    if (!p.marca) continue;
+    if (isMainBrand(p.marca)) continue;
+
+    present.set(normBrand(p.marca), p.marca.trim());
+  }
+
+  return Array.from(present.values()).sort((a, b) =>
+    a.localeCompare(b, "es", { sensitivity: "base" })
+  );
+}
+
+function renderDesignerBrands() {
+  if (!el.designerBrands) return;
+
+  const brandsList = getOtherBrands(PRODUCTS);
+  el.designerBrands.innerHTML = "";
+
+  brandsList.forEach((brand) => {
+    const card = document.createElement("div");
+    card.className = "product";
+
+    const logo = getBrandLogo(brand);
+
+    card.innerHTML = `
+      <div class="product-card">
+        <div class="card-thumb">
+          ${
+            logo
+              ? `<img src="${logo}" alt="${brand}" loading="lazy" onerror="this.style.display='none'">`
+              : ""
+          }
+        </div>
+        <div class="card-info">
+          <p class="title">${brand}</p>
+          <p class="sub">Ver productos</p>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener("click", () => openBrand(brand));
+    el.designerBrands.appendChild(card);
+  });
+}
+
+function openDesignerView() {
+  toggleSearchVisibility(false);
+  hideAllCatalog();
+  hideBrandSection();
+
+  renderDesignerBrands();
+  el.designerView?.classList.remove("hidden");
+  el.designerView?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closeDesignerView() {
+  el.designerView?.classList.add("hidden");
+  if (el.designerBrands) el.designerBrands.innerHTML = "";
   toggleSearchVisibility(true);
 }
 
@@ -802,7 +888,7 @@ function wireEvents() {
   wireEvents._wired = true;
 
   el.brandBack?.addEventListener("click", closeBrand);
-
+  el.designerBack?.addEventListener("click", closeDesignerView);
   document.querySelectorAll('a[href="#products"]').forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
