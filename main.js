@@ -68,7 +68,7 @@ function getBrandLogo(marcaRaw) {
     "rasasi": "fotos/rasassilogo.webp",
     "asdaaf": "fotos/asdaaflogo.webp",
     "jean paul gaultier": "fotos/jeanpaulgaultier.webp",
-    "emporio armani": "fotos/emporioarmani.webp",
+    "armani": "fotos/armani.webp",
   };
 
   for (const key in map) {
