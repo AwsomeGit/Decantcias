@@ -227,7 +227,7 @@ function hideAllCatalog() {
 // ------------------------
 // Render grid
 // ------------------------
-function renderGrid(items, mountEl) {
+function renderGrid(items, mountEl, hideMarca = false) {
   const target = mountEl || el.products;
   if (!target) return;
 
@@ -295,7 +295,7 @@ function renderGrid(items, mountEl) {
             : ""
         }
 
-        <p class="title">${(p.marca || "").trim()} ${(p.nombre || "").trim()}</p>
+        <p class="title">${hideMarca ? "" : (p.marca || "").trim() + " "}${(p.nombre || "").trim()}</p>
         <p class="sub">${moneyAR(p.precio)}</p>
       </div>
     </div>
