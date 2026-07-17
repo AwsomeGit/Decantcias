@@ -144,6 +144,7 @@ el.brandProducts = document.getElementById("brandProducts");
   el.designerView = document.getElementById("designerView");
   el.designerBack = document.getElementById("designerBack");
   el.designerBrands = document.getElementById("designerBrands");
+    el.designerMount = document.getElementById("designerMount");
   el.products = document.getElementById("products");
 
   // Product modal
@@ -371,8 +372,13 @@ function renderBrands(products) {
       </div>
     </div>
   `;
-  designerCard.addEventListener("click", () => openDesignerView());
-  el.brands.appendChild(designerCard);
+designerCard.addEventListener("click", () => openDesignerView());
+  if (el.designerMount) {
+    el.designerMount.innerHTML = "";
+    el.designerMount.appendChild(designerCard);
+  } else {
+    el.brands.appendChild(designerCard);
+  }
 
   toggleSearchVisibility(true);
 }
