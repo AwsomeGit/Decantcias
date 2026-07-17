@@ -585,7 +585,7 @@ function setDecantAvailabilityUI() {
   }
 }
 
-function openModalByProduct(product) {
+function openModalByProduct(product, hideMarca = false) {
   if (!el.overlay) return;
 
   ACTIVE = product;
