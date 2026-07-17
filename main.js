@@ -301,7 +301,7 @@ function renderGrid(items, mountEl, hideMarca = false) {
     </div>
   `;
 
-  card.addEventListener("click", () => openModalByProduct(p));
+card.addEventListener("click", () => openModalByProduct(p, hideMarca));
   target.appendChild(card);
 });
   }
