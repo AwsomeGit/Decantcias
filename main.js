@@ -465,7 +465,7 @@ function openBrand(brandName) {
     );
 
   if (el.brandTitle) el.brandTitle.textContent = brandName;
-  if (el.brandProducts) renderGrid(filtered, el.brandProducts);
+  if (el.brandProducts) renderGrid(filtered, el.brandProducts, true);
 
   showBrandSection();
   el.brandView?.scrollIntoView({ behavior: "smooth", block: "start" });
