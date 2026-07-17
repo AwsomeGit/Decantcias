@@ -362,7 +362,7 @@ function renderBrands(products) {
  designerCard.innerHTML = `
     <div class="product-card">
       <div class="card-thumb">
-        <img src="fotos/designadorlogo.webp" alt="Diseñador" loading="lazy">
+        <img src="fotos/diseniadorlogo.png" alt="Diseñador" loading="lazy">
       </div>
       <div class="card-info">
         <p class="title">Diseñador</p>
