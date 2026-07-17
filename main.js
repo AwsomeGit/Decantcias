@@ -359,9 +359,11 @@ function renderBrands(products) {
   // Card especial "Diseñador"
   const designerCard = document.createElement("div");
   designerCard.className = "product";
-  designerCard.innerHTML = `
+ designerCard.innerHTML = `
     <div class="product-card">
-      <div class="card-thumb"></div>
+      <div class="card-thumb">
+        <img src="fotos/designadorlogo.webp" alt="Diseñador" loading="lazy">
+      </div>
       <div class="card-info">
         <p class="title">Diseñador</p>
         <p class="sub">Ver marcas</p>
