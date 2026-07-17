@@ -67,6 +67,7 @@ function getBrandLogo(marcaRaw) {
     "french avenue": "fotos/frenchavenuelogo.webp",
     "rasasi": "fotos/rasassilogo.webp",
     "asdaaf": "fotos/asdaaflogo.webp",
+    "jeanpaulgaultier": "fotos/jeanpaulgaultier.webp",
   };
 
   for (const key in map) {
