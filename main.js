@@ -4,7 +4,7 @@ const sheetURL =
 const WHATSAPP_NUMBER = "5493517883411";
 
 // Solo estas marcas como “home”
-const MAIN_BRANDS = ["Lattafa", "Armaf", "Zimaya", "Afnan", "Maison Alhambra", "Fragance World", "Asdaaf", "Rasasi", ];
+const MAIN_BRANDS = ["Lattafa", "Armaf", "Zimaya", "Afnan", "Maison Alhambra", "French Avenue", "Asdaaf", "Rasasi", ];
 
 // ------------------------
 // Util
