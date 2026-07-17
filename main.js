@@ -598,7 +598,7 @@ function openModalByProduct(product) {
   const ultimaUnidad = stockActual === 1;
   const decantSi = !!ACTIVE.decantDisponible;
 
-  el.title.textContent = `${ACTIVE.marca} ${ACTIVE.nombre}`;
+  if (el.brandProducts) renderGrid(filtered, el.brandProducts);
   el.desc.textContent = ACTIVE.descripcion || "";
 
   // Precio + aviso stock SOLO en modal
