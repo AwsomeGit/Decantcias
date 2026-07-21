@@ -67,7 +67,7 @@ function getBrandLogo(marcaRaw) {
     "french avenue": "fotos/frenchavenuelogo.webp",
     "rasasi": "fotos/rasassilogo.webp",
     "asdaaf": "fotos/asdaaflogo.webp",
-    "Otros": "fotos/otrosarabeslogo.webp",
+    "otros": "fotos/otrosarabeslogo.webp",
     "jean paul gaultier": "fotos/jeanpaulgaultier.webp",
     "armani": "fotos/armani.webp", 
 
