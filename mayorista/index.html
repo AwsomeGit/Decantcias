@@ -302,19 +302,10 @@
         // Ocultar productos "no trabajados" (precio placeholder $900)
         items = items.filter((it) => Math.abs(it.precio - 900) > 0.01 && it.precio > 0);
 
-        // Cruzar con imagen
+          // Cruzar con imagen (solo coincidencia exacta, para evitar fotos equivocadas)
         items = items.map((it) => {
           const key = normKey(it.marca) + "|" + normKey(it.nombre);
-          let img = IMAGE_MAP[key];
-          if (!img) {
-            // intento flexible: buscar nombre contenido dentro de otro, misma marca
-            const nk = normKey(it.nombre);
-            const foundKey = Object.keys(IMAGE_MAP).find((k) => {
-              const [mk, nombreK] = k.split("|");
-              return mk === normKey(it.marca) && (nombreK.includes(nk) || nk.includes(nombreK));
-            });
-            if (foundKey) img = IMAGE_MAP[foundKey];
-          }
+          const img = IMAGE_MAP[key];
           return { ...it, img: img ? imgPath(img) : "" };
         });
 
