@@ -467,6 +467,22 @@
           y += 4;
         }
 
+        // Mensaje final
+        if (y > pageHeight - 30) {
+          doc.addPage();
+          y = 20;
+        } else {
+          y += 10;
+        }
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(10);
+        const mensajeFinal = doc.splitTextToSize(
+          "Recordá que si buscás algún perfume en específico, lo buscamos, te lo cotizamos y en 5 días hábiles te lo entregamos.",
+          pageWidth - marginX * 2
+        );
+        doc.text(mensajeFinal, marginX, y);
+
         doc.save("decantcias-mayorista.pdf");
       } catch (e) {
         console.error(e);
