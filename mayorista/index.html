@@ -8,13 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  body {
+   body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: #0d0d0d;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(201,162,75,0.15), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(201,162,75,0.12), transparent 40%),
+      #0d0d0d;
     color: #f2eee2;
     min-height: 100vh;
-  }
   .gold { color: #c9a24b; }
 
   /* ---------- Login ---------- */
@@ -52,7 +54,21 @@
   #loginError { color: #e26b6b; font-size: 14px; min-height: 18px; }
 
   /* ---------- Contenido ---------- */
-  #app { display: none; padding: 20px; max-width: 1100px; margin: 0 auto; }
+  #app { display: none; padding: 20px;  #app {
+    display: none;
+    padding: 24px;
+    max-width: 1100px;
+    margin: 20px auto;
+    border: 1px solid rgba(201,162,75,0.35);
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(201,162,75,0.08);
+  }
+  .logo-header {
+    display: block;
+    max-width: 140px;
+    margin: 0 auto 10px;
+  }
+        max-width: 1100px; margin: 0 auto; }
   header.top {
     display: flex;
     flex-wrap: wrap;
@@ -131,6 +147,7 @@
 
   <!-- LOGIN -->
   <div id="loginScreen">
+    <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-header" />
     <h1>DECANT<span class="gold">CIAS</span></h1>
     <p style="opacity:.7;margin-top:-8px">Acceso mayorista</p>
     <input type="password" id="passInput" placeholder="Contraseña" autocomplete="off" />
@@ -140,9 +157,12 @@
 
   <!-- CONTENIDO -->
   <div id="app">
-    <header class="top">
-      <h1>Precios <span class="gold">Mayoristas</span></h1>
-      <button id="downloadPdfBtn" type="button">Descargar PDF completo</button>
+  <header class="top" style="flex-direction:column;border-bottom:none;padding-bottom:0;">
+      <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-header" />
+      <div style="display:flex;width:100%;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,162,75,0.5);padding-bottom:16px;flex-wrap:wrap;gap:12px;">
+        <h1>Precios <span class="gold">Mayoristas</span></h1>
+     <button id="downloadPdfBtn" type="button">Descargar PDF completo</button>
+      </div>
     </header>
     <div id="status">Cargando datos...</div>
     <div id="brandsContainer"></div>
