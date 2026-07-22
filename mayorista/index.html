@@ -422,9 +422,20 @@
         const pageWidth = 210;
         let y = 20;
 
+        // Logo arriba de todo
+        const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
+        if (logoDataUrl) {
+          const logoWidth = 30;
+          const logoX = (pageWidth - logoWidth) / 2;
+          try {
+            doc.addImage(logoDataUrl, "PNG", logoX, y, logoWidth, logoWidth * 0.75);
+          } catch (e) {}
+          y += logoWidth * 0.75 + 8;
+        }
+
         doc.setFont("helvetica", "bold");
         doc.setFontSize(16);
-        doc.text("Decantcias — Lista Mayorista", marginX, y);
+        doc.text("Decantcias — Lista Mayorista", pageWidth / 2, y, { align: "center" });
         y += 10;
 
         const byBrand = {};
