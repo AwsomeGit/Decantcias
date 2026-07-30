@@ -593,7 +593,7 @@
         doc.setFont("helvetica", "italic");
         doc.setFontSize(9);
         const nota = doc.splitTextToSize(
-          "Este documento es una cotización estimada. Los precios y el stock están sujetos a confirmación definitiva al momento de concretar el pedido.",
+          "Este documento es una cotización estimada. Los precios y el stock están sujetos a confirmación definitiva al momento de concretar el pedido. No válido como factura.",
           pageWidth - (marginX * 2)
         );
         doc.text(nota, marginX, y);
