@@ -17,7 +17,7 @@
       #0d0d0d;
     color: #f2eee2;
     min-height: 100vh;
-    padding-bottom: 120px; /* Espacio para barra flotante */
+    padding-bottom: 120px;
   }
   .gold { color: #c9a24b; }
 
@@ -87,14 +87,13 @@
     text-transform: uppercase;
   }
 
-  /* Grilla: ~5 por linea en escritorio */
+  /* Grilla 5 por linea */
   .items-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
   }
 
-  /* Tarjeta de producto compacta */
   .item-card {
     background: #161616;
     border: 1px solid rgba(201,162,75,0.25);
@@ -197,10 +196,37 @@
   }
   .cart-summary {
     display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .cart-totals {
+    display: flex;
     flex-direction: column;
   }
-  .cart-summary .total-label { font-size: 12px; opacity: 0.7; }
-  .cart-summary .total-amount { font-size: 20px; font-weight: 800; color: #c9a24b; }
+  .cart-totals .total-label { font-size: 12px; opacity: 0.7; }
+  .cart-totals .total-amount { font-size: 20px; font-weight: 800; color: #c9a24b; }
+
+  .review-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(201,162,75,0.6);
+    background: #1f1f1f;
+    color: #c9a24b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .review-btn:hover {
+    background: #c9a24b;
+    color: #1a1a1a;
+  }
+  .review-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .action-btns {
+    display: flex;
+    gap: 10px;
+  }
 
   #generatePdfBtn {
     padding: 12px 20px;
@@ -215,15 +241,107 @@
   }
   #generatePdfBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* Adaptación a pantallas pequeñas */
-  @media (max-width: 1024px) {
-    .items-grid { grid-template-columns: repeat(4, 1fr); }
+  /* Modal de Revisión de Pedido */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 16px;
   }
-  @media (max-width: 768px) {
-    .items-grid { grid-template-columns: repeat(3, 1fr); }
+  .modal-overlay.active { display: flex; }
+  
+  .modal-content {
+    background: #141414;
+    border: 1px solid rgba(201,162,75,0.4);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
   }
-  @media (max-width: 480px) {
+  .modal-header {
+    padding: 16px;
+    border-bottom: 1px solid rgba(201,162,75,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-header h3 { margin: 0; font-size: 18px; color: #c9a24b; }
+  .close-modal {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .modal-body {
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cart-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1c1c1c;
+    border: 1px solid rgba(201,162,75,0.2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    gap: 10px;
+  }
+  .cart-item-info { flex: 1; min-width: 0; }
+  .cart-item-title { font-size: 13px; font-weight: 600; margin: 0; }
+  .cart-item-sub { font-size: 11px; opacity: 0.6; margin: 2px 0 0 0; }
+  .cart-item-actions { display: flex; align-items: center; gap: 12px; }
+  .cart-item-price { font-size: 13px; font-weight: 800; color: #c9a24b; }
+  
+  .remove-item-btn {
+    background: rgba(226, 107, 107, 0.15);
+    border: 1px solid rgba(226, 107, 107, 0.4);
+    color: #e26b6b;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .remove-item-btn:hover { background: #e26b6b; color: #fff; }
+
+  .modal-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(201,162,75,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .clear-all-btn {
+    background: transparent;
+    border: 1px solid #e26b6b;
+    color: #e26b6b;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .clear-all-btn:hover { background: #e26b6b; color: #fff; }
+
+  @media (max-width: 1024px) { .items-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 768px) { .items-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 550px) {
     .items-grid { grid-template-columns: repeat(2, 1fr); }
+    .cart-bar { flex-direction: column; gap: 12px; align-items: stretch; }
+    .cart-summary { justify-content: space-between; }
+    .action-btns { justify-content: flex-end; }
   }
 </style>
 </head>
@@ -247,16 +365,37 @@
   <!-- Barra Fija para Confirmar Presupuesto -->
   <div class="cart-bar">
     <div class="cart-summary">
-      <span class="total-label" id="itemsCount">0 productos seleccionados</span>
-      <span class="total-amount" id="totalPrice">$0</span>
+      <div class="cart-totals">
+        <span class="total-label" id="itemsCount">0 productos seleccionados</span>
+        <span class="total-amount" id="totalPrice">$0</span>
+      </div>
+      <button class="review-btn" id="reviewBtn" disabled onclick="openModal()">Revisar pedido</button>
     </div>
-    <button id="generatePdfBtn" disabled>Descargar Presupuesto PDF</button>
+    <div class="action-btns">
+      <button id="generatePdfBtn" disabled>Descargar PDF</button>
+    </div>
+  </div>
+
+  <!-- Modal de Revisión -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Revisión de Pedido</h3>
+        <button class="close-modal" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalList">
+        <!-- Ítems del carrito -->
+      </div>
+      <div class="modal-footer">
+        <button class="clear-all-btn" onclick="clearCart()">Vaciar pedido</button>
+        <button class="review-btn" onclick="closeModal()">Seguir agregando</button>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    // Validar Sesión
     if (sessionStorage.getItem("mayorista_auth") !== "ok") {
       window.location.href = "index.html";
     }
@@ -266,7 +405,7 @@
 
     let ALL_PRODUCTS = [];
     let IMAGE_MAP = {}; 
-    let CART = {}; // { 'id': cantidad }
+    let CART = {};
 
     function normKey(s) {
       return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[()]/g, "").replace(/\s+/g, "").trim();
@@ -333,7 +472,6 @@
     async function cargarCatalogo() {
       const statusEl = document.getElementById("status");
       try {
-        // 1) Cargar fotos del catálogo general
         const catRes = await fetch(CATALOG_CSV, { cache: "no-store" });
         const catText = await catRes.text();
         const catParsed = Papa.parse(catText, { header: true, skipEmptyLines: true });
@@ -354,15 +492,12 @@
           }
         });
 
-        // 2) Cargar precios mayoristas
         const res = await fetch(WHOLESALE_CSV, { cache: "no-store" });
         const text = await res.text();
         let items = parseWholesaleBlocks(text);
 
-        // Ocultar productos $900 o sin precio
         items = items.filter((it) => Math.abs(it.precio - 900) > 0.01 && it.precio > 0);
 
-        // Asignar fotos
         items = items.map((it) => {
           const key = normKey(it.marca) + "|" + normKey(it.nombre);
           const img = IMAGE_MAP[key];
@@ -382,14 +517,12 @@
       const container = document.getElementById("catalogContainer");
       container.innerHTML = "";
 
-      // Agrupar por marcas
       const byBrand = {};
       products.forEach((it) => {
         byBrand[it.marca] = byBrand[it.marca] || [];
         byBrand[it.marca].push(it);
       });
 
-      // Ordenar marcas alfabéticamente
       const sortedBrands = Object.keys(byBrand).sort((a, b) =>
         a.localeCompare(b, "es", { sensitivity: "base" })
       );
@@ -447,10 +580,30 @@
         CART[id] = updated;
       }
 
+      // Actualizar contador en la grilla si existe
       const counterEl = document.getElementById(`qty_${id}`);
       if (counterEl) counterEl.textContent = updated;
 
       recalculateTotals();
+      if (document.getElementById("modalOverlay").classList.contains("active")) {
+        renderModalList();
+      }
+    }
+
+    function removeItem(id) {
+      delete CART[id];
+      const counterEl = document.getElementById(`qty_${id}`);
+      if (counterEl) counterEl.textContent = 0;
+
+      recalculateTotals();
+      renderModalList();
+    }
+
+    function clearCart() {
+      CART = {};
+      document.querySelectorAll(".qty-count").forEach(el => el.textContent = 0);
+      recalculateTotals();
+      closeModal();
     }
 
     function recalculateTotals() {
@@ -469,9 +622,58 @@
       document.getElementById("itemsCount").textContent = `${totalUnits} ${totalUnits === 1 ? 'unidad seleccionada' : 'unidades seleccionadas'}`;
       document.getElementById("totalPrice").textContent = moneyAR(totalPrice);
       document.getElementById("generatePdfBtn").disabled = totalUnits === 0;
+      document.getElementById("reviewBtn").disabled = totalUnits === 0;
+      document.getElementById("reviewBtn").textContent = `Revisar pedido (${totalUnits})`;
     }
 
-    // Buscador en tiempo real
+    // Modal
+    function openModal() {
+      renderModalList();
+      document.getElementById("modalOverlay").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modalOverlay").classList.remove("active");
+    }
+
+    function renderModalList() {
+      const container = document.getElementById("modalList");
+      container.innerHTML = "";
+
+      const keys = Object.keys(CART);
+      if (keys.length === 0) {
+        container.innerHTML = `<p style="text-align:center; opacity:0.6; padding: 20px;">No hay productos en el pedido.</p>`;
+        closeModal();
+        return;
+      }
+
+      keys.forEach((id) => {
+        const qty = CART[id];
+        const item = ALL_PRODUCTS.find((p) => p.id === id);
+        if (!item) return;
+
+        const row = document.createElement("div");
+        row.className = "cart-item-row";
+        row.innerHTML = `
+          <div class="cart-item-info">
+            <p class="cart-item-title">${item.marca} - ${item.nombre}</p>
+            <p class="cart-item-sub">${item.ml} ml · ${moneyAR(item.precio)} c/u</p>
+          </div>
+          <div class="cart-item-actions">
+            <div class="qty-controls" style="width: auto;">
+              <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
+              <span class="qty-count" style="padding: 0 8px;">${qty}</span>
+              <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
+            </div>
+            <span class="cart-item-price">${moneyAR(item.precio * qty)}</span>
+            <button class="remove-item-btn" onclick="removeItem('${item.id}')" title="Quitar item">✕</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    // Buscador
     document.getElementById("searchInput").addEventListener("input", (e) => {
       const term = normKey(e.target.value);
       const filtered = ALL_PRODUCTS.filter((it) =>
@@ -480,7 +682,7 @@
       renderList(filtered);
     });
 
-    // Helper para imagen en PDF
+    // Helper imagen PDF
     async function imageToDataURL(url) {
       try {
         const res = await fetch(url);
@@ -496,7 +698,7 @@
       }
     }
 
-    // Generación del PDF
+    // PDF
     document.getElementById("generatePdfBtn").addEventListener("click", async () => {
       const btn = document.getElementById("generatePdfBtn");
       btn.disabled = true;
@@ -511,7 +713,6 @@
         const pageWidth = 210;
         let y = 15;
 
-        // Logo Header
         const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
         if (logoDataUrl) {
           const logoWidth = 26;
@@ -573,7 +774,6 @@
           y += 7;
         }
 
-        // Totales
         y += 4;
         doc.setLineWidth(0.5);
         doc.line(marginX, y, pageWidth - marginX, y);
@@ -584,7 +784,6 @@
         doc.text(`Total Unidades: ${totalUnidades}`, marginX + 3, y);
         doc.text(`TOTAL FINAL: ${moneyAR(totalGeneral)}`, marginX + 175, y, { align: "right" });
 
-        // Nota
         y += 16;
         if (y > pageHeight - 30) {
           doc.addPage();
@@ -593,7 +792,7 @@
         doc.setFont("helvetica", "italic");
         doc.setFontSize(9);
         const nota = doc.splitTextToSize(
-          "Este documento es una cotización estimada. Los precios y el stock están sujetos a confirmación definitiva al momento de concretar el pedido. No válido como factura.",
+          "Este documento es una cotización estimada. Los precios y el stock están sujetos a confirmación definitiva al momento de concretar el pedido.",
           pageWidth - (marginX * 2)
         );
         doc.text(nota, marginX, y);
@@ -604,11 +803,10 @@
         alert("Error al generar el presupuesto en PDF.");
       } finally {
         btn.disabled = false;
-        btn.textContent = "Descargar Presupuesto PDF";
+        btn.textContent = "Descargar PDF";
       }
     });
 
-    // Iniciar
     cargarCatalogo();
   </script>
 </body>
