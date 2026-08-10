@@ -481,13 +481,19 @@ function openBrand(brandName) {
   const logo = getBrandLogo(brandName);
   if (el.brandTitle) {
     el.brandTitle.innerHTML = `
-      <div class="brand-header-card" style="display: flex; align-items: center; gap: 12px; margin: 15px 0;">
-        ${
-          logo
-            ? `<img src="${logo}" alt="${brandName}" style="max-height: 45px; width: auto; object-fit: contain;" onerror="this.style.display='none'">`
-            : ""
-        }
-        <h2 style="margin: 0; font-size: 1.4rem;">${brandName}</h2>
+      <div class="product" style="margin: 15px 0; max-width: 320px; cursor: default;">
+        <div class="product-card">
+          <div class="card-thumb" style="padding: 12px;">
+            ${
+              logo
+                ? `<img src="${logo}" alt="${brandName}" loading="lazy" style="max-height: 80px; width: auto; object-fit: contain;" onerror="this.style.display='none'">`
+                : ""
+            }
+          </div>
+          <div class="card-info">
+            <h2 class="title" style="margin: 0; font-size: 1.3rem; text-align: center;">${brandName}</h2>
+          </div>
+        </div>
       </div>
     `;
   }
