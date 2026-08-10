@@ -443,6 +443,10 @@ function openDesignerView() {
   hideAllCatalog();
   hideBrandSection();
 
+  // Ocultar marcas principales
+  if (el.brands) el.brands.classList.add("hidden");
+  if (el.designerMount) el.designerMount.classList.add("hidden");
+
   renderDesignerBrands();
   el.designerView?.classList.remove("hidden");
   el.designerView?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -451,12 +455,20 @@ function openDesignerView() {
 function closeDesignerView() {
   el.designerView?.classList.add("hidden");
   if (el.designerBrands) el.designerBrands.innerHTML = "";
+
+  // Mostrar marcas principales al cerrar
+  if (el.brands) el.brands.classList.remove("hidden");
+  if (el.designerMount) el.designerMount.classList.remove("hidden");
+
   toggleSearchVisibility(true);
 }
-
 function openBrand(brandName) {
   toggleSearchVisibility(false);
   hideAllCatalog();
+
+  // Ocultar la grilla de marcas principales
+  if (el.brands) el.brands.classList.add("hidden");
+  if (el.designerMount) el.designerMount.classList.add("hidden");
 
   const key = normBrand(brandName);
   const filtered = PRODUCTS
@@ -466,8 +478,20 @@ function openBrand(brandName) {
         sensitivity: "base",
       })
     );
+  const logo = getBrandLogo(brandName);
+  if (el.brandTitle) {
+    el.brandTitle.innerHTML = `
+      <div class="brand-header-card" style="display: flex; align-items: center; gap: 12px; margin: 15px 0;">
+        ${
+          logo
+            ? `<img src="${logo}" alt="${brandName}" style="max-height: 45px; width: auto; object-fit: contain;" onerror="this.style.display='none'">`
+            : ""
+        }
+        <h2 style="margin: 0; font-size: 1.4rem;">${brandName}</h2>
+      </div>
+    `;
+  }
 
-  if (el.brandTitle) el.brandTitle.textContent = brandName;
   if (el.brandProducts) renderGrid(filtered, el.brandProducts, true);
 
   showBrandSection();
@@ -476,6 +500,11 @@ function openBrand(brandName) {
 
 function closeBrand() {
   hideBrandSection();
+
+  // Volver a mostrar las marcas
+  if (el.brands) el.brands.classList.remove("hidden");
+  if (el.designerMount) el.designerMount.classList.remove("hidden");
+
   toggleSearchVisibility(true);
 }
 
