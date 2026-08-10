@@ -47,19 +47,21 @@
   <div id="designerMount" class="designer-mount"></div>
 
   <!-- LISTA FILTRADA -->
+<!-- REEMPLAZAR CON ESTO EN EL HTML: -->
+  <!-- LISTA FILTRADA -->
   <section id="brandView" class="brand-view hidden">
-    <div class="brand-head">
+    <div class="brand-head" style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
       <button id="brandBack" class="back-btn" type="button">← Volver</button>
-      <h2 id="brandTitle"></h2>
+      <div id="brandTitle" style="width: 100%;"></div>
     </div>
     <div id="brandProducts" class="products-grid"></div>
   </section>
 
   <!-- LISTA DE MARCAS DISEÑADOR -->
   <section id="designerView" class="brand-view hidden">
-    <div class="brand-head">
+    <div class="brand-head" style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
       <button id="designerBack" class="back-btn" type="button">← Volver</button>
-      <h2>Diseñador</h2>
+      <h2 style="margin: 10px 0 0 0; font-size: 1.4rem;">Diseñador</h2>
     </div>
     <div id="designerBrands" class="brands-grid"></div>
   </section>
