@@ -75,8 +75,8 @@
   }
   .search-input:focus { outline: 1px solid #c9a24b; }
 
-  /* Botón Filtro Stock */
-  .stock-filter-btn {
+  /* Botón Filtro Stock y Agregar Decant */
+  .stock-filter-btn, .add-decant-btn {
     padding: 10px 14px;
     border-radius: 8px;
     border: 1px solid rgba(201,162,75,0.4);
@@ -92,8 +92,13 @@
     white-space: nowrap;
     user-select: none;
   }
-  .stock-filter-btn:hover {
+  .stock-filter-btn:hover, .add-decant-btn:hover {
     border-color: #c9a24b;
+  }
+  .add-decant-btn {
+    background: linear-gradient(135deg, rgba(201,162,75,0.2), rgba(201,162,75,0.05));
+    border-color: #c9a24b;
+    color: #c9a24b;
   }
   .stock-filter-btn.active {
     background: rgba(201,162,75,0.18);
@@ -269,7 +274,7 @@
   }
   #generatePdfBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* Modal de Revisión de Pedido */
+  /* Modal de Revisión y Formulario Decant */
   .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -317,6 +322,28 @@
     flex-direction: column;
     gap: 10px;
   }
+
+  /* Formulario Decant Modal */
+  .decant-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .decant-form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #c9a24b;
+  }
+  .decant-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(201,162,75,0.4);
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 14px;
+  }
+  .decant-input:focus { outline: 1px solid #c9a24b; }
 
   .cart-item-row {
     display: flex;
@@ -387,6 +414,9 @@
       <button id="onlyStockBtn" class="stock-filter-btn" type="button">
         <span>✓</span> Solo en stock
       </button>
+      <button class="add-decant-btn" onclick="openDecantModal()">
+        <span>+</span> Agregar Decant 5ml
+      </button>
     </div>
 
     <div id="status">Cargando catálogo...</div>
@@ -422,6 +452,30 @@
     </div>
   </div>
 
+  <!-- Modal para Agregar Decant 5ml -->
+  <div class="modal-overlay" id="decantModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Agregar Decant 5ml</h3>
+        <button class="close-modal" onclick="closeDecantModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="decant-form-group">
+          <label for="decantNameInput">Nombre de la Fragancia</label>
+          <input type="text" id="decantNameInput" class="decant-input" placeholder="Ej: Sauvage Elixir" />
+        </div>
+        <div class="decant-form-group">
+          <label for="decantPriceInput">Precio ($ ARS)</label>
+          <input type="number" id="decantPriceInput" class="decant-input" placeholder="Ej: 5000" min="0" step="any" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="clear-all-btn" style="border-color: #666; color: #ccc;" onclick="closeDecantModal()">Cancelar</button>
+        <button class="review-btn" style="background: #c9a24b; color: #1a1a1a;" onclick="saveCustomDecant()">Agregar al pedido</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
@@ -435,7 +489,7 @@
     let ALL_PRODUCTS = [];
     let IMAGE_MAP = {}; 
     let CART = {};
-    let ONLY_STOCK = false; // Estado del filtro de stock
+    let ONLY_STOCK = false;
 
     function normKey(s) {
       return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[()]/g, "").replace(/\s+/g, "").trim();
@@ -667,6 +721,48 @@
       document.getElementById("reviewBtn").textContent = `Revisar pedido (${totalUnits})`;
     }
 
+    /* Modal Agregar Decant */
+    function openDecantModal() {
+      document.getElementById("decantNameInput").value = "";
+      document.getElementById("decantPriceInput").value = "";
+      document.getElementById("decantModalOverlay").classList.add("active");
+    }
+
+    function closeDecantModal() {
+      document.getElementById("decantModalOverlay").classList.remove("active");
+    }
+
+    function saveCustomDecant() {
+      const nameVal = document.getElementById("decantNameInput").value.trim();
+      const priceVal = parseFloat(document.getElementById("decantPriceInput").value);
+
+      if (!nameVal) {
+        alert("Por favor, ingresa el nombre de la fragancia.");
+        return;
+      }
+      if (isNaN(priceVal) || priceVal < 0) {
+        alert("Por favor, ingresa un precio válido.");
+        return;
+      }
+
+      const id = `decant_custom_${Date.now()}`;
+      const decantItem = {
+        id: id,
+        marca: "Decant 5ml",
+        nombre: `"${nameVal}"`,
+        precio: priceVal,
+        stock: 999,
+        ml: 5,
+        isCustom: true
+      };
+
+      ALL_PRODUCTS.push(decantItem);
+      CART[id] = 1;
+
+      recalculateTotals();
+      closeDecantModal();
+    }
+
     // Toggle Filtro Stock
     document.getElementById("onlyStockBtn").addEventListener("click", function() {
       ONLY_STOCK = !ONLY_STOCK;
@@ -705,9 +801,10 @@
 
         const row = document.createElement("div");
         row.className = "cart-item-row";
+        const titleText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.marca} - ${item.nombre}`;
         row.innerHTML = `
           <div class="cart-item-info">
-            <p class="cart-item-title">${item.marca} - ${item.nombre}</p>
+            <p class="cart-item-title">${titleText}</p>
             <p class="cart-item-sub">${item.ml} ml · ${moneyAR(item.precio)} c/u</p>
           </div>
           <div class="cart-item-actions">
@@ -805,7 +902,7 @@
             y = 20;
           }
 
-          const itemText = `${item.marca} - ${item.nombre} (${item.ml}ml)`;
+          const itemText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.marca} - ${item.nombre} (${item.ml}ml)`;
           const truncatedText = doc.splitTextToSize(itemText, 100)[0];
 
           doc.text(truncatedText, marginX + 3, y);
