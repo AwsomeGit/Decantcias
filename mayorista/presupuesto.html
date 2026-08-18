@@ -462,7 +462,8 @@
       <div class="modal-body">
         <div class="decant-form-group">
           <label for="decantNameInput">Nombre de la Fragancia</label>
-          <input type="text" id="decantNameInput" class="decant-input" placeholder="Ej: Sauvage Elixir" />
+          <input type="text" id="decantNameInput" list="decantNameList" class="decant-input" placeholder="Ej: Sauvage Elixir" autocomplete="off" />
+          <datalist id="decantNameList"></datalist>
         </div>
         <div class="decant-form-group">
           <label for="decantPriceInput">Precio ($ ARS)</label>
@@ -725,11 +726,38 @@
       document.getElementById("reviewBtn").textContent = `Revisar pedido (${totalUnits})`;
     }
 
+    /* Sugerencias para Decants */
+    function populateDecantSuggestions() {
+      const datalist = document.getElementById("decantNameList");
+      if (!datalist) return;
+
+      datalist.innerHTML = "";
+
+      const uniqueItems = new Set();
+
+      ALL_PRODUCTS.forEach((p) => {
+        if (p.isCustom) return;
+        const label = `${p.marca} - ${p.nombre}`;
+        uniqueItems.add(label);
+      });
+
+      Array.from(uniqueItems)
+        .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }))
+        .forEach((itemText) => {
+          const opt = document.createElement("option");
+          opt.value = itemText;
+          datalist.appendChild(opt);
+        });
+    }
+
     /* Modal Agregar Decant */
     function openDecantModal() {
       document.getElementById("decantNameInput").value = "";
       document.getElementById("decantPriceInput").value = "";
       document.getElementById("decantQtyInput").value = "1";
+      
+      populateDecantSuggestions();
+
       document.getElementById("decantModalOverlay").classList.add("active");
     }
 
