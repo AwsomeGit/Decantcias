@@ -327,7 +327,7 @@
   .decant-form-group {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
   .decant-form-group label {
     font-size: 12px;
@@ -466,7 +466,11 @@
         </div>
         <div class="decant-form-group">
           <label for="decantPriceInput">Precio ($ ARS)</label>
-          <input type="number" id="decantPriceInput" class="decant-input" placeholder="Ej: 5000" min="0" step="any" />
+          <input type="text" id="decantPriceInput" class="decant-input" placeholder="Ej: 5000" inputmode="decimal" />
+        </div>
+        <div class="decant-form-group">
+          <label for="decantQtyInput">Cantidad de Decants</label>
+          <input type="number" id="decantQtyInput" class="decant-input" placeholder="Ej: 1" value="1" min="1" step="1" />
         </div>
       </div>
       <div class="modal-footer">
@@ -725,6 +729,7 @@
     function openDecantModal() {
       document.getElementById("decantNameInput").value = "";
       document.getElementById("decantPriceInput").value = "";
+      document.getElementById("decantQtyInput").value = "1";
       document.getElementById("decantModalOverlay").classList.add("active");
     }
 
@@ -734,7 +739,9 @@
 
     function saveCustomDecant() {
       const nameVal = document.getElementById("decantNameInput").value.trim();
-      const priceVal = parseFloat(document.getElementById("decantPriceInput").value);
+      const rawPrice = document.getElementById("decantPriceInput").value.replace(/\,/g, '.');
+      const priceVal = parseFloat(rawPrice);
+      const qtyVal = parseInt(document.getElementById("decantQtyInput").value, 10);
 
       if (!nameVal) {
         alert("Por favor, ingresa el nombre de la fragancia.");
@@ -742,6 +749,10 @@
       }
       if (isNaN(priceVal) || priceVal < 0) {
         alert("Por favor, ingresa un precio válido.");
+        return;
+      }
+      if (isNaN(qtyVal) || qtyVal <= 0) {
+        alert("Por favor, ingresa una cantidad válida (mínimo 1).");
         return;
       }
 
@@ -757,7 +768,7 @@
       };
 
       ALL_PRODUCTS.push(decantItem);
-      CART[id] = 1;
+      CART[id] = qtyVal;
 
       recalculateTotals();
       closeDecantModal();
