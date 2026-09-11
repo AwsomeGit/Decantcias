@@ -200,406 +200,431 @@
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    // ------------------------------------------------------
-    // CONFIG
-    // ------------------------------------------------------
-    const PASSWORD = "JeaAwsMayorista*";
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  // ------------------------------------------------------
+  // CONFIG
+  // ------------------------------------------------------
+  const PASSWORD = "JeaAwsMayorista*";
 
-    const CATALOG_CSV =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
+  const CATALOG_CSV =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
-    const WHOLESALE_CSV =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=89266512&single=true&output=csv";
+  const WHOLESALE_CSV =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=89266512&single=true&output=csv";
 
-    let CURRENT_TIER = "x10";
+  let CURRENT_TIER = "x10";
 
-    // ------------------------------------------------------
-    // LOGIN
-    // ------------------------------------------------------
-    const loginScreen = document.getElementById("loginScreen");
-    const app = document.getElementById("app");
-    const passInput = document.getElementById("passInput");
-    const passBtn = document.getElementById("passBtn");
-    const loginError = document.getElementById("loginError");
+  // ------------------------------------------------------
+  // LOGIN
+  // ------------------------------------------------------
+  const loginScreen = document.getElementById("loginScreen");
+  const app = document.getElementById("app");
+  const passInput = document.getElementById("passInput");
+  const passBtn = document.getElementById("passBtn");
+  const loginError = document.getElementById("loginError");
 
-    function tryLogin() {
-      if (passInput.value === PASSWORD) {
-        sessionStorage.setItem("mayorista_auth", "ok");
-        loginScreen.style.display = "none";
-        app.style.display = "block";
-        cargarTodo();
-      } else {
-        loginError.textContent = "Contraseña incorrecta.";
-      }
-    }
-
-    passBtn.addEventListener("click", tryLogin);
-    passInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") tryLogin();
-    });
-
-    if (sessionStorage.getItem("mayorista_auth") === "ok") {
+  function tryLogin() {
+    if (passInput.value === PASSWORD) {
+      sessionStorage.setItem("mayorista_auth", "ok");
       loginScreen.style.display = "none";
       app.style.display = "block";
       cargarTodo();
+    } else {
+      loginError.textContent = "Contraseña incorrecta.";
+    }
+  }
+
+  passBtn.addEventListener("click", tryLogin);
+  passInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") tryLogin();
+  });
+
+  if (sessionStorage.getItem("mayorista_auth") === "ok") {
+    loginScreen.style.display = "none";
+    app.style.display = "block";
+    cargarTodo();
+  }
+
+  // ------------------------------------------------------
+  // Helpers
+  // ------------------------------------------------------
+  function normKey(s) {
+    return String(s || "")
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[()]/g, "")
+      .replace(/\s+/g, "")
+      .trim();
+  }
+
+  function moneyAR(n) {
+    const v = Number(n);
+    return `$${(Number.isFinite(v) ? v : 0).toLocaleString("es-AR")}`;
+  }
+
+  // CORREGIDO: Parsea correctamente el valor numérico evitando que $900 pase a 90000
+  function parseUSMoney(raw) {
+    if (raw == null) return 0;
+    let str = String(raw).trim();
+    if (!str) return 0;
+
+    // Si tiene comas como separador decimal (ej: "900,00"), reemplazar por punto
+    if (str.includes(",") && !str.includes(".")) {
+      str = str.replace(",", ".");
     }
 
-    // ------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------
-    function normKey(s) {
-      return String(s || "")
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[()]/g, "")
-        .replace(/\s+/g, "")
-        .trim();
-    }
+    // Extraer solo dígitos y punto decimal
+    const cleaned = str.replace(/[^0-9.]/g, "");
+    const n = parseFloat(cleaned);
+    return Number.isFinite(n) ? n : 0;
+  }
 
-    function moneyAR(n) {
-      const v = Number(n);
-      return `$${(Number.isFinite(v) ? v : 0).toLocaleString("es-AR")}`;
-    }
+  function toNumber(raw) {
+    const n = parseFloat(String(raw || "").replace(/[^\d.-]/g, ""));
+    return Number.isFinite(n) ? n : 0;
+  }
 
-    function parseUSMoney(raw) {
-      if (raw == null) return 0;
-      const cleaned = String(raw).replace(/\$/g, "").replace(/\./g, "").replace(/,/g, ".").replace(/[^0-9.]/g, "").trim();
-      const n = parseFloat(cleaned);
-      return Number.isFinite(n) ? n : 0;
-    }
+  function imgPath(p) {
+    if (!p) return "";
+    if (/^https?:\/\//i.test(p)) return p;
+    return "../" + p.replace(/^\/+/, "");
+  }
 
-    function toNumber(raw) {
-      const n = parseFloat(String(raw || "").replace(/[^\d.-]/g, ""));
-      return Number.isFinite(n) ? n : 0;
-    }
+  // ------------------------------------------------------
+  // Parser de Bloques Mayoristas adaptado a "Precio 3U", "Precio 5U", "Precio 10U"
+  // ------------------------------------------------------
+  function parseWholesaleBlocks(csvText) {
+    const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: "greedy" });
+    const rows = parsed.data;
+    const items = [];
 
-    function imgPath(p) {
-      if (!p) return "";
-      if (/^https?:\/\//i.test(p)) return p;
-      return "../" + p.replace(/^\/+/, "");
-    }
+    for (let r = 0; r < rows.length; r++) {
+      const row = rows[r];
+      for (let c = 0; c < row.length; c++) {
+        const colMarca = normKey(row[c]);
+        const colPerfume = normKey(row[c + 1]);
 
-    // ------------------------------------------------------
-    // Parser de Bloques Mayoristas adaptado a "Precio 3U", "Precio 5U", "Precio 10U"
-    // ------------------------------------------------------
-    function parseWholesaleBlocks(csvText) {
-      const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: "greedy" });
-      const rows = parsed.data;
-      const items = [];
+        // Detecta el inicio de cualquier bloque de Marca y Perfume
+        if (colMarca === "marca" && (colPerfume === "perfume" || colPerfume.includes("perfume"))) {
+          let colIndexMap = { marca: c, perfume: c + 1 };
 
-      for (let r = 0; r < rows.length; r++) {
-        const row = rows[r];
-        for (let c = 0; c < row.length; c++) {
-          const colMarca = normKey(row[c]);
-          const colPerfume = normKey(row[c + 1]);
-
-          // Detecta el inicio de cualquier bloque de Marca y Perfume
-          if (colMarca === "marca" && (colPerfume === "perfume" || colPerfume.includes("perfume"))) {
-            let colIndexMap = { marca: c, perfume: c + 1 };
-
-            // Escanea las columnas subsiguientes para encontrar los precios y datos
-            for (let offset = 2; offset < 10; offset++) {
-              if (c + offset >= row.length) break;
-              const h = normKey(row[c + offset]);
-              
-              if (h.includes("precio")) {
-                if (h.includes("3")) colIndexMap.precio3 = c + offset;
-                else if (h.includes("5")) colIndexMap.precio5 = c + offset;
-                else if (h.includes("10")) colIndexMap.precio10 = c + offset;
-                else colIndexMap.precio10 = c + offset;
-              } else if (h.includes("stock")) {
-                colIndexMap.stock = c + offset;
-              } else if (h.includes("tamano") || h.includes("ml")) {
-                colIndexMap.ml = c + offset;
-              }
+          // Escanea las columnas subsiguientes para encontrar los precios y datos
+          for (let offset = 2; offset < 10; offset++) {
+            if (c + offset >= row.length) break;
+            const h = normKey(row[c + offset]);
+            
+            if (h.includes("precio")) {
+              if (h.includes("3")) colIndexMap.precio3 = c + offset;
+              else if (h.includes("5")) colIndexMap.precio5 = c + offset;
+              else if (h.includes("10")) colIndexMap.precio10 = c + offset;
+              else colIndexMap.precio10 = c + offset;
+            } else if (h.includes("stock")) {
+              colIndexMap.stock = c + offset;
+            } else if (h.includes("tamano") || h.includes("ml")) {
+              colIndexMap.ml = c + offset;
             }
+          }
 
-            let rr = r + 1;
-            while (rr < rows.length) {
-              const rowr = rows[rr] || [];
-              const marca = (rowr[colIndexMap.marca] || "").trim();
-              const nombre = (rowr[colIndexMap.perfume] || "").trim();
+          let rr = r + 1;
+          while (rr < rows.length) {
+            const rowr = rows[rr] || [];
+            const marca = (rowr[colIndexMap.marca] || "").trim();
+            const nombre = (rowr[colIndexMap.perfume] || "").trim();
 
-              // Si encuentra otra cabecera repetida abajo, interrumpe
-              if (normKey(marca) === "marca") break;
-              if (!marca && !nombre) break;
+            // Si encuentra otra cabecera repetida abajo, interrumpe
+            if (normKey(marca) === "marca") break;
+            if (!marca && !nombre) break;
 
-              if (marca && nombre) {
-                const p3 = colIndexMap.precio3 !== undefined ? parseUSMoney(rowr[colIndexMap.precio3]) : 0;
-                const p5 = colIndexMap.precio5 !== undefined ? parseUSMoney(rowr[colIndexMap.precio5]) : p3;
-                const p10 = colIndexMap.precio10 !== undefined ? parseUSMoney(rowr[colIndexMap.precio10]) : p5;
+            if (marca && nombre) {
+              const p3 = colIndexMap.precio3 !== undefined ? parseUSMoney(rowr[colIndexMap.precio3]) : 0;
+              const p5 = colIndexMap.precio5 !== undefined ? parseUSMoney(rowr[colIndexMap.precio5]) : p3;
+              const p10 = colIndexMap.precio10 !== undefined ? parseUSMoney(rowr[colIndexMap.precio10]) : p5;
 
-                const stock = colIndexMap.stock !== undefined ? toNumber(rowr[colIndexMap.stock]) : 0;
-                const ml = colIndexMap.ml !== undefined ? toNumber(rowr[colIndexMap.ml]) : 0;
+              const stock = colIndexMap.stock !== undefined ? toNumber(rowr[colIndexMap.stock]) : 0;
+              const ml = colIndexMap.ml !== undefined ? toNumber(rowr[colIndexMap.ml]) : 0;
 
-                items.push({
-                  marca,
-                  nombre,
-                  precios: { x10: p10, x5: p5, x3: p3 },
-                  stock,
-                  ml
-                });
-              }
-              rr++;
+              items.push({
+                marca,
+                nombre,
+                precios: { x10: p10, x5: p5, x3: p3 },
+                stock,
+                ml
+              });
             }
+            rr++;
           }
         }
       }
-      return items;
     }
+    return items;
+  }
 
-    // ------------------------------------------------------
-    // Carga principal
-    // ------------------------------------------------------
-    let WHOLESALE_ITEMS = [];
-    let IMAGE_MAP = {};
+  // ------------------------------------------------------
+  // Carga principal
+  // ------------------------------------------------------
+  let WHOLESALE_ITEMS = [];
+  let IMAGE_MAP = {};
 
-    async function cargarTodo() {
-      const statusEl = document.getElementById("status");
-      try {
-        // 1) Catálogo principal (para las fotos)
-        const catRes = await fetch(CATALOG_CSV, { cache: "no-store" });
-        const catText = await catRes.text();
-        const catParsed = Papa.parse(catText, { header: true, skipEmptyLines: true });
+  async function cargarTodo() {
+    const statusEl = document.getElementById("status");
+    try {
+      // 1) Catálogo principal (para las fotos)
+      const catRes = await fetch(CATALOG_CSV, { cache: "no-store" });
+      const catText = await catRes.text();
+      const catParsed = Papa.parse(catText, { header: true, skipEmptyLines: true });
 
-        catParsed.data.forEach((row) => {
-          const clean = {};
-          for (const k in row) {
-            const kk = (k || "").replace(/^\uFEFF/, "").trim();
-            clean[kk] = (row[k] ?? "").toString().trim();
-          }
-          const marca = clean.marca || clean.Marca || "";
-          const nombre = clean.nombre || clean.Nombre || "";
-          const imagenRaw = clean.imagenURL || clean.imagenUrl || clean.imagen || "";
-          const firstImg = String(imagenRaw).split("|")[0].trim();
-          if (marca && nombre && firstImg) {
-            const key = normKey(marca) + "|" + normKey(nombre);
-            IMAGE_MAP[key] = firstImg;
-          }
-        });
+      catParsed.data.forEach((row) => {
+        const clean = {};
+        for (const k in row) {
+          const kk = (k || "").replace(/^\uFEFF/, "").trim();
+          clean[kk] = (row[k] ?? "").toString().trim();
+        }
+        const marca = clean.marca || clean.Marca || "";
+        const nombre = clean.nombre || clean.Nombre || "";
+        const imagenRaw = clean.imagenURL || clean.imagenUrl || clean.imagen || "";
+        const firstImg = String(imagenRaw).split("|")[0].trim();
+        if (marca && nombre && firstImg) {
+          const key = normKey(marca) + "|" + normKey(nombre);
+          IMAGE_MAP[key] = firstImg;
+        }
+      });
 
-        // 2) Hoja mayorista
-        const wRes = await fetch(WHOLESALE_CSV, { cache: "no-store" });
-        const wText = await wRes.text();
-        let items = parseWholesaleBlocks(wText);
+      // 2) Hoja mayorista
+      const wRes = await fetch(WHOLESALE_CSV, { cache: "no-store" });
+      const wText = await wRes.text();
+      let items = parseWholesaleBlocks(wText);
 
-        // Ocultar productos no trabajados ($900 o $0)
-        items = items.filter((it) => Math.abs(it.precios.x10 - 900) > 0.01 && it.precios.x10 > 0);
+      // CORREGIDO: Oculta productos si el precio es 900, <= 0, o si no hay stock
+      items = items.filter((it) => {
+        const p10 = it.precios.x10;
+        const p5 = it.precios.x5;
+        const p3 = it.precios.x3;
 
-        // Cruzar con imagen
-        items = items.map((it) => {
-          const key = normKey(it.marca) + "|" + normKey(it.nombre);
-          const img = IMAGE_MAP[key];
-          return { ...it, img: img ? imgPath(img) : "" };
-        });
+        // Si el precio de cualquier tier es igual a 900 o menor/igual a 0, se descarta
+        const esInvalido = (p) => p <= 0 || Math.abs(p - 900) < 0.1;
 
-        WHOLESALE_ITEMS = items;
-        renderBrands(items);
-        statusEl.style.display = "none";
-      } catch (e) {
-        console.error(e);
-        statusEl.textContent = "No se pudo cargar la información mayorista.";
+        if (esInvalido(p10) && esInvalido(p5) && esInvalido(p3)) {
+          return false;
+        }
+
+        return true;
+      });
+
+      // Cruzar con imagen
+      items = items.map((it) => {
+        const key = normKey(it.marca) + "|" + normKey(it.nombre);
+        const img = IMAGE_MAP[key];
+        return { ...it, img: img ? imgPath(img) : "" };
+      });
+
+      WHOLESALE_ITEMS = items;
+      renderBrands(items);
+      statusEl.style.display = "none";
+    } catch (e) {
+      console.error(e);
+      statusEl.textContent = "No se pudo cargar la información mayorista.";
+    }
+  }
+
+  function renderBrands(items) {
+    const container = document.getElementById("brandsContainer");
+    container.innerHTML = "";
+
+    const byBrand = {};
+    items.forEach((it) => {
+      const key = it.marca.trim();
+      byBrand[key] = byBrand[key] || [];
+      byBrand[key].push(it);
+    });
+
+    const brandNames = Object.keys(byBrand).sort((a, b) =>
+      a.localeCompare(b, "es", { sensitivity: "base" })
+    );
+
+    brandNames.forEach((brand) => {
+      const block = document.createElement("div");
+      block.className = "brand-block";
+
+      const list = byBrand[brand].sort((a, b) =>
+        a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+      );
+
+      block.innerHTML = `
+        <h2>${brand}</h2>
+        <div class="items-grid">
+          ${list
+            .map((it) => {
+              const precioActual = it.precios[CURRENT_TIER] || it.precios.x10;
+              return `
+            <div class="item-card">
+              ${
+                it.img
+                  ? `<img src="${it.img}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'noimg',textContent:'Sin foto'}))">`
+                  : `<div class="noimg">Sin foto</div>`
+              }
+              <div class="info">
+                <p class="name">${it.nombre}</p>
+                <p class="price">${moneyAR(precioActual)}</p>
+                <p class="meta">Stock: ${it.stock} · ${it.ml} ml</p>
+              </div>
+            </div>
+          `;
+            })
+            .join("")}
+        </div>
+      `;
+      container.appendChild(block);
+    });
+  }
+
+  // Listener para el selector de tier
+  document.querySelectorAll(".tier-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      document.querySelectorAll(".tier-btn").forEach((b) => b.classList.remove("active"));
+      e.target.classList.add("active");
+      CURRENT_TIER = e.target.getAttribute("data-tier");
+      renderBrands(WHOLESALE_ITEMS);
+    });
+  });
+
+  // ------------------------------------------------------
+  // Descargar PDF completo
+  // ------------------------------------------------------
+  async function imageToDataURL(url) {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
+    const btn = document.getElementById("downloadPdfBtn");
+    btn.disabled = true;
+    const textoOriginal = btn.textContent;
+    btn.textContent = "Generando PDF...";
+
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+      const marginX = 15;
+      const pageHeight = 297;
+      const pageWidth = 210;
+      let y = 20;
+
+      // Logo arriba de todo
+      const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
+      if (logoDataUrl) {
+        const logoWidth = 30;
+        const logoX = (pageWidth - logoWidth) / 2;
+        try {
+          doc.addImage(logoDataUrl, "PNG", logoX, y, logoWidth, logoWidth * 0.75);
+        } catch (e) {}
+        y += logoWidth * 0.75 + 8;
       }
-    }
 
-    function renderBrands(items) {
-      const container = document.getElementById("brandsContainer");
-      container.innerHTML = "";
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text(`Decantcias — Lista Mayorista (${CURRENT_TIER.toUpperCase()})`, pageWidth / 2, y, { align: "center" });
+      y += 10;
 
       const byBrand = {};
-      items.forEach((it) => {
-        const key = it.marca.trim();
-        byBrand[key] = byBrand[key] || [];
-        byBrand[key].push(it);
+      WHOLESALE_ITEMS.forEach((it) => {
+        byBrand[it.marca] = byBrand[it.marca] || [];
+        byBrand[it.marca].push(it);
       });
 
       const brandNames = Object.keys(byBrand).sort((a, b) =>
         a.localeCompare(b, "es", { sensitivity: "base" })
       );
 
-      brandNames.forEach((brand) => {
-        const block = document.createElement("div");
-        block.className = "brand-block";
+      for (const brand of brandNames) {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text(brand, marginX, y);
+        y += 7;
 
         const list = byBrand[brand].sort((a, b) =>
           a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
         );
 
-        block.innerHTML = `
-          <h2>${brand}</h2>
-          <div class="items-grid">
-            ${list
-              .map((it) => {
-                const precioActual = it.precios[CURRENT_TIER] || it.precios.x10;
-                return `
-              <div class="item-card">
-                ${
-                  it.img
-                    ? `<img src="${it.img}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'noimg',textContent:'Sin foto'}))">`
-                    : `<div class="noimg">Sin foto</div>`
-                }
-                <div class="info">
-                  <p class="name">${it.nombre}</p>
-                  <p class="price">${moneyAR(precioActual)}</p>
-                  <p class="meta">Stock: ${it.stock} · ${it.ml} ml</p>
-                </div>
-              </div>
-            `;
-              })
-              .join("")}
-          </div>
-        `;
-        container.appendChild(block);
-      });
-    }
-
-    // Listener para el selector de tier
-    document.querySelectorAll(".tier-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        document.querySelectorAll(".tier-btn").forEach((b) => b.classList.remove("active"));
-        e.target.classList.add("active");
-        CURRENT_TIER = e.target.getAttribute("data-tier");
-        renderBrands(WHOLESALE_ITEMS);
-      });
-    });
-
-    // ------------------------------------------------------
-    // Descargar PDF completo
-    // ------------------------------------------------------
-    async function imageToDataURL(url) {
-      try {
-        const res = await fetch(url);
-        const blob = await res.blob();
-        return await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-      } catch (e) {
-        return null;
-      }
-    }
-
-    document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
-      const btn = document.getElementById("downloadPdfBtn");
-      btn.disabled = true;
-      const textoOriginal = btn.textContent;
-      btn.textContent = "Generando PDF...";
-
-      try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: "mm", format: "a4" });
-
-        const marginX = 15;
-        const pageHeight = 297;
-        const pageWidth = 210;
-        let y = 20;
-
-        // Logo arriba de todo
-        const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
-        if (logoDataUrl) {
-          const logoWidth = 30;
-          const logoX = (pageWidth - logoWidth) / 2;
-          try {
-            doc.addImage(logoDataUrl, "PNG", logoX, y, logoWidth, logoWidth * 0.75);
-          } catch (e) {}
-          y += logoWidth * 0.75 + 8;
-        }
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.text(`Decantcias — Lista Mayorista (${CURRENT_TIER.toUpperCase()})`, pageWidth / 2, y, { align: "center" });
-        y += 10;
-
-        const byBrand = {};
-        WHOLESALE_ITEMS.forEach((it) => {
-          byBrand[it.marca] = byBrand[it.marca] || [];
-          byBrand[it.marca].push(it);
-        });
-
-        const brandNames = Object.keys(byBrand).sort((a, b) =>
-          a.localeCompare(b, "es", { sensitivity: "base" })
-        );
-
-        for (const brand of brandNames) {
-          if (y > pageHeight - 20) {
+        for (const it of list) {
+          if (y > pageHeight - 25) {
             doc.addPage();
             y = 20;
           }
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(13);
-          doc.text(brand, marginX, y);
-          y += 7;
 
-          const list = byBrand[brand].sort((a, b) =>
-            a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
-          );
-
-          for (const it of list) {
-            if (y > pageHeight - 25) {
-              doc.addPage();
-              y = 20;
-            }
-
-            let dataUrl = null;
-            if (it.img) {
-              dataUrl = await imageToDataURL(it.img);
-            }
-
-            if (dataUrl) {
-              try {
-                doc.addImage(dataUrl, "JPEG", marginX, y - 4, 18, 18);
-              } catch (e) {
-                try {
-                  doc.addImage(dataUrl, "PNG", marginX, y - 4, 18, 18);
-                } catch (e2) {}
-              }
-            }
-
-            const precioActual = it.precios[CURRENT_TIER] || it.precios.x10;
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(11);
-            doc.text(it.nombre, marginX + 24, y);
-            doc.setFont("helvetica", "bold");
-            doc.text(moneyAR(precioActual), marginX + 24, y + 6);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            doc.text(`Stock: ${it.stock}  ·  ${it.ml} ml`, marginX + 24, y + 12);
-
-            y += 26;
+          let dataUrl = null;
+          if (it.img) {
+            dataUrl = await imageToDataURL(it.img);
           }
 
-          y += 4;
+          if (dataUrl) {
+            try {
+              doc.addImage(dataUrl, "JPEG", marginX, y - 4, 18, 18);
+            } catch (e) {
+              try {
+                doc.addImage(dataUrl, "PNG", marginX, y - 4, 18, 18);
+              } catch (e2) {}
+            }
+          }
+
+          const precioActual = it.precios[CURRENT_TIER] || it.precios.x10;
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(11);
+          doc.text(it.nombre, marginX + 24, y);
+          doc.setFont("helvetica", "bold");
+          doc.text(moneyAR(precioActual), marginX + 24, y + 6);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9);
+          doc.text(`Stock: ${it.stock}  ·  ${it.ml} ml`, marginX + 24, y + 12);
+
+          y += 26;
         }
 
-        // Mensaje final
-        if (y > pageHeight - 30) {
-          doc.addPage();
-          y = 20;
-        } else {
-          y += 10;
-        }
-
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(10);
-        const mensajeFinal = doc.splitTextToSize(
-          "Recordá que si buscás algún perfume en específico, lo buscamos, te lo cotizamos y en 5 días hábiles te lo entregamos.",
-          pageWidth - marginX * 2
-        );
-        doc.text(mensajeFinal, marginX, y);
-
-        doc.save(`decantcias-mayorista-${CURRENT_TIER}.pdf`);
-      } catch (e) {
-        console.error(e);
-        alert("Hubo un error generando el PDF. Revisá la consola.");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = textoOriginal;
+        y += 4;
       }
-    });
-  </script>
+
+      // Mensaje final
+      if (y > pageHeight - 30) {
+        doc.addPage();
+        y = 20;
+      } else {
+        y += 10;
+      }
+
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(10);
+      const mensajeFinal = doc.splitTextToSize(
+        "Recordá que si buscás algún perfume en específico, lo buscamos, te lo cotizamos y en 5 días hábiles te lo entregamos.",
+        pageWidth - marginX * 2
+      );
+      doc.text(mensajeFinal, marginX, y);
+
+      doc.save(`decantcias-mayorista-${CURRENT_TIER}.pdf`);
+    } catch (e) {
+      console.error(e);
+      alert("Hubo un error generando el PDF. Revisá la consola.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = textoOriginal;
+    }
+  });
+</script>
 </body>
 </html>
