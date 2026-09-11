@@ -287,7 +287,7 @@
     padding: 16px;
   }
   .modal-overlay.active { display: flex; }
-  
+
   .modal-content {
     background: #141414;
     border: 1px solid rgba(201,162,75,0.4);
@@ -360,7 +360,7 @@
   .cart-item-sub { font-size: 11px; opacity: 0.6; margin: 2px 0 0 0; }
   .cart-item-actions { display: flex; align-items: center; gap: 12px; }
   .cart-item-price { font-size: 13px; font-weight: 800; color: #c9a24b; }
-  
+
   .remove-item-btn {
     background: rgba(226, 107, 107, 0.15);
     border: 1px solid rgba(226, 107, 107, 0.4);
@@ -507,7 +507,7 @@
 
     function parseUSMoney(raw) {
       if (raw == null) return 0;
-      const cleaned = String(raw).replace(/\$/g, "").replace(/,/g, "").trim();
+      const cleaned = String(raw).replace(/\$/g, "").replace(/\./g, "").replace(/,/g, ".").replace(/[^0-9.]/g, "").trim();
       const n = parseFloat(cleaned);
       return Number.isFinite(n) ? n : 0;
     }
@@ -523,6 +523,7 @@
       return "../" + p.replace(/^\/+/, "");
     }
 
+    /* Mapeo dinámico de columnas de bloques mayoristas */
     function parseWholesaleBlocks(csvText) {
       const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: "greedy" });
       const rows = parsed.data;
@@ -531,22 +532,48 @@
       for (let r = 0; r < rows.length; r++) {
         const row = rows[r];
         for (let c = 0; c < row.length; c++) {
-          if (
-            normKey(row[c]) === "marca" &&
-            normKey(row[c + 1]) === "perfume" &&
-            normKey(row[c + 2]) === "precio"
-          ) {
+          const colMarca = normKey(row[c]);
+          const colPerfume = normKey(row[c + 1]);
+
+          if (colMarca === "marca" && (colPerfume === "perfume" || colPerfume.includes("perfume"))) {
+            let colIndexMap = { marca: c, perfume: c + 1 };
+
+            for (let offset = 2; offset < 10; offset++) {
+              if (c + offset >= row.length) break;
+              const h = normKey(row[c + offset]);
+              
+              if (h.includes("precio")) {
+                if (h.includes("3")) colIndexMap.precio3 = c + offset;
+                else if (h.includes("5")) colIndexMap.precio5 = c + offset;
+                else if (h.includes("10")) colIndexMap.precio10 = c + offset;
+                else colIndexMap.precio10 = c + offset;
+              } else if (h.includes("stock")) {
+                colIndexMap.stock = c + offset;
+              } else if (h.includes("tamano") || h.includes("ml")) {
+                colIndexMap.ml = c + offset;
+              }
+            }
+
             let rr = r + 1;
             while (rr < rows.length) {
               const rowr = rows[rr] || [];
-              const marca = (rowr[c] || "").trim();
-              const nombre = (rowr[c + 1] || "").trim();
+              const marca = (rowr[colIndexMap.marca] || "").trim();
+              const nombre = (rowr[colIndexMap.perfume] || "").trim();
+
+              if (normKey(marca) === "marca") break;
               if (!marca && !nombre) break;
 
               if (marca && nombre) {
-                const precio = parseUSMoney(rowr[c + 2]);
-                const stock = toNumber(rowr[c + 3]);
-                const ml = toNumber(rowr[c + 4]);
+                const p3 = colIndexMap.precio3 !== undefined ? parseUSMoney(rowr[colIndexMap.precio3]) : 0;
+                const p5 = colIndexMap.precio5 !== undefined ? parseUSMoney(rowr[colIndexMap.precio5]) : p3;
+                const p10 = colIndexMap.precio10 !== undefined ? parseUSMoney(rowr[colIndexMap.precio10]) : p5;
+                
+                // Usamos el precio mayorista preferencial (x10)
+                const precio = p10 || p5 || p3;
+
+                const stock = colIndexMap.stock !== undefined ? toNumber(rowr[colIndexMap.stock]) : 0;
+                const ml = colIndexMap.ml !== undefined ? toNumber(rowr[colIndexMap.ml]) : 0;
+
                 const id = `${normKey(marca)}_${normKey(nombre)}_${ml}`;
                 items.push({ id, marca, nombre, precio, stock, ml });
               }
