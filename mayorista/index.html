@@ -1,206 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="robots" content="noindex, nofollow" />
-<title>Decantcias — Mayorista</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background:
-      radial-gradient(circle at 15% 10%, rgba(201,162,75,0.15), transparent 40%),
-      radial-gradient(circle at 85% 90%, rgba(201,162,75,0.12), transparent 40%),
-      #0d0d0d;
-    color: #f2eee2;
-    min-height: 100vh;
-  }
-  .gold { color: #c9a24b; }
-
-  /* ---------- Login ---------- */
-  #loginScreen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 16px;
-    padding: 20px;
-    text-align: center;
-  }
-  #loginScreen h1 { font-weight: 800; letter-spacing: 2px; margin-bottom: 4px; }
-  #loginScreen input {
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid #c9a24b;
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 16px;
-    width: 260px;
-    max-width: 80vw;
-  }
-  #loginScreen button {
-    padding: 12px 20px;
-    border-radius: 8px;
-    border: none;
-    background: linear-gradient(135deg,#f2d98d,#c9a24b);
-    color: #1a1a1a;
-    font-weight: 800;
-    cursor: pointer;
-    letter-spacing: 1px;
-  }
-  #loginError { color: #e26b6b; font-size: 14px; min-height: 18px; }
-
-  /* ---------- Contenido ---------- */
-  #app {
-    display: none;
-    padding: 24px;
-    max-width: 1100px;
-    margin: 20px auto;
-    border: 1px solid rgba(201,162,75,0.35);
-    border-radius: 16px;
-    box-shadow: 0 0 40px rgba(201,162,75,0.08);
-  }
-  .logo-header {
-    display: block;
-    max-width: 140px;
-    margin: 0 auto 10px;
-  }
-  header.top h1 { font-size: 22px; letter-spacing: 2px; margin: 0; font-weight: 800; }
-  
-  /* Selector de Tiers */
-  .tier-switch-container {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #161616;
-    padding: 4px;
-    border: 1px solid rgba(201,162,75,0.4);
-    border-radius: 10px;
-  }
-  .tier-btn {
-    background: transparent;
-    border: none;
-    color: #f2eee2;
-    padding: 8px 14px;
-    font-family: inherit;
-    font-weight: 600;
-    font-size: 13px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .tier-btn.active {
-    background: linear-gradient(135deg,#f2d98d,#c9a24b);
-    color: #1a1a1a;
-    font-weight: 800;
-  }
-
-  #downloadPdfBtn {
-    padding: 12px 18px;
-    border-radius: 8px;
-    border: none;
-    background: linear-gradient(135deg,#f2d98d,#c9a24b);
-    color: #1a1a1a;
-    font-weight: 800;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-  }
-  #downloadPdfBtn:disabled { opacity: 0.6; cursor: default; }
-
-  #status { text-align: center; opacity: 0.75; padding: 40px 0; }
-
-  .brand-block { margin-bottom: 32px; }
-  .brand-block h2 {
-    font-size: 18px;
-    letter-spacing: 1px;
-    border-left: 3px solid #c9a24b;
-    padding-left: 10px;
-    margin-bottom: 14px;
-  }
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 14px;
-  }
-  .item-card {
-    background: #161616;
-    border: 1px solid rgba(201,162,75,0.3);
-    border-radius: 10px;
-    padding: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .item-card img {
-    width: 56px;
-    height: 56px;
-    object-fit: cover;
-    border-radius: 6px;
-    background: #222;
-    flex-shrink: 0;
-  }
-  .item-card .noimg {
-    width: 56px;
-    height: 56px;
-    border-radius: 6px;
-    background: #222;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    opacity: 0.5;
-    text-align: center;
-  }
-  .item-card .info { min-width: 0; }
-  .item-card .name { font-size: 13px; font-weight: 600; line-height: 1.3; margin: 0 0 4px; }
-  .item-card .price { font-size: 14px; font-weight: 800; color: #c9a24b; margin: 0; }
-  .item-card .meta { font-size: 11px; opacity: 0.6; margin: 2px 0 0; }
-</style>
-</head>
-<body>
-
-  <!-- LOGIN -->
-  <div id="loginScreen">
-    <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-header" />
-    <h1>DECANT<span class="gold">CIAS</span></h1>
-    <p style="opacity:.7;margin-top:-8px">Acceso mayorista</p>
-    <input type="password" id="passInput" placeholder="Contraseña" autocomplete="off" />
-    <button id="passBtn" type="button">Ingresar</button>
-    <div id="loginError"></div>
-  </div>
-
-  <!-- CONTENIDO -->
-  <div id="app">
-    <header class="top" style="flex-direction:column;border-bottom:none;padding-bottom:0;">
-      <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-header" />
-      <div style="display:flex;width:100%;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,162,75,0.5);padding-bottom:16px;flex-wrap:wrap;gap:12px;">
-        <h1>Precios <span class="gold">Mayoristas</span></h1>
-        
-        <!-- Switch de Cantidades -->
-        <div class="tier-switch-container">
-          <button class="tier-btn active" data-tier="x10">x10 u.</button>
-          <button class="tier-btn" data-tier="x5">x5 u.</button>
-          <button class="tier-btn" data-tier="x3">x3 u.</button>
-        </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <a href="presupuesto.html" id="presupuestoBtn" style="padding:12px 18px;border-radius:8px;border:1px solid #c9a24b;color:#c9a24b;text-decoration:none;font-weight:800;letter-spacing:0.5px;display:inline-block;">Presupuesto</a>
-          <button id="downloadPdfBtn" type="button">Descargar PDF completo</button>
-        </div>
-      </div>
-    </header>
-    <div id="status">Cargando datos...</div>
-    <div id="brandsContainer"></div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
   // ------------------------------------------------------
@@ -264,18 +62,15 @@
     return `$${(Number.isFinite(v) ? v : 0).toLocaleString("es-AR")}`;
   }
 
-  // CORREGIDO: Parsea correctamente el valor numérico evitando que $900 pase a 90000
   function parseUSMoney(raw) {
     if (raw == null) return 0;
     let str = String(raw).trim();
     if (!str) return 0;
 
-    // Si tiene comas como separador decimal (ej: "900,00"), reemplazar por punto
     if (str.includes(",") && !str.includes(".")) {
       str = str.replace(",", ".");
     }
 
-    // Extraer solo dígitos y punto decimal
     const cleaned = str.replace(/[^0-9.]/g, "");
     const n = parseFloat(cleaned);
     return Number.isFinite(n) ? n : 0;
@@ -306,11 +101,9 @@
         const colMarca = normKey(row[c]);
         const colPerfume = normKey(row[c + 1]);
 
-        // Detecta el inicio de cualquier bloque de Marca y Perfume
         if (colMarca === "marca" && (colPerfume === "perfume" || colPerfume.includes("perfume"))) {
           let colIndexMap = { marca: c, perfume: c + 1 };
 
-          // Escanea las columnas subsiguientes para encontrar los precios y datos
           for (let offset = 2; offset < 10; offset++) {
             if (c + offset >= row.length) break;
             const h = normKey(row[c + offset]);
@@ -333,7 +126,6 @@
             const marca = (rowr[colIndexMap.marca] || "").trim();
             const nombre = (rowr[colIndexMap.perfume] || "").trim();
 
-            // Si encuentra otra cabecera repetida abajo, interrumpe
             if (normKey(marca) === "marca") break;
             if (!marca && !nombre) break;
 
@@ -370,7 +162,6 @@
   async function cargarTodo() {
     const statusEl = document.getElementById("status");
     try {
-      // 1) Catálogo principal (para las fotos)
       const catRes = await fetch(CATALOG_CSV, { cache: "no-store" });
       const catText = await catRes.text();
       const catParsed = Papa.parse(catText, { header: true, skipEmptyLines: true });
@@ -391,28 +182,23 @@
         }
       });
 
-      // 2) Hoja mayorista
       const wRes = await fetch(WHOLESALE_CSV, { cache: "no-store" });
       const wText = await wRes.text();
       let items = parseWholesaleBlocks(wText);
 
-      // CORREGIDO: Oculta productos si el precio es 900, <= 0, o si no hay stock
+      // Ocultar si el precio es 900 o <= 0
       items = items.filter((it) => {
         const p10 = it.precios.x10;
         const p5 = it.precios.x5;
         const p3 = it.precios.x3;
-
-        // Si el precio de cualquier tier es igual a 900 o menor/igual a 0, se descarta
         const esInvalido = (p) => p <= 0 || Math.abs(p - 900) < 0.1;
 
         if (esInvalido(p10) && esInvalido(p5) && esInvalido(p3)) {
           return false;
         }
-
         return true;
       });
 
-      // Cruzar con imagen
       items = items.map((it) => {
         const key = normKey(it.marca) + "|" + normKey(it.nombre);
         const img = IMAGE_MAP[key];
@@ -479,7 +265,6 @@
     });
   }
 
-  // Listener para el selector de tier
   document.querySelectorAll(".tier-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       document.querySelectorAll(".tier-btn").forEach((b) => b.classList.remove("active"));
@@ -490,7 +275,7 @@
   });
 
   // ------------------------------------------------------
-  // Descargar PDF completo
+  // Descargar PDF completo con los 3 precios
   // ------------------------------------------------------
   async function imageToDataURL(url) {
     try {
@@ -522,7 +307,7 @@
       const pageWidth = 210;
       let y = 20;
 
-      // Logo arriba de todo
+      // Logo superior
       const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
       if (logoDataUrl) {
         const logoWidth = 30;
@@ -535,7 +320,7 @@
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
-      doc.text(`Decantcias — Lista Mayorista (${CURRENT_TIER.toUpperCase()})`, pageWidth / 2, y, { align: "center" });
+      doc.text("Decantcias — Lista Mayorista Completa", pageWidth / 2, y, { align: "center" });
       y += 10;
 
       const byBrand = {};
@@ -549,7 +334,7 @@
       );
 
       for (const brand of brandNames) {
-        if (y > pageHeight - 20) {
+        if (y > pageHeight - 25) {
           doc.addPage();
           y = 20;
         }
@@ -563,7 +348,7 @@
         );
 
         for (const it of list) {
-          if (y > pageHeight - 25) {
+          if (y > pageHeight - 28) {
             doc.addPage();
             y = 20;
           }
@@ -583,18 +368,23 @@
             }
           }
 
-          const precioActual = it.precios[CURRENT_TIER] || it.precios.x10;
-
-          doc.setFont("helvetica", "normal");
+          doc.setFont("helvetica", "bold");
           doc.setFontSize(11);
           doc.text(it.nombre, marginX + 24, y);
-          doc.setFont("helvetica", "bold");
-          doc.text(moneyAR(precioActual), marginX + 24, y + 6);
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(9);
-          doc.text(`Stock: ${it.stock}  ·  ${it.ml} ml`, marginX + 24, y + 12);
 
-          y += 26;
+          // Renderizado de los 3 precios
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9.5);
+          const preciosTexto = `(x10u) ${moneyAR(it.precios.x10)}   |   (x5u) ${moneyAR(it.precios.x5)}   |   (x3u) ${moneyAR(it.precios.x3)}`;
+          doc.text(preciosTexto, marginX + 24, y + 5.5);
+
+          // Meta datos (Stock y ml)
+          doc.setFontSize(8.5);
+          doc.setTextColor(100);
+          doc.text(`Stock: ${it.stock}  ·  ${it.ml} ml`, marginX + 24, y + 10.5);
+          doc.setTextColor(0);
+
+          y += 20;
         }
 
         y += 4;
@@ -616,7 +406,7 @@
       );
       doc.text(mensajeFinal, marginX, y);
 
-      doc.save(`decantcias-mayorista-${CURRENT_TIER}.pdf`);
+      doc.save("decantcias-mayorista.pdf");
     } catch (e) {
       console.error(e);
       alert("Hubo un error generando el PDF. Revisá la consola.");
@@ -626,5 +416,3 @@
     }
   });
 </script>
-</body>
-</html>
