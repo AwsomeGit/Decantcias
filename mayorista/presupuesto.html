@@ -686,7 +686,15 @@
         const text = await res.text();
         let items = parseWholesaleBlocks(text);
 
-        items = items.filter((it) => Math.abs(it.precio10 - 900) > 0.01 && (it.precio10 > 0 || it.precio5 > 0 || it.precio3 > 0));
+        items = items.filter((it) => {
+  // Comprobar que ningún escalón de precio sea igual a 900
+  const is900 = Math.abs(it.precio10 - 900) < 0.01 || 
+                Math.abs(it.precio5 - 900) < 0.01 || 
+                Math.abs(it.precio3 - 900) < 0.01;
+  
+  // Debe tener algún precio válido y no ser de $900
+  return !is900 && (it.precio10 > 0 || it.precio5 > 0 || it.precio3 > 0);
+});
 
         items = items.map((it) => {
           const key = normKey(it.marca) + "|" + normKey(it.nombre);
