@@ -1,1071 +1,706 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="robots" content="noindex, nofollow" />
-<title>Presupuesto — Decantcias Mayorista</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background:
-      radial-gradient(circle at 15% 10%, rgba(201,162,75,0.15), transparent 40%),
-      radial-gradient(circle at 85% 90%, rgba(201,162,75,0.12), transparent 40%),
-      #0d0d0d;
-    color: #f2eee2;
-    min-height: 100vh;
-    padding-bottom: 120px;
-  }
-  .gold { color: #c9a24b; }
-
-  .container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 24px;
-    border: 1px solid rgba(201,162,75,0.35);
-    border-radius: 16px;
-    box-shadow: 0 0 40px rgba(201,162,75,0.08);
-  }
-
-  /* Header */
-  .header-top {
-    text-align: center;
-    border-bottom: 1px solid rgba(201,162,75,0.3);
-    padding-bottom: 16px;
-    margin-bottom: 20px;
-  }
-  .logo-header {
-    display: block;
-    max-width: 120px;
-    margin: 0 auto 10px;
-  }
-  h1 { font-size: 22px; letter-spacing: 2px; margin: 0; font-weight: 800; }
-
-  /* Toolbar */
-  .toolbar {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .back-btn {
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: 1px solid #c9a24b;
-    color: #c9a24b;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-  }
-  .search-input {
-    flex: 1;
-    min-width: 180px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(201,162,75,0.4);
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 14px;
-  }
-  .search-input:focus { outline: 1px solid #c9a24b; }
-
-  /* Switch de Escala de Precios */
-  .price-tier-switch {
-    display: flex;
-    background: #1a1a1a;
-    border: 1px solid rgba(201,162,75,0.4);
-    border-radius: 8px;
-    padding: 2px;
-  }
-  .tier-btn {
-    background: transparent;
-    border: none;
-    color: #f2eee2;
-    padding: 8px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .tier-btn.active {
-    background: #c9a24b;
-    color: #1a1a1a;
-    font-weight: 800;
-  }
-
-  /* Botón Filtro Stock y Agregar Decant */
-  .stock-filter-btn, .add-decant-btn {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(201,162,75,0.4);
-    background: #1a1a1a;
-    color: #f2eee2;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    user-select: none;
-  }
-  .stock-filter-btn:hover, .add-decant-btn:hover {
-    border-color: #c9a24b;
-  }
-  .add-decant-btn {
-    background: linear-gradient(135deg, rgba(201,162,75,0.2), rgba(201,162,75,0.05));
-    border-color: #c9a24b;
-    color: #c9a24b;
-  }
-  .stock-filter-btn.active {
-    background: rgba(201,162,75,0.18);
-    border-color: #c9a24b;
-    color: #c9a24b;
-    font-weight: 700;
-  }
-
-  #status { text-align: center; opacity: 0.75; padding: 40px 0; }
-
-  /* Secciones por Marca */
-  .brand-group { margin-bottom: 32px; }
-  .brand-title {
-    font-size: 16px;
-    letter-spacing: 1px;
-    border-left: 3px solid #c9a24b;
-    padding-left: 10px;
-    margin: 0 0 16px 0;
-    text-transform: uppercase;
-  }
-
-  /* Grilla 5 por línea */
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-  }
-
-  .item-card {
-    background: #161616;
-    border: 1px solid rgba(201,162,75,0.25);
-    border-radius: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    justify-content: space-between;
-  }
-  .item-card img {
-    width: 64px;
-    height: 64px;
-    object-fit: cover;
-    border-radius: 6px;
-    background: #222;
-    margin-bottom: 8px;
-  }
-  .item-card .noimg {
-    width: 64px;
-    height: 64px;
-    border-radius: 6px;
-    background: #222;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    opacity: 0.5;
-    margin-bottom: 8px;
-  }
-  .item-name {
-    font-size: 12px;
-    font-weight: 600;
-    margin: 0 0 4px 0;
-    line-height: 1.2;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    height: 28px;
-  }
-  .item-price {
-    font-size: 13px;
-    font-weight: 800;
-    color: #c9a24b;
-    margin: 2px 0;
-  }
-  .item-details {
-    font-size: 10px;
-    opacity: 0.6;
-    margin: 0 0 8px 0;
-  }
-
-  /* Controles de Cantidad (+ / -) */
-  .qty-controls {
-    display: flex;
-    align-items: center;
-    background: #222;
-    border: 1px solid rgba(201,162,75,0.4);
-    border-radius: 6px;
-    overflow: hidden;
-    width: 100%;
-    justify-content: space-between;
-  }
-  .qty-btn {
-    background: transparent;
-    border: none;
-    color: #c9a24b;
-    font-weight: bold;
-    font-size: 14px;
-    width: 28px;
-    height: 28px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-  }
-  .qty-btn:hover { background: rgba(201,162,75,0.2); }
-  .qty-count {
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  /* Barra Flotante Inferior */
-  .cart-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #141414;
-    border-top: 1px solid rgba(201,162,75,0.5);
-    padding: 14px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 -10px 25px rgba(0,0,0,0.8);
-    z-index: 1000;
-  }
-  .cart-summary {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .cart-totals {
-    display: flex;
-    flex-direction: column;
-  }
-  .cart-totals .total-label { font-size: 12px; opacity: 0.7; }
-  .cart-totals .total-amount { font-size: 20px; font-weight: 800; color: #c9a24b; }
-
-  .review-btn {
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 1px solid rgba(201,162,75,0.6);
-    background: #1f1f1f;
-    color: #c9a24b;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .review-btn:hover {
-    background: #c9a24b;
-    color: #1a1a1a;
-  }
-  .review-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .action-btns {
-    display: flex;
-    gap: 10px;
-  }
-
-  #generatePdfBtn {
-    padding: 12px 20px;
-    border-radius: 8px;
-    border: none;
-    background: linear-gradient(135deg,#f2d98d,#c9a24b);
-    color: #1a1a1a;
-    font-weight: 800;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    font-size: 14px;
-  }
-  #generatePdfBtn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  /* Modales */
-  .modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(4px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    padding: 16px;
-  }
-  .modal-overlay.active { display: flex; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decantcias — Mayorista</title>
   
-  .modal-content {
-    background: #141414;
-    border: 1px solid rgba(201,162,75,0.4);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 600px;
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-  }
-  .modal-header {
-    padding: 16px;
-    border-bottom: 1px solid rgba(201,162,75,0.3);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .modal-header h3 { margin: 0; font-size: 18px; color: #c9a24b; }
-  .close-modal {
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-  }
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- jsPDF & AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
-  .modal-body {
-    padding: 16px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  <style>
+    :root {
+      --bg-dark: #0f0f11;
+      --card-bg: #18181c;
+      --accent-gold: #c9a24b;
+      --accent-gold-light: #f2d98d;
+      --border-color: #2a2a30;
+      --text-main: #f0f0f0;
+      --text-muted: #a0a0a0;
+    }
 
-  /* Formulario Decant Modal */
-  .decant-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .decant-form-group label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #c9a24b;
-  }
-  .decant-input {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(201,162,75,0.4);
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 14px;
-  }
-  .decant-input:focus { outline: 1px solid #c9a24b; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-  .cart-item-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #1c1c1c;
-    border: 1px solid rgba(201,162,75,0.2);
-    padding: 8px 12px;
-    border-radius: 8px;
-    gap: 10px;
-  }
-  .cart-item-info { flex: 1; min-width: 0; }
-  .cart-item-title { font-size: 13px; font-weight: 600; margin: 0; }
-  .cart-item-sub { font-size: 11px; opacity: 0.6; margin: 2px 0 0 0; }
-  .cart-item-actions { display: flex; align-items: center; gap: 12px; }
-  .cart-item-price { font-size: 13px; font-weight: 800; color: #c9a24b; }
-  
-  .remove-item-btn {
-    background: rgba(226, 107, 107, 0.15);
-    border: 1px solid rgba(226, 107, 107, 0.4);
-    color: #e26b6b;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-  .remove-item-btn:hover { background: #e26b6b; color: #fff; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
 
-  .modal-footer {
-    padding: 16px;
-    border-top: 1px solid rgba(201,162,75,0.3);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .clear-all-btn {
-    background: transparent;
-    border: 1px solid #e26b6b;
-    color: #e26b6b;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-  .clear-all-btn:hover { background: #e26b6b; color: #fff; }
+    .header-container {
+      text-align: center;
+      padding: 25px 15px 15px;
+    }
 
-  @media (max-width: 1024px) { .items-grid { grid-template-columns: repeat(4, 1fr); } }
-  @media (max-width: 768px) { .items-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 550px) {
-    .items-grid { grid-template-columns: repeat(2, 1fr); }
-    .cart-bar { flex-direction: column; gap: 12px; align-items: stretch; }
-    .cart-summary { justify-content: space-between; }
-    .action-btns { justify-content: flex-end; }
-  }
-</style>
+    .logo-img {
+      max-width: 120px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .page-title {
+      font-size: 2rem;
+      color: var(--accent-gold-light);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .toolbar {
+      max-width: 1200px;
+      margin: 15px auto;
+      padding: 0 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 10px 15px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-gold);
+    }
+
+    .price-tier-switch {
+      display: flex;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .tier-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .tier-btn.active {
+      background: var(--accent-gold);
+      color: #000;
+    }
+
+    .stock-filter-btn, .action-top-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .stock-filter-btn.active {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold-light);
+    }
+
+    .download-full-pdf-btn {
+      background: linear-gradient(135deg, var(--accent-gold-light), var(--accent-gold));
+      color: #111;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .download-full-pdf-btn:hover {
+      opacity: 0.9;
+    }
+
+    .catalog-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .brand-section {
+      margin-bottom: 30px;
+    }
+
+    .brand-title {
+      font-size: 1.4rem;
+      color: var(--accent-gold);
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .product-img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+
+    .product-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+
+    .product-details {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .product-price {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-gold-light);
+      margin-bottom: 12px;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      background: #0f0f11;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .qty-btn {
+      background: transparent;
+      border: none;
+      color: var(--accent-gold);
+      width: 35px;
+      height: 35px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .qty-btn:hover {
+      background: rgba(201, 162, 75, 0.1);
+    }
+
+    .qty-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    /* BARRA INFERIOR DEL CARRITO */
+    .cart-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #141417;
+      border-top: 1px solid var(--border-color);
+      padding: 12px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .cart-summary {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-summary .items-count {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .cart-summary .total-price {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--accent-gold-light);
+    }
+
+    .download-cart-btn {
+      background: var(--accent-gold);
+      color: #000;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .download-cart-btn:disabled {
+      background: #3a3a40;
+      color: #777;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header-top">
-      <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-header" />
-      <h1>Armar <span class="gold">Presupuesto</span></h1>
+  <!-- ENCABEZADO -->
+  <header class="header-container">
+    <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-img" onerror="this.style.display='none'" />
+    <h1 class="page-title">Armar Presupuesto</h1>
+  </header>
+
+  <!-- BARRA DE HERRAMIENTAS Y BOTÓN DESCARGAR PDF ARRIBA -->
+  <div class="toolbar">
+    <input type="text" id="searchInput" class="search-input" placeholder="Buscar perfume o marca..." />
+    
+    <div class="price-tier-switch">
+      <button class="tier-btn active" data-tier="10U" onclick="setPriceTier('10U')">10+ U</button>
+      <button class="tier-btn" data-tier="5U" onclick="setPriceTier('5U')">5+ U</button>
+      <button class="tier-btn" data-tier="3U" onclick="setPriceTier('3U')">3+ U</button>
     </div>
 
-    <div class="toolbar">
-      <a href="index.html" class="back-btn">← Volver</a>
-      <input type="text" id="searchInput" class="search-input" placeholder="Buscar perfume o marca..." />
-      
-      <!-- Selector de escala de precios -->
-      <div class="price-tier-switch">
-        <button class="tier-btn active" data-tier="10U" onclick="setPriceTier('10U')">10+ U</button>
-        <button class="tier-btn" data-tier="5U" onclick="setPriceTier('5U')">5+ U</button>
-        <button class="tier-btn" data-tier="3U" onclick="setPriceTier('3U')">3+ U</button>
-      </div>
+    <button id="onlyStockBtn" class="stock-filter-btn" type="button" onclick="toggleStockFilter()">
+      <span id="stockCheckIcon">✓</span> Solo en stock
+    </button>
 
-      <button id="onlyStockBtn" class="stock-filter-btn" type="button">
-        <span>✓</span> Solo en stock
-      </button>
-      <button class="add-decant-btn" onclick="openDecantModal()">
-        <span>+</span> Agregar Decant 5ml
-      </button>
-    </div>
-
-    <div id="status">Cargando catálogo...</div>
-    <div id="catalogContainer"></div>
+    <!-- BOTÓN SUPERIOR SOLICITADO: Descarga catálogo completo con las 3 escalas -->
+    <button id="downloadFullCatalogPdfBtn" class="download-full-pdf-btn">
+      Descargar PDF
+    </button>
   </div>
 
-  <!-- Barra Fija para Confirmar Presupuesto -->
+  <!-- CATÁLOGO -->
+  <main class="catalog-container" id="catalogContainer">
+    <p style="text-align: center; color: var(--text-muted); margin-top: 40px;">Cargando catálogo...</p>
+  </main>
+
+  <!-- BARRA INFERIOR DE PRESUPUESTO -->
   <div class="cart-bar">
     <div class="cart-summary">
-      <div class="cart-totals">
-        <span class="total-label" id="itemsCount">0 productos seleccionados</span>
-        <span class="total-amount" id="totalPrice">$0</span>
-      </div>
-      <button class="review-btn" id="reviewBtn" disabled onclick="openModal()">Revisar pedido (0)</button>
+      <span class="items-count" id="cartCountLabel">Productos seleccionados: 0</span>
+      <span class="total-price" id="cartTotalLabel">$0</span>
     </div>
     <div class="action-btns">
-      <button id="generatePdfBtn" disabled>Descargar PDF</button>
+      <!-- BOTÓN INFERIOR SOLICITADO: Descarga solo los ítems presupuestados -->
+      <button id="generatePdfBtn" class="download-cart-btn" disabled>
+        Descargar presupuesto
+      </button>
     </div>
   </div>
 
-  <!-- Modal de Revisión -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Revisión de Pedido</h3>
-        <button class="close-modal" onclick="closeModal()">✕</button>
-      </div>
-      <div class="modal-body" id="modalList"></div>
-      <div class="modal-footer">
-        <button class="clear-all-btn" onclick="clearCart()">Vaciar pedido</button>
-        <button class="review-btn" onclick="closeModal()">Seguir agregando</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para Agregar Decant 5ml -->
-  <div class="modal-overlay" id="decantModalOverlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Agregar Decant 5ml</h3>
-        <button class="close-modal" onclick="closeDecantModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="decant-form-group">
-          <label for="decantNameInput">Nombre de la Fragancia</label>
-          <input type="text" id="decantNameInput" list="decantNameList" class="decant-input" placeholder="Ej: Sauvage Elixir" autocomplete="off" />
-          <datalist id="decantNameList"></datalist>
-        </div>
-        <div class="decant-form-group">
-          <label for="decantPriceInput">Precio ($ ARS)</label>
-          <input type="text" id="decantPriceInput" class="decant-input" placeholder="Ej: 5000" inputmode="decimal" />
-        </div>
-        <div class="decant-form-group">
-          <label for="decantQtyInput">Cantidad de Decants</label>
-          <input type="number" id="decantQtyInput" class="decant-input" placeholder="Ej: 1" value="1" min="1" step="1" />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="clear-all-btn" style="border-color: #666; color: #ccc;" onclick="closeDecantModal()">Cancelar</button>
-        <button class="review-btn" style="background: #c9a24b; color: #1a1a1a;" onclick="saveCustomDecant()">Agregar al pedido</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    if (sessionStorage.getItem("mayorista_auth") !== "ok") {
-      window.location.href = "index.html";
-    }
-
-    const CATALOG_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
-    const WHOLESALE_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=89266512&single=true&output=csv";
-
     let ALL_PRODUCTS = [];
-    let IMAGE_MAP = {}; 
-    let CART = {};
-    let ONLY_STOCK = false;
-    let CURRENT_TIER = "10U";
+    let currentTier = '10U';
+    let filterOnlyStock = false;
+    let cart = {}; // { itemId: cantidad }
 
-    function normKey(s) {
-      return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[()]/g, "").replace(/\s+/g, "").trim();
-    }
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT1fS6X0oYnQJ5f_R3c3aM_rS9_G1sK/pub?output=csv'; // Reemplazar con tu URL de CSV si aplica
 
-    function moneyAR(n) {
-      const v = Number(n);
-      return `$${(Number.isFinite(v) ? v : 0).toLocaleString("es-AR")}`;
-    }
-
+    // Convertir valor monetario
     function parseUSMoney(raw) {
       if (raw == null) return 0;
-      const cleaned = String(raw).replace(/\$/g, "").replace(/\./g, "").replace(/,/g, ".").trim();
+      let cleaned = String(raw).replace(/\$/g, "").trim();
+      cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
       const n = parseFloat(cleaned);
       return Number.isFinite(n) ? n : 0;
     }
 
-    function toNumber(raw) {
-      const n = parseFloat(String(raw || "").replace(/[^\d.-]/g, ""));
-      return Number.isFinite(n) ? n : 0;
+    function moneyAR(val) {
+      return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(val);
     }
 
-    function imgPath(p) {
-      if (!p) return "";
-      if (/^https?:\/\//i.test(p)) return p;
-      return "../" + p.replace(/^\/+/, "");
-    }
-
-    function getItemActivePrice(item) {
-      if (item.isCustom) return item.precio;
-      if (CURRENT_TIER === "3U") return item.precio3U || item.precio10U || 0;
-      if (CURRENT_TIER === "5U") return item.precio5U || item.precio10U || 0;
-      return item.precio10U || 0;
-    }
-
-    function setPriceTier(tier) {
-      CURRENT_TIER = tier;
-      document.querySelectorAll(".tier-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.tier === tier);
-      });
-      applyFilters();
-      recalculateTotals();
-    }
-
-    function parseWholesaleBlocks(csvText) {
-      const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: "greedy" });
-      const rows = parsed.data;
-      const items = [];
-
-      for (let r = 0; r < rows.length; r++) {
-        const row = rows[r];
-        for (let c = 0; c < row.length; c++) {
-          if (
-            normKey(row[c]) === "marca" &&
-            normKey(row[c + 1]) === "perfume"
-          ) {
-            let rr = r + 1;
-            while (rr < rows.length) {
-              const rowr = rows[rr] || [];
-              const marca = (rowr[c] || "").trim();
-              const nombre = (rowr[c + 1] || "").trim();
-              if (!marca && !nombre) break;
-
-              if (marca && nombre) {
-                const precio3U = parseUSMoney(rowr[c + 2]);
-                const precio5U = parseUSMoney(rowr[c + 3]);
-                const precio10U = parseUSMoney(rowr[c + 4]);
-                
-                const stock = toNumber(rowr[c + 5]);
-                const ml = toNumber(rowr[c + 6]);
-                const id = `${normKey(marca)}_${normKey(nombre)}_${ml}`;
-                
-                items.push({ 
-                  id, 
-                  marca, 
-                  nombre, 
-                  precio3U, 
-                  precio5U, 
-                  precio10U, 
-                  stock, 
-                  ml 
-                });
-              }
-              rr++;
-            }
-          }
-        }
-      }
-      return items;
-    }
-
+    // Cargar Catálogo
     async function cargarCatalogo() {
-      const statusEl = document.getElementById("status");
       try {
-        const catRes = await fetch(CATALOG_CSV, { cache: "no-store" });
-        const catText = await catRes.text();
-        const catParsed = Papa.parse(catText, { header: true, skipEmptyLines: true });
+        const response = await fetch(SHEET_URL);
+        const data = await response.text();
+        
+        // Parse simple de CSV
+        const lines = data.split('\n').map(l => l.split(','));
+        const items = [];
 
-        catParsed.data.forEach((row) => {
-          const clean = {};
-          for (const k in row) {
-            const kk = (k || "").replace(/^\uFEFF/, "").trim();
-            clean[kk] = (row[k] ?? "").toString().trim();
-          }
-          const marca = clean.marca || clean.Marca || "";
-          const nombre = clean.nombre || clean.Nombre || "";
-          const imagenRaw = clean.imagenURL || clean.imagenUrl || clean.imagen || "";
-          const firstImg = String(imagenRaw).split("|")[0].trim();
-          if (marca && nombre && firstImg) {
-            const key = normKey(marca) + "|" + normKey(nombre);
-            IMAGE_MAP[key] = firstImg;
-          }
-        });
+        for (let i = 1; i < lines.length; i++) {
+          const row = lines[i];
+          if (!row || row.length < 4) continue;
 
-        const res = await fetch(WHOLESALE_CSV, { cache: "no-store" });
-        const text = await res.text();
-        let items = parseWholesaleBlocks(text);
+          const marca = row[0]?.trim() || 'VARIOS';
+          const nombre = row[1]?.trim() || '';
+          const ml = row[2]?.trim() || '';
+          const stock = parseInt(row[3]) || 0;
+          
+          const p10 = parseUSMoney(row[4]);
+          const p5 = parseUSMoney(row[5]);
+          const p3 = parseUSMoney(row[6]);
 
-        // Excluir de forma absoluta todos los ítems cuyo precio base sea 900 o 0
-        items = items.filter((it) => 
-          it.precio10U !== 900 && 
-          it.precio5U !== 900 && 
-          it.precio3U !== 900 && 
-          (it.precio10U > 0 || it.precio3U > 0)
-        );
+          // Filtrar items sin precio válido o con precio 900
+          if (p10 === 900 || p5 === 900 || p3 === 900) continue;
+          if (p10 <= 0 && p3 <= 0) continue;
 
-        items = items.map((it) => {
-          const key = normKey(it.marca) + "|" + normKey(it.nombre);
-          const img = IMAGE_MAP[key];
-          return { ...it, img: img ? imgPath(img) : "" };
-        });
+          items.push({
+            id: `prod_${i}`,
+            marca,
+            nombre,
+            ml,
+            stock,
+            precio10U: p10,
+            precio5U: p5,
+            precio3U: p3,
+            img: `../fotos/${nombre.toLowerCase().replace(/\s+/g, '')}.jpg`
+          });
+        }
 
         ALL_PRODUCTS = items;
-        statusEl.style.display = "none";
-        applyFilters();
+        renderCatalog();
       } catch (e) {
-        console.error(e);
-        statusEl.textContent = "Error al obtener la lista de productos.";
+        console.error("Error al cargar catálogo:", e);
+        document.getElementById('catalogContainer').innerHTML = `<p style="text-align:center; color:red;">Error al cargar los productos.</p>`;
       }
     }
 
-    function applyFilters() {
-      const term = normKey(document.getElementById("searchInput").value);
+    // Renderizar HTML
+    function renderCatalog() {
+      const container = document.getElementById('catalogContainer');
+      const search = document.getElementById('searchInput').value.toLowerCase();
       
-      const filtered = ALL_PRODUCTS.filter((it) => {
-        const matchesSearch = normKey(it.nombre).includes(term) || normKey(it.marca).includes(term);
-        const matchesStock = ONLY_STOCK ? it.stock > 0 : true;
+      container.innerHTML = '';
+
+      let filtered = ALL_PRODUCTS.filter(p => {
+        const matchesSearch = p.marca.toLowerCase().includes(search) || p.nombre.toLowerCase().includes(search);
+        const matchesStock = filterOnlyStock ? p.stock > 0 : true;
         return matchesSearch && matchesStock;
       });
 
-      renderList(filtered);
-    }
-
-    function renderList(products) {
-      const container = document.getElementById("catalogContainer");
-      container.innerHTML = "";
-
-      const byBrand = {};
-      products.forEach((it) => {
-        byBrand[it.marca] = byBrand[it.marca] || [];
-        byBrand[it.marca].push(it);
-      });
-
-      const sortedBrands = Object.keys(byBrand).sort((a, b) =>
-        a.localeCompare(b, "es", { sensitivity: "base" })
-      );
-
-      if (sortedBrands.length === 0) {
-        container.innerHTML = `<p style="text-align:center; opacity:0.6; padding: 40px 0;">No se encontraron productos disponibles.</p>`;
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); margin-top:30px;">No se encontraron productos.</p>`;
         return;
       }
 
-      sortedBrands.forEach((brand) => {
-        const group = document.createElement("div");
-        group.className = "brand-group";
+      // Agrupar por Marca
+      const grouped = {};
+      filtered.forEach(p => {
+        if (!grouped[p.marca]) grouped[p.marca] = [];
+        grouped[p.marca].push(p);
+      });
 
-        const itemsList = byBrand[brand].sort((a, b) =>
-          a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
-        );
+      Object.keys(grouped).sort().forEach(marca => {
+        const brandSec = document.createElement('div');
+        brandSec.className = 'brand-section';
+        
+        let html = `<h2 class="brand-title">${marca}</h2><div class="products-grid">`;
 
-        let itemsHtml = itemsList.map((it) => {
-          const qty = CART[it.id] || 0;
-          const displayPrice = getItemActivePrice(it);
-          const imgHtml = it.img
-            ? `<img src="${it.img}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'noimg',textContent:'Sin foto'}))">`
-            : `<div class="noimg">Sin foto</div>`;
+        grouped[marca].forEach(item => {
+          const price = item[`precio${currentTier}`] || item.precio10U;
+          const qty = cart[item.id] || 0;
 
-          return `
-            <div class="item-card">
-              ${imgHtml}
-              <p class="item-name" title="${it.nombre}">${it.nombre}</p>
-              <span class="item-price">${moneyAR(displayPrice)}</span>
-              <p class="item-details">${it.ml} ml · Stock: ${it.stock}</p>
-              
-              <div class="qty-controls">
-                <button class="qty-btn" onclick="updateQty('${it.id}', -1)">-</button>
-                <span class="qty-count" id="qty_${it.id}">${qty}</span>
-                <button class="qty-btn" onclick="updateQty('${it.id}', 1)">+</button>
+          html += `
+            <div class="product-card">
+              <img src="${item.img}" class="product-img" onerror="this.src='https://via.placeholder.com/100?text=Decantcias'" />
+              <div class="product-name">${item.nombre}</div>
+              <div class="product-details">${item.ml} ml - Stock: ${item.stock}</div>
+              <div class="product-price">${moneyAR(price)}</div>
+              <div class="quantity-control">
+                <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
+                <input type="text" class="qty-input" value="${qty}" readonly />
+                <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
               </div>
             </div>
           `;
-        }).join("");
+        });
 
-        group.innerHTML = `
-          <h2 class="brand-title">${brand}</h2>
-          <div class="items-grid">${itemsHtml}</div>
-        `;
-        container.appendChild(group);
+        html += `</div>`;
+        brandSec.innerHTML = html;
+        container.appendChild(brandSec);
       });
+
+      updateCartBar();
+    }
+
+    function setPriceTier(tier) {
+      currentTier = tier;
+      document.querySelectorAll('.tier-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tier === tier);
+      });
+      renderCatalog();
+    }
+
+    function toggleStockFilter() {
+      filterOnlyStock = !filterOnlyStock;
+      const btn = document.getElementById('onlyStockBtn');
+      btn.classList.toggle('active', filterOnlyStock);
+      renderCatalog();
     }
 
     function updateQty(id, change) {
-      const current = CART[id] || 0;
+      const current = cart[id] || 0;
       const updated = Math.max(0, current + change);
-
       if (updated === 0) {
-        delete CART[id];
+        delete cart[id];
       } else {
-        CART[id] = updated;
+        cart[id] = updated;
       }
-
-      const counterEl = document.getElementById(`qty_${id}`);
-      if (counterEl) counterEl.textContent = updated;
-
-      recalculateTotals();
-      if (document.getElementById("modalOverlay").classList.contains("active")) {
-        renderModalList();
-      }
+      renderCatalog();
     }
 
-    function removeItem(id) {
-      delete CART[id];
-      const counterEl = document.getElementById(`qty_${id}`);
-      if (counterEl) counterEl.textContent = 0;
+    function updateCartBar() {
+      let count = 0;
+      let total = 0;
 
-      recalculateTotals();
-      renderModalList();
-    }
-
-    function clearCart() {
-      CART = {};
-      document.querySelectorAll(".qty-count").forEach(el => el.textContent = 0);
-      recalculateTotals();
-      closeModal();
-    }
-
-    function recalculateTotals() {
-      let totalUnits = 0;
-      let totalPrice = 0;
-
-      for (const id in CART) {
-        const qty = CART[id];
-        const item = ALL_PRODUCTS.find((p) => p.id === id);
+      Object.keys(cart).forEach(id => {
+        const item = ALL_PRODUCTS.find(p => p.id === id);
         if (item) {
-          totalUnits += qty;
-          totalPrice += getItemActivePrice(item) * qty;
+          const qty = cart[id];
+          const price = item[`precio${currentTier}`] || item.precio10U;
+          count += qty;
+          total += price * qty;
         }
-      }
-
-      document.getElementById("itemsCount").textContent = `${totalUnits} ${totalUnits === 1 ? 'unidad seleccionada' : 'unidades seleccionadas'}`;
-      document.getElementById("totalPrice").textContent = moneyAR(totalPrice);
-      document.getElementById("generatePdfBtn").disabled = totalUnits === 0;
-      document.getElementById("reviewBtn").disabled = totalUnits === 0;
-      document.getElementById("reviewBtn").textContent = `Revisar pedido (${totalUnits})`;
-    }
-
-    /* Sugerencias para Decants */
-    function populateDecantSuggestions() {
-      const datalist = document.getElementById("decantNameList");
-      if (!datalist) return;
-
-      datalist.innerHTML = "";
-
-      const uniqueItems = new Set();
-
-      ALL_PRODUCTS.forEach((p) => {
-        if (p.isCustom) return;
-        const label = `${p.marca} - ${p.nombre}`;
-        uniqueItems.add(label);
       });
 
-      Array.from(uniqueItems)
-        .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }))
-        .forEach((itemText) => {
-          const opt = document.createElement("option");
-          opt.value = itemText;
-          datalist.appendChild(opt);
-        });
-    }
-
-    /* Modal Agregar Decant */
-    function openDecantModal() {
-      document.getElementById("decantNameInput").value = "";
-      document.getElementById("decantPriceInput").value = "";
-      document.getElementById("decantQtyInput").value = "1";
+      document.getElementById('cartCountLabel').textContent = `Productos seleccionados: ${count}`;
+      document.getElementById('cartTotalLabel').textContent = moneyAR(total);
       
-      populateDecantSuggestions();
-
-      document.getElementById("decantModalOverlay").classList.add("active");
+      const btn = document.getElementById('generatePdfBtn');
+      btn.disabled = count === 0;
     }
 
-    function closeDecantModal() {
-      document.getElementById("decantModalOverlay").classList.remove("active");
-    }
+    document.getElementById('searchInput').addEventListener('input', renderCatalog);
 
-    function saveCustomDecant() {
-      const nameVal = document.getElementById("decantNameInput").value.trim();
-      const rawPrice = document.getElementById("decantPriceInput").value.replace(/\,/g, '.');
-      const priceVal = parseFloat(rawPrice);
-      const qtyVal = parseInt(document.getElementById("decantQtyInput").value, 10);
-
-      if (!nameVal) {
-        alert("Por favor, ingresa el nombre de la fragancia.");
-        return;
-      }
-      if (isNaN(priceVal) || priceVal < 0) {
-        alert("Por favor, ingresa un precio válido.");
-        return;
-      }
-      if (isNaN(qtyVal) || qtyVal <= 0) {
-        alert("Por favor, ingresa una cantidad válida (mínimo 1).");
-        return;
-      }
-
-      const id = `decant_custom_${Date.now()}`;
-      const decantItem = {
-        id: id,
-        marca: "Decant 5ml",
-        nombre: `"${nameVal}"`,
-        precio: priceVal,
-        precio10U: priceVal,
-        precio5U: priceVal,
-        precio3U: priceVal,
-        stock: 999,
-        ml: 5,
-        isCustom: true
-      };
-
-      ALL_PRODUCTS.push(decantItem);
-      CART[id] = qtyVal;
-
-      recalculateTotals();
-      closeDecantModal();
-    }
-
-    // Toggle Filtro Stock
-    document.getElementById("onlyStockBtn").addEventListener("click", function() {
-      ONLY_STOCK = !ONLY_STOCK;
-      this.classList.toggle("active", ONLY_STOCK);
-      applyFilters();
-    });
-
-    // Buscador
-    document.getElementById("searchInput").addEventListener("input", applyFilters);
-
-    // Modal
-    function openModal() {
-      renderModalList();
-      document.getElementById("modalOverlay").classList.add("active");
-    }
-
-    function closeModal() {
-      document.getElementById("modalOverlay").classList.remove("active");
-    }
-
-    function renderModalList() {
-      const container = document.getElementById("modalList");
-      container.innerHTML = "";
-
-      const keys = Object.keys(CART);
-      if (keys.length === 0) {
-        container.innerHTML = `<p style="text-align:center; opacity:0.6; padding: 20px;">No hay productos en el pedido.</p>`;
-        closeModal();
-        return;
-      }
-
-      keys.forEach((id) => {
-        const qty = CART[id];
-        const item = ALL_PRODUCTS.find((p) => p.id === id);
-        if (!item) return;
-
-        const currentPrice = getItemActivePrice(item);
-        const row = document.createElement("div");
-        row.className = "cart-item-row";
-        const titleText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.marca} - ${item.nombre}`;
-        row.innerHTML = `
-          <div class="cart-item-info">
-            <p class="cart-item-title">${titleText}</p>
-            <p class="cart-item-sub">${item.ml} ml · ${moneyAR(currentPrice)} c/u</p>
-          </div>
-          <div class="cart-item-actions">
-            <div class="qty-controls" style="width: auto;">
-              <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
-              <span class="qty-count" style="padding: 0 8px;">${qty}</span>
-              <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
-            </div>
-            <span class="cart-item-price">${moneyAR(currentPrice * qty)}</span>
-            <button class="remove-item-btn" onclick="removeItem('${item.id}')" title="Quitar item">✕</button>
-          </div>
-        `;
-        container.appendChild(row);
+    // Helper para imagen base64
+    function imageToDataURL(url) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
       });
     }
 
-    // Helper imagen PDF
-    async function imageToDataURL(url) {
-      try {
-        const res = await fetch(url);
-        const blob = await res.blob();
-        return await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-      } catch (e) {
-        return null;
-      }
-    }
-
-    // Generar PDF
-    document.getElementById("generatePdfBtn").addEventListener("click", async () => {
-      const btn = document.getElementById("generatePdfBtn");
+    // ==========================================
+    // 1. DESCARGAR PDF COMPLETO (3 PRECIOS)
+    // ==========================================
+    document.getElementById("downloadFullCatalogPdfBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("downloadFullCatalogPdfBtn");
       btn.disabled = true;
-      btn.textContent = "Generando PDF...";
+      btn.textContent = "Generando...";
 
       try {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ unit: "mm", format: "a4" });
 
-        const marginX = 15;
+        const marginX = 12;
         const pageHeight = 297;
         const pageWidth = 210;
         let y = 15;
 
+        // Logo
         const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
         if (logoDataUrl) {
-          const logoWidth = 26;
-          doc.addImage(logoDataUrl, "PNG", (pageWidth - logoWidth) / 2, y, logoWidth, logoWidth * 0.75);
-          y += logoWidth * 0.75 + 6;
+          doc.addImage(logoDataUrl, "PNG", (pageWidth - 24) / 2, y, 24, 18);
+          y += 22;
         }
 
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.text("Presupuesto Mayorista — Decantcias", pageWidth / 2, y, { align: "center" });
+        doc.setFontSize(15);
+        doc.text("Catálogo Completo — Decantcias Mayorista", pageWidth / 2, y, { align: "center" });
         y += 6;
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9);
         const fecha = new Date().toLocaleDateString("es-AR", { year: 'numeric', month: 'long', day: 'numeric' });
-        doc.text(`Fecha: ${fecha}`, pageWidth / 2, y, { align: "center" });
-        y += 10;
+        doc.text(`Lista actualizada al: ${fecha}`, pageWidth / 2, y, { align: "center" });
+        y += 8;
 
-        // Tabla Header
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setFillColor(240, 240, 240);
-        doc.rect(marginX, y, pageWidth - (marginX * 2), 8, "F");
-        
-        doc.text("Producto / Escala de Precios", marginX + 3, y + 5.5);
-        doc.text("Cant.", marginX + 130, y + 5.5, { align: "center" });
-        doc.text("P. Unitario", marginX + 175, y + 5.5, { align: "right" });
-        y += 12;
+        const printHeader = () => {
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8.5);
+          doc.setFillColor(230, 230, 230);
+          doc.rect(marginX, y, pageWidth - (marginX * 2), 6.5, "F");
 
-        let totalUnidades = 0;
+          doc.text("Producto / Detalle", marginX + 3, y + 4.5);
+          doc.text("Precio 10+ U", marginX + 110, y + 4.5, { align: "right" });
+          doc.text("Precio 5+ U", marginX + 145, y + 4.5, { align: "right" });
+          doc.text("Precio 3+ U", marginX + 180, y + 4.5, { align: "right" });
+          y += 9;
+        };
 
-        for (const id in CART) {
-          const qty = CART[id];
-          const item = ALL_PRODUCTS.find((p) => p.id === id);
-          if (!item) continue;
+        printHeader();
 
-          totalUnidades += qty;
-
-          if (y > pageHeight - 35) {
+        ALL_PRODUCTS.forEach((item) => {
+          if (y > pageHeight - 15) {
             doc.addPage();
-            y = 20;
+            y = 15;
+            printHeader();
           }
 
-          const itemText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.nombre}`;
-          const truncatedText = doc.splitTextToSize(itemText, 110)[0];
-
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(10);
-          doc.text(truncatedText, marginX + 3, y);
-          doc.text(String(qty), marginX + 130, y, { align: "center" });
-          y += 5;
+          const itemText = `${item.marca} - ${item.nombre} (${item.ml}ml)`;
+          const truncatedText = doc.splitTextToSize(itemText, 90)[0];
 
           doc.setFont("helvetica", "normal");
-          doc.setFontSize(9);
+          doc.setFontSize(8);
+          doc.text(truncatedText, marginX + 3, y);
+          doc.text(moneyAR(item.precio10U), marginX + 110, y, { align: "right" });
+          doc.text(moneyAR(item.precio5U), marginX + 145, y, { align: "right" });
+          doc.text(moneyAR(item.precio3U), marginX + 180, y, { align: "right" });
 
-          if (item.isCustom) {
-            doc.text(` Precio: ${moneyAR(item.precio)}`, marginX + 6, y);
-            y += 5;
-          } else {
-            doc.text(` (Precio 10+ u) ${moneyAR(item.precio10U)}`, marginX + 6, y);
-            y += 4.5;
-            doc.text(` (Precio 5+ u) ${moneyAR(item.precio5U)}`, marginX + 6, y);
-            y += 4.5;
-            doc.text(` (Precio 3+ u) ${moneyAR(item.precio3U)}`, marginX + 6, y);
-            y += 5.5;
-          }
-
-          doc.setLineWidth(0.1);
-          doc.setDrawColor(200, 200, 200);
+          y += 3.5;
+          doc.setLineWidth(0.05);
+          doc.setDrawColor(220, 220, 220);
           doc.line(marginX + 3, y, pageWidth - marginX, y);
-          y += 5;
-        }
+          y += 3.8;
+        });
 
-        y += 4;
-        if (y > pageHeight - 30) {
-          doc.addPage();
-          y = 20;
-        }
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(11);
-        doc.text(`Total Unidades Seleccionadas: ${totalUnidades}`, marginX + 3, y);
-
-        y += 14;
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(8.5);
-        const nota = doc.splitTextToSize(
-          "Este documento es una cotización estimada. Los precios por unidad varían según la cantidad total llevada por escala (3, 5 o 10+ unidades). Sujeto a confirmación de stock.",
-          pageWidth - (marginX * 2)
-        );
-        doc.text(nota, marginX, y);
-
-        doc.save(`presupuesto-decantcias-${Date.now()}.pdf`);
+        doc.save(`catalogo-completo-decantcias.pdf`);
       } catch (e) {
         console.error(e);
-        alert("Error al generar el presupuesto en PDF.");
+        alert("Error al generar el PDF del catálogo completo.");
       } finally {
         btn.disabled = false;
         btn.textContent = "Descargar PDF";
       }
     });
 
+    // ==========================================
+    // 2. DESCARGAR PRESUPUESTO DEL CARRITO
+    // ==========================================
+    document.getElementById("generatePdfBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("generatePdfBtn");
+      btn.disabled = true;
+
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+        const marginX = 15;
+        const pageWidth = 210;
+        let y = 15;
+
+        // Logo
+        const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
+        if (logoDataUrl) {
+          doc.addImage(logoDataUrl, "PNG", (pageWidth - 26) / 2, y, 26, 20);
+          y += 24;
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text("Presupuesto de Compra — Decantcias", pageWidth / 2, y, { align: "center" });
+        y += 6;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(`Escala seleccionada: ${currentTier}`, pageWidth / 2, y, { align: "center" });
+        y += 10;
+
+        // Encabezado
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setFillColor(240, 240, 240);
+        doc.rect(marginX, y, pageWidth - (marginX * 2), 7, "F");
+
+        doc.text("Producto", marginX + 3, y + 5);
+        doc.text("Cant.", marginX + 110, y + 5, { align: "center" });
+        doc.text("P. Unit", marginX + 145, y + 5, { align: "right" });
+        doc.text("Subtotal", marginX + 180, y + 5, { align: "right" });
+        y += 10;
+
+        let grandTotal = 0;
+
+        Object.keys(cart).forEach((id) => {
+          const item = ALL_PRODUCTS.find((p) => p.id === id);
+          if (!item) return;
+
+          const qty = cart[id];
+          const unitPrice = item[`precio${currentTier}`] || item.precio10U;
+          const subtotal = unitPrice * qty;
+          grandTotal += subtotal;
+
+          const itemText = `${item.marca} - ${item.nombre} (${item.ml}ml)`;
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.5);
+          doc.text(doc.splitTextToSize(itemText, 90)[0], marginX + 3, y);
+          doc.text(String(qty), marginX + 110, y, { align: "center" });
+          doc.text(moneyAR(unitPrice), marginX + 145, y, { align: "right" });
+          doc.text(moneyAR(subtotal), marginX + 180, y, { align: "right" });
+
+          y += 4;
+          doc.setLineWidth(0.08);
+          doc.setDrawColor(220, 220, 220);
+          doc.line(marginX + 3, y, pageWidth - marginX, y);
+          y += 5;
+        });
+
+        // Total
+        y += 5;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text(`TOTAL ESTIMADO: ${moneyAR(grandTotal)}`, pageWidth - marginX, y, { align: "right" });
+
+        doc.save(`presupuesto-decantcias-${Date.now()}.pdf`);
+      } catch (e) {
+        console.error(e);
+        alert("Error al generar el presupuesto.");
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // Iniciar carga
     cargarCatalogo();
   </script>
 </body>
