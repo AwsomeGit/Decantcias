@@ -75,6 +75,31 @@
   }
   .search-input:focus { outline: 1px solid #c9a24b; }
 
+  /* Switch de Escala de Precios */
+  .price-tier-switch {
+    display: flex;
+    background: #1a1a1a;
+    border: 1px solid rgba(201,162,75,0.4);
+    border-radius: 8px;
+    padding: 2px;
+  }
+  .tier-btn {
+    background: transparent;
+    border: none;
+    color: #f2eee2;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .tier-btn.active {
+    background: #c9a24b;
+    color: #1a1a1a;
+    font-weight: 800;
+  }
+
   /* Botón Filtro Stock y Agregar Decant */
   .stock-filter-btn, .add-decant-btn {
     padding: 10px 14px;
@@ -411,6 +436,14 @@
     <div class="toolbar">
       <a href="index.html" class="back-btn">← Volver</a>
       <input type="text" id="searchInput" class="search-input" placeholder="Buscar perfume o marca..." />
+      
+      <!-- Selector de escala de precios -->
+      <div class="price-tier-switch">
+        <button class="tier-btn active" data-tier="10U" onclick="setPriceTier('10U')">10+ U</button>
+        <button class="tier-btn" data-tier="5U" onclick="setPriceTier('5U')">5+ U</button>
+        <button class="tier-btn" data-tier="3U" onclick="setPriceTier('3U')">3+ U</button>
+      </div>
+
       <button id="onlyStockBtn" class="stock-filter-btn" type="button">
         <span>✓</span> Solo en stock
       </button>
@@ -495,6 +528,7 @@
     let IMAGE_MAP = {}; 
     let CART = {};
     let ONLY_STOCK = false;
+    let CURRENT_TIER = "10U"; // '10U', '5U' o '3U'
 
     function normKey(s) {
       return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[()]/g, "").replace(/\s+/g, "").trim();
@@ -523,6 +557,22 @@
       return "../" + p.replace(/^\/+/, "");
     }
 
+    function getItemActivePrice(item) {
+      if (item.isCustom) return item.precio;
+      if (CURRENT_TIER === "3U") return item.precio3U || item.precio10U || 0;
+      if (CURRENT_TIER === "5U") return item.precio5U || item.precio10U || 0;
+      return item.precio10U || 0;
+    }
+
+    function setPriceTier(tier) {
+      CURRENT_TIER = tier;
+      document.querySelectorAll(".tier-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tier === tier);
+      });
+      applyFilters();
+      recalculateTotals();
+    }
+
     function parseWholesaleBlocks(csvText) {
       const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: "greedy" });
       const rows = parsed.data;
@@ -547,9 +597,6 @@
                 const precio5U = parseUSMoney(rowr[c + 3]);
                 const precio10U = parseUSMoney(rowr[c + 4]);
                 
-                // Asigna Precio 10U por defecto (o 5U / 3U si falta)
-                const precio = precio10U || precio5U || precio3U; 
-                
                 const stock = toNumber(rowr[c + 5]);
                 const ml = toNumber(rowr[c + 6]);
                 const id = `${normKey(marca)}_${normKey(nombre)}_${ml}`;
@@ -558,7 +605,6 @@
                   id, 
                   marca, 
                   nombre, 
-                  precio, 
                   precio3U, 
                   precio5U, 
                   precio10U, 
@@ -601,7 +647,7 @@
         const text = await res.text();
         let items = parseWholesaleBlocks(text);
 
-        items = items.filter((it) => Math.abs(it.precio - 900) > 0.01 && it.precio > 0);
+        items = items.filter((it) => Math.abs(it.precio10U - 900) > 0.01 && (it.precio10U > 0 || it.precio3U > 0));
 
         items = items.map((it) => {
           const key = normKey(it.marca) + "|" + normKey(it.nombre);
@@ -659,6 +705,7 @@
 
         let itemsHtml = itemsList.map((it) => {
           const qty = CART[it.id] || 0;
+          const displayPrice = getItemActivePrice(it);
           const imgHtml = it.img
             ? `<img src="${it.img}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'noimg',textContent:'Sin foto'}))">`
             : `<div class="noimg">Sin foto</div>`;
@@ -667,7 +714,7 @@
             <div class="item-card">
               ${imgHtml}
               <p class="item-name" title="${it.nombre}">${it.nombre}</p>
-              <span class="item-price">${moneyAR(it.precio)}</span>
+              <span class="item-price">${moneyAR(displayPrice)}</span>
               <p class="item-details">${it.ml} ml · Stock: ${it.stock}</p>
               
               <div class="qty-controls">
@@ -731,7 +778,7 @@
         const item = ALL_PRODUCTS.find((p) => p.id === id);
         if (item) {
           totalUnits += qty;
-          totalPrice += item.precio * qty;
+          totalPrice += getItemActivePrice(item) * qty;
         }
       }
 
@@ -806,6 +853,9 @@
         marca: "Decant 5ml",
         nombre: `"${nameVal}"`,
         precio: priceVal,
+        precio10U: priceVal,
+        precio5U: priceVal,
+        precio3U: priceVal,
         stock: 999,
         ml: 5,
         isCustom: true
@@ -854,13 +904,14 @@
         const item = ALL_PRODUCTS.find((p) => p.id === id);
         if (!item) return;
 
+        const currentPrice = getItemActivePrice(item);
         const row = document.createElement("div");
         row.className = "cart-item-row";
         const titleText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.marca} - ${item.nombre}`;
         row.innerHTML = `
           <div class="cart-item-info">
             <p class="cart-item-title">${titleText}</p>
-            <p class="cart-item-sub">${item.ml} ml · ${moneyAR(item.precio)} c/u</p>
+            <p class="cart-item-sub">${item.ml} ml · ${moneyAR(currentPrice)} c/u</p>
           </div>
           <div class="cart-item-actions">
             <div class="qty-controls" style="width: auto;">
@@ -868,7 +919,7 @@
               <span class="qty-count" style="padding: 0 8px;">${qty}</span>
               <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
             </div>
-            <span class="cart-item-price">${moneyAR(item.precio * qty)}</span>
+            <span class="cart-item-price">${moneyAR(currentPrice * qty)}</span>
             <button class="remove-item-btn" onclick="removeItem('${item.id}')" title="Quitar item">✕</button>
           </div>
         `;
@@ -892,7 +943,7 @@
       }
     }
 
-    // PDF
+    // Generar PDF con desglose de 10u, 5u y 3u por cada producto
     document.getElementById("generatePdfBtn").addEventListener("click", async () => {
       const btn = document.getElementById("generatePdfBtn");
       btn.disabled = true;
@@ -931,62 +982,73 @@
         doc.setFillColor(240, 240, 240);
         doc.rect(marginX, y, pageWidth - (marginX * 2), 8, "F");
         
-        doc.text("Producto", marginX + 3, y + 5.5);
-        doc.text("Cant.", marginX + 110, y + 5.5, { align: "center" });
-        doc.text("P. Unitario", marginX + 140, y + 5.5, { align: "right" });
-        doc.text("Subtotal", marginX + 175, y + 5.5, { align: "right" });
+        doc.text("Producto / Escala de Precios", marginX + 3, y + 5.5);
+        doc.text("Cant.", marginX + 130, y + 5.5, { align: "center" });
+        doc.text("P. Unitario", marginX + 175, y + 5.5, { align: "right" });
         y += 12;
 
-        let totalGeneral = 0;
         let totalUnidades = 0;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
 
         for (const id in CART) {
           const qty = CART[id];
           const item = ALL_PRODUCTS.find((p) => p.id === id);
           if (!item) continue;
 
-          const subtotal = item.precio * qty;
-          totalGeneral += subtotal;
           totalUnidades += qty;
 
-          if (y > pageHeight - 30) {
+          // Espacio necesario para el bloque del producto (nombre + 3 precios = ~20mm)
+          if (y > pageHeight - 35) {
             doc.addPage();
             y = 20;
           }
 
-          const itemText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.marca} - ${item.nombre} (${item.ml}ml)`;
-          const truncatedText = doc.splitTextToSize(itemText, 100)[0];
+          const itemText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.nombre}`;
+          const truncatedText = doc.splitTextToSize(itemText, 110)[0];
 
+          // Título del Producto
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10);
           doc.text(truncatedText, marginX + 3, y);
-          doc.text(String(qty), marginX + 110, y, { align: "center" });
-          doc.text(moneyAR(item.precio), marginX + 140, y, { align: "right" });
-          doc.text(moneyAR(subtotal), marginX + 175, y, { align: "right" });
+          doc.text(String(qty), marginX + 130, y, { align: "center" });
+          y += 5;
 
-          y += 7;
+          // Desglose de Precios (10+ U, 5+ U, 3+ U)
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9);
+
+          if (item.isCustom) {
+            doc.text(` Precio: ${moneyAR(item.precio)}`, marginX + 6, y);
+            y += 5;
+          } else {
+            doc.text(` (Precio 10+ u) ${moneyAR(item.precio10U)}`, marginX + 6, y);
+            y += 4.5;
+            doc.text(` (Precio 5+ u) ${moneyAR(item.precio5U)}`, marginX + 6, y);
+            y += 4.5;
+            doc.text(` (Precio 3+ u) ${moneyAR(item.precio3U)}`, marginX + 6, y);
+            y += 5.5;
+          }
+
+          doc.setLineWidth(0.1);
+          doc.setDrawColor(200, 200, 200);
+          doc.line(marginX + 3, y, pageWidth - marginX, y);
+          y += 5;
         }
 
         y += 4;
-        doc.setLineWidth(0.5);
-        doc.line(marginX, y, pageWidth - marginX, y);
-        y += 8;
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(11);
-        doc.text(`Total Unidades: ${totalUnidades}`, marginX + 3, y);
-        doc.text(`TOTAL FINAL: ${moneyAR(totalGeneral)}`, marginX + 175, y, { align: "right" });
-
-        y += 16;
         if (y > pageHeight - 30) {
           doc.addPage();
           y = 20;
         }
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text(`Total Unidades Seleccionadas: ${totalUnidades}`, marginX + 3, y);
+
+        y += 14;
         doc.setFont("helvetica", "italic");
-        doc.setFontSize(9);
+        doc.setFontSize(8.5);
         const nota = doc.splitTextToSize(
-          "Este documento es una cotización estimada. Los precios y el stock están sujetos a confirmación definitiva al momento de concretar el pedido. No válido como factura.",
+          "Este documento es una cotización estimada. Los precios por unidad varían según la cantidad total llevada por escala (3, 5 o 10+ unidades). Sujeto a confirmación de stock.",
           pageWidth - (marginX * 2)
         );
         doc.text(nota, marginX, y);
