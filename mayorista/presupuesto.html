@@ -17,7 +17,7 @@
       #0d0d0d;
     color: #f2eee2;
     min-height: 100vh;
-    padding-bottom: 120px;
+    padding-bottom: 140px;
   }
   .gold { color: #c9a24b; }
 
@@ -92,9 +92,7 @@
     white-space: nowrap;
     user-select: none;
   }
-  .stock-filter-btn:hover, .add-decant-btn:hover {
-    border-color: #c9a24b;
-  }
+  .stock-filter-btn:hover, .add-decant-btn:hover { border-color: #c9a24b; }
   .add-decant-btn {
     background: linear-gradient(135deg, rgba(201,162,75,0.2), rgba(201,162,75,0.05));
     border-color: #c9a24b;
@@ -212,6 +210,34 @@
     font-weight: 600;
   }
 
+  /* Selector de Lista de Precio (Switch) */
+  .tier-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e1e1e;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(201,162,75,0.4);
+  }
+  .tier-switch-label {
+    font-size: 11px;
+    color: #c9a24b;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .tier-select {
+    background: #0d0d0d;
+    color: #f2eee2;
+    border: 1px solid #c9a24b;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+  }
+
   /* Barra Flotante Inferior */
   .cart-bar {
     position: fixed;
@@ -220,7 +246,7 @@
     right: 0;
     background: #141414;
     border-top: 1px solid rgba(201,162,75,0.5);
-    padding: 14px 24px;
+    padding: 12px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -231,6 +257,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    flex-wrap: wrap;
   }
   .cart-totals {
     display: flex;
@@ -293,8 +320,8 @@
     border: 1px solid rgba(201,162,75,0.4);
     border-radius: 12px;
     width: 100%;
-    max-width: 600px;
-    max-height: 80vh;
+    max-width: 680px;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.9);
@@ -351,15 +378,28 @@
     justify-content: space-between;
     background: #1c1c1c;
     border: 1px solid rgba(201,162,75,0.2);
-    padding: 8px 12px;
+    padding: 10px 12px;
     border-radius: 8px;
     gap: 10px;
   }
   .cart-item-info { flex: 1; min-width: 0; }
   .cart-item-title { font-size: 13px; font-weight: 600; margin: 0; }
   .cart-item-sub { font-size: 11px; opacity: 0.6; margin: 2px 0 0 0; }
-  .cart-item-actions { display: flex; align-items: center; gap: 12px; }
-  .cart-item-price { font-size: 13px; font-weight: 800; color: #c9a24b; }
+  .cart-item-actions { display: flex; align-items: center; gap: 8px; }
+  .cart-item-price { font-size: 13px; font-weight: 800; color: #c9a24b; min-width: 70px; text-align: right; }
+
+  /* Input para editar precio individual */
+  .unit-price-input {
+    width: 80px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid rgba(201,162,75,0.5);
+    background: #111;
+    color: #c9a24b;
+    font-weight: 700;
+    font-size: 12px;
+    text-align: right;
+  }
 
   .remove-item-btn {
     background: rgba(226, 107, 107, 0.15);
@@ -430,6 +470,17 @@
         <span class="total-label" id="itemsCount">0 productos seleccionados</span>
         <span class="total-amount" id="totalPrice">$0</span>
       </div>
+
+      <!-- Switch de Escala de Precio -->
+      <div class="tier-switch-container">
+        <span class="tier-switch-label">Lista:</span>
+        <select id="barTierSelect" class="tier-select" onchange="changePriceTier(this.value)">
+          <option value="10" selected>x10 Unidades</option>
+          <option value="5">x5 Unidades</option>
+          <option value="3">x3 Unidades</option>
+        </select>
+      </div>
+
       <button class="review-btn" id="reviewBtn" disabled onclick="openModal()">Revisar pedido (0)</button>
     </div>
     <div class="action-btns">
@@ -442,6 +493,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3>Revisión de Pedido</h3>
+        <div class="tier-switch-container">
+          <span class="tier-switch-label">Aplicar Lista:</span>
+          <select id="modalTierSelect" class="tier-select" onchange="changePriceTier(this.value)">
+            <option value="10" selected>x10 Unid.</option>
+            <option value="5">x5 Unid.</option>
+            <option value="3">x3 Unid.</option>
+          </select>
+        </div>
         <button class="close-modal" onclick="closeModal()">✕</button>
       </div>
       <div class="modal-body" id="modalList"></div>
@@ -493,7 +552,9 @@
 
     let ALL_PRODUCTS = [];
     let IMAGE_MAP = {}; 
-    let CART = {};
+    let CART = {}; // { id: cantidad }
+    let CUSTOM_PRICES = {}; // { id: precioUnitarioEditado }
+    let CURRENT_TIER = "10"; // "3", "5" o "10"
     let ONLY_STOCK = false;
 
     function normKey(s) {
@@ -523,7 +584,7 @@
       return "../" + p.replace(/^\/+/, "");
     }
 
-    /* Mapeo dinámico de columnas de bloques mayoristas */
+    /* Mapeo dinámico de bloques mayoristas */
     function parseWholesaleBlocks(csvText) {
       const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: "greedy" });
       const rows = parsed.data;
@@ -567,15 +628,17 @@
                 const p3 = colIndexMap.precio3 !== undefined ? parseUSMoney(rowr[colIndexMap.precio3]) : 0;
                 const p5 = colIndexMap.precio5 !== undefined ? parseUSMoney(rowr[colIndexMap.precio5]) : p3;
                 const p10 = colIndexMap.precio10 !== undefined ? parseUSMoney(rowr[colIndexMap.precio10]) : p5;
-                
-                // Usamos el precio mayorista preferencial (x10)
-                const precio = p10 || p5 || p3;
 
                 const stock = colIndexMap.stock !== undefined ? toNumber(rowr[colIndexMap.stock]) : 0;
                 const ml = colIndexMap.ml !== undefined ? toNumber(rowr[colIndexMap.ml]) : 0;
 
                 const id = `${normKey(marca)}_${normKey(nombre)}_${ml}`;
-                items.push({ id, marca, nombre, precio, stock, ml });
+                items.push({ 
+                  id, marca, nombre, stock, ml,
+                  precio3: p3 || p5 || p10,
+                  precio5: p5 || p10 || p3,
+                  precio10: p10 || p5 || p3
+                });
               }
               rr++;
             }
@@ -583,6 +646,17 @@
         }
       }
       return items;
+    }
+
+    /* Obtener precio según escalón (o edición personalizada) */
+    function getItemUnitPrice(item) {
+      if (item.isCustom) return item.precioCustom || 0;
+      if (CUSTOM_PRICES[item.id] !== undefined) {
+        return CUSTOM_PRICES[item.id];
+      }
+      if (CURRENT_TIER === "3") return item.precio3;
+      if (CURRENT_TIER === "5") return item.precio5;
+      return item.precio10;
     }
 
     async function cargarCatalogo() {
@@ -612,7 +686,7 @@
         const text = await res.text();
         let items = parseWholesaleBlocks(text);
 
-        items = items.filter((it) => Math.abs(it.precio - 900) > 0.01 && it.precio > 0);
+        items = items.filter((it) => Math.abs(it.precio10 - 900) > 0.01 && (it.precio10 > 0 || it.precio5 > 0 || it.precio3 > 0));
 
         items = items.map((it) => {
           const key = normKey(it.marca) + "|" + normKey(it.nombre);
@@ -670,6 +744,7 @@
 
         let itemsHtml = itemsList.map((it) => {
           const qty = CART[it.id] || 0;
+          const price = getItemUnitPrice(it);
           const imgHtml = it.img
             ? `<img src="${it.img}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'noimg',textContent:'Sin foto'}))">`
             : `<div class="noimg">Sin foto</div>`;
@@ -678,7 +753,7 @@
             <div class="item-card">
               ${imgHtml}
               <p class="item-name" title="${it.nombre}">${it.nombre}</p>
-              <span class="item-price">${moneyAR(it.precio)}</span>
+              <span class="item-price" id="price_tag_${it.id}">${moneyAR(price)}</span>
               <p class="item-details">${it.ml} ml · Stock: ${it.stock}</p>
               
               <div class="qty-controls">
@@ -698,12 +773,34 @@
       });
     }
 
+    function changePriceTier(newTier) {
+      CURRENT_TIER = newTier;
+      document.getElementById("barTierSelect").value = newTier;
+      document.getElementById("modalTierSelect").value = newTier;
+
+      // Limpiar sobreescrituras manuales para restaurar precios de lista
+      CUSTOM_PRICES = {};
+
+      ALL_PRODUCTS.forEach(it => {
+        const priceTag = document.getElementById(`price_tag_${it.id}`);
+        if (priceTag) {
+          priceTag.textContent = moneyAR(getItemUnitPrice(it));
+        }
+      });
+
+      recalculateTotals();
+      if (document.getElementById("modalOverlay").classList.contains("active")) {
+        renderModalList();
+      }
+    }
+
     function updateQty(id, change) {
       const current = CART[id] || 0;
       const updated = Math.max(0, current + change);
 
       if (updated === 0) {
         delete CART[id];
+        delete CUSTOM_PRICES[id];
       } else {
         CART[id] = updated;
       }
@@ -717,8 +814,20 @@
       }
     }
 
+    function updateIndividualPrice(id, newPriceVal) {
+      const val = parseFloat(newPriceVal);
+      if (!isNaN(val) && val >= 0) {
+        CUSTOM_PRICES[id] = val;
+      } else {
+        delete CUSTOM_PRICES[id];
+      }
+      recalculateTotals();
+      renderModalList();
+    }
+
     function removeItem(id) {
       delete CART[id];
+      delete CUSTOM_PRICES[id];
       const counterEl = document.getElementById(`qty_${id}`);
       if (counterEl) counterEl.textContent = 0;
 
@@ -728,6 +837,7 @@
 
     function clearCart() {
       CART = {};
+      CUSTOM_PRICES = {};
       document.querySelectorAll(".qty-count").forEach(el => el.textContent = 0);
       recalculateTotals();
       closeModal();
@@ -742,7 +852,7 @@
         const item = ALL_PRODUCTS.find((p) => p.id === id);
         if (item) {
           totalUnits += qty;
-          totalPrice += item.precio * qty;
+          totalPrice += getItemUnitPrice(item) * qty;
         }
       }
 
@@ -816,7 +926,7 @@
         id: id,
         marca: "Decant 5ml",
         nombre: `"${nameVal}"`,
-        precio: priceVal,
+        precioCustom: priceVal,
         stock: 999,
         ml: 5,
         isCustom: true
@@ -865,13 +975,15 @@
         const item = ALL_PRODUCTS.find((p) => p.id === id);
         if (!item) return;
 
+        const unitPrice = getItemUnitPrice(item);
         const row = document.createElement("div");
         row.className = "cart-item-row";
         const titleText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.marca} - ${item.nombre}`;
+        
         row.innerHTML = `
           <div class="cart-item-info">
             <p class="cart-item-title">${titleText}</p>
-            <p class="cart-item-sub">${item.ml} ml · ${moneyAR(item.precio)} c/u</p>
+            <p class="cart-item-sub">${item.ml} ml</p>
           </div>
           <div class="cart-item-actions">
             <div class="qty-controls" style="width: auto;">
@@ -879,7 +991,8 @@
               <span class="qty-count" style="padding: 0 8px;">${qty}</span>
               <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
             </div>
-            <span class="cart-item-price">${moneyAR(item.precio * qty)}</span>
+            <input type="number" class="unit-price-input" value="${unitPrice}" step="100" onchange="updateIndividualPrice('${item.id}', this.value)" title="Editar precio unitario" />
+            <span class="cart-item-price">${moneyAR(unitPrice * qty)}</span>
             <button class="remove-item-btn" onclick="removeItem('${item.id}')" title="Quitar item">✕</button>
           </div>
         `;
@@ -903,7 +1016,7 @@
       }
     }
 
-    // PDF
+    // Generar PDF
     document.getElementById("generatePdfBtn").addEventListener("click", async () => {
       const btn = document.getElementById("generatePdfBtn");
       btn.disabled = true;
@@ -959,7 +1072,8 @@
           const item = ALL_PRODUCTS.find((p) => p.id === id);
           if (!item) continue;
 
-          const subtotal = item.precio * qty;
+          const unitPrice = getItemUnitPrice(item);
+          const subtotal = unitPrice * qty;
           totalGeneral += subtotal;
           totalUnidades += qty;
 
@@ -973,7 +1087,7 @@
 
           doc.text(truncatedText, marginX + 3, y);
           doc.text(String(qty), marginX + 110, y, { align: "center" });
-          doc.text(moneyAR(item.precio), marginX + 140, y, { align: "right" });
+          doc.text(moneyAR(unitPrice), marginX + 140, y, { align: "right" });
           doc.text(moneyAR(subtotal), marginX + 175, y, { align: "right" });
 
           y += 7;
