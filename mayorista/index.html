@@ -1,707 +1,531 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Decantcias — Mayorista</title>
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- jsPDF & AutoTable -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Decantcias — Mayorista</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+   body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(201,162,75,0.15), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(201,162,75,0.12), transparent 40%),
+      #0d0d0d;
+    color: #f2eee2;
+    min-height: 100vh;
+  .gold { color: #c9a24b; }
 
-  <style>
-    :root {
-      --bg-dark: #0f0f11;
-      --card-bg: #18181c;
-      --accent-gold: #c9a24b;
-      --accent-gold-light: #f2d98d;
-      --border-color: #2a2a30;
-      --text-main: #f0f0f0;
-      --text-muted: #a0a0a0;
-    }
+  /* ---------- Login ---------- */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  #loginScreen h1 { font-weight: 800; letter-spacing: 2px; margin-bottom: 4px; }
+  #loginScreen input {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #c9a24b;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 16px;
+    width: 260px;
+    max-width: 80vw;
+  }
+  #loginScreen button {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg,#f2d98d,#c9a24b);
+    color: #1a1a1a;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+  #loginError { color: #e26b6b; font-size: 14px; min-height: 18px; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+  /* ---------- Contenido ---------- */
+  #app { display: none; padding: 20px;  #app {
+    display: none;
+    padding: 24px;
+    max-width: 1100px;
+    margin: 20px auto;
+    border: 1px solid rgba(201,162,75,0.35);
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(201,162,75,0.08);
+  }
+  .logo-header {
+    display: block;
+    max-width: 140px;
+    margin: 0 auto 10px;
+  }
+        max-width: 1100px; margin: 0 auto; }
+  header.top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(201,162,75,0.5);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  header.top h1 { font-size: 22px; letter-spacing: 2px; margin: 0; font-weight: 800; }
+  #downloadPdfBtn {
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg,#f2d98d,#c9a24b);
+    color: #1a1a1a;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+  #downloadPdfBtn:disabled { opacity: 0.6; cursor: default; }
 
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      padding-bottom: 90px;
-    }
+  #status { text-align: center; opacity: 0.75; padding: 40px 0; }
 
-    .header-container {
-      text-align: center;
-      padding: 25px 15px 15px;
-    }
-
-    .logo-img {
-      max-width: 120px;
-      height: auto;
-      margin-bottom: 10px;
-    }
-
-    .page-title {
-      font-size: 2rem;
-      color: var(--accent-gold-light);
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-
-    .toolbar {
-      max-width: 1200px;
-      margin: 15px auto;
-      padding: 0 15px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .search-input {
-      flex: 1;
-      min-width: 220px;
-      padding: 10px 15px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .search-input:focus {
-      border-color: var(--accent-gold);
-    }
-
-    .price-tier-switch {
-      display: flex;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .tier-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 10px 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .tier-btn.active {
-      background: var(--accent-gold);
-      color: #000;
-    }
-
-    .stock-filter-btn, .action-top-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: 0.2s;
-    }
-
-    .stock-filter-btn.active {
-      border-color: var(--accent-gold);
-      color: var(--accent-gold-light);
-    }
-
-    .download-full-pdf-btn {
-      background: linear-gradient(135deg, var(--accent-gold-light), var(--accent-gold));
-      color: #111;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .download-full-pdf-btn:hover {
-      opacity: 0.9;
-    }
-
-    .catalog-container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 15px;
-    }
-
-    .brand-section {
-      margin-bottom: 30px;
-    }
-
-    .brand-title {
-      font-size: 1.4rem;
-      color: var(--accent-gold);
-      margin-bottom: 15px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 5px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 15px;
-    }
-
-    .product-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      position: relative;
-    }
-
-    .product-img {
-      width: 100px;
-      height: 100px;
-      object-fit: contain;
-      margin-bottom: 10px;
-      border-radius: 6px;
-    }
-
-    .product-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 5px;
-      color: #fff;
-    }
-
-    .product-details {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
-
-    .product-price {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--accent-gold-light);
-      margin-bottom: 12px;
-    }
-
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      background: #0f0f11;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      overflow: hidden;
-      width: 100%;
-    }
-
-    .qty-btn {
-      background: transparent;
-      border: none;
-      color: var(--accent-gold);
-      width: 35px;
-      height: 35px;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    .qty-btn:hover {
-      background: rgba(201, 162, 75, 0.1);
-    }
-
-    .qty-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #fff;
-      text-align: center;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    /* BARRA INFERIOR DEL CARRITO */
-    .cart-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #141417;
-      border-top: 1px solid var(--border-color);
-      padding: 12px 25px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .cart-summary {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .cart-summary .items-count {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .cart-summary .total-price {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--accent-gold-light);
-    }
-
-    .download-cart-btn {
-      background: var(--accent-gold);
-      color: #000;
-      border: none;
-      padding: 12px 22px;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .download-cart-btn:disabled {
-      background: #3a3a40;
-      color: #777;
-      cursor: not-allowed;
-    }
-  </style>
+  .brand-block { margin-bottom: 32px; }
+  .brand-block h2 {
+    font-size: 18px;
+    letter-spacing: 1px;
+    border-left: 3px solid #c9a24b;
+    padding-left: 10px;
+    margin-bottom: 14px;
+  }
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .item-card {
+    background: #161616;
+    border: 1px solid rgba(201,162,75,0.3);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .item-card img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #222;
+    flex-shrink: 0;
+  }
+  .item-card .noimg {
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    background: #222;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    opacity: 0.5;
+    text-align: center;
+  }
+  .item-card .info { min-width: 0; }
+  .item-card .name { font-size: 13px; font-weight: 600; line-height: 1.3; margin: 0 0 4px; }
+    .item-card .price { font-size: 14px; font-weight: 800; color: #c9a24b; margin: 0; }
+  .item-card .meta { font-size: 11px; opacity: 0.6; margin: 2px 0 0; }
+</style>
 </head>
 <body>
 
-  <!-- ENCABEZADO -->
-  <header class="header-container">
-    <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-img" onerror="this.style.display='none'" />
-    <h1 class="page-title">Armar Presupuesto</h1>
-  </header>
-
-  <!-- BARRA DE HERRAMIENTAS Y BOTÓN DESCARGAR PDF ARRIBA -->
-  <div class="toolbar">
-    <input type="text" id="searchInput" class="search-input" placeholder="Buscar perfume o marca..." />
-    
-    <div class="price-tier-switch">
-      <button class="tier-btn active" data-tier="10U" onclick="setPriceTier('10U')">10+ U</button>
-      <button class="tier-btn" data-tier="5U" onclick="setPriceTier('5U')">5+ U</button>
-      <button class="tier-btn" data-tier="3U" onclick="setPriceTier('3U')">3+ U</button>
-    </div>
-
-    <button id="onlyStockBtn" class="stock-filter-btn" type="button" onclick="toggleStockFilter()">
-      <span id="stockCheckIcon">✓</span> Solo en stock
-    </button>
-
-    <!-- BOTÓN SUPERIOR SOLICITADO: Descarga catálogo completo con las 3 escalas -->
-    <button id="downloadFullCatalogPdfBtn" class="download-full-pdf-btn">
-      Descargar PDF
-    </button>
+  <!-- LOGIN -->
+  <div id="loginScreen">
+    <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-header" />
+    <h1>DECANT<span class="gold">CIAS</span></h1>
+    <p style="opacity:.7;margin-top:-8px">Acceso mayorista</p>
+    <input type="password" id="passInput" placeholder="Contraseña" autocomplete="off" />
+    <button id="passBtn" type="button">Ingresar</button>
+    <div id="loginError"></div>
   </div>
 
-  <!-- CATÁLOGO -->
-  <main class="catalog-container" id="catalogContainer">
-    <p style="text-align: center; color: var(--text-muted); margin-top: 40px;">Cargando catálogo...</p>
-  </main>
-
-  <!-- BARRA INFERIOR DE PRESUPUESTO -->
-  <div class="cart-bar">
-    <div class="cart-summary">
-      <span class="items-count" id="cartCountLabel">Productos seleccionados: 0</span>
-      <span class="total-price" id="cartTotalLabel">$0</span>
-    </div>
-    <div class="action-btns">
-      <!-- BOTÓN INFERIOR SOLICITADO: Descarga solo los ítems presupuestados -->
-      <button id="generatePdfBtn" class="download-cart-btn" disabled>
-        Descargar presupuesto
-      </button>
-    </div>
+  <!-- CONTENIDO -->
+  <div id="app">
+  <header class="top" style="flex-direction:column;border-bottom:none;padding-bottom:0;">
+      <img src="../fotos/logodecant.png" alt="Decantcias" class="logo-header" />
+      <div style="display:flex;width:100%;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,162,75,0.5);padding-bottom:16px;flex-wrap:wrap;gap:12px;">
+        <h1>Precios <span class="gold">Mayoristas</span></h1>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="presupuesto.html" id="presupuestoBtn" style="padding:12px 18px;border-radius:8px;border:1px solid #c9a24b;color:#c9a24b;text-decoration:none;font-weight:800;letter-spacing:0.5px;display:inline-block;">Presupuesto</a>
+        <button id="downloadPdfBtn" type="button">Descargar PDF completo</button>
+      </div>
+      </div>
+    </header>
+    <div id="status">Cargando datos...</div>
+    <div id="brandsContainer"></div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    let ALL_PRODUCTS = [];
-    let currentTier = '10U';
-    let filterOnlyStock = false;
-    let cart = {}; // { itemId: cantidad }
+    // ------------------------------------------------------
+    // CONFIG
+    // ------------------------------------------------------
+    const PASSWORD = "JeaAwsMayorista*";
 
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=89266512&single=true&output=csv'; // Reemplazar con tu URL de CSV si aplica
+    const CATALOG_CSV =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=751988153&single=true&output=csv";
 
-    // Convertir valor monetario
+    const WHOLESALE_CSV =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsmuT-sX_hT2VXW9_7AbpfRkS1plqwYKV3zrzUVDUf44aEhUZU7btUwp_QUwDoNbv3VANut3ZntOzK/pub?gid=89266512&single=true&output=csv";
+
+    // ------------------------------------------------------
+    // LOGIN
+    // ------------------------------------------------------
+    const loginScreen = document.getElementById("loginScreen");
+    const app = document.getElementById("app");
+    const passInput = document.getElementById("passInput");
+    const passBtn = document.getElementById("passBtn");
+    const loginError = document.getElementById("loginError");
+
+    function tryLogin() {
+      if (passInput.value === PASSWORD) {
+        sessionStorage.setItem("mayorista_auth", "ok");
+        loginScreen.style.display = "none";
+        app.style.display = "block";
+        cargarTodo();
+      } else {
+        loginError.textContent = "Contraseña incorrecta.";
+      }
+    }
+
+    passBtn.addEventListener("click", tryLogin);
+    passInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") tryLogin();
+    });
+
+    if (sessionStorage.getItem("mayorista_auth") === "ok") {
+      loginScreen.style.display = "none";
+      app.style.display = "block";
+      cargarTodo();
+    }
+
+    // ------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------
+     function normKey(s) {
+      return String(s || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[()]/g, "")
+        .replace(/\s+/g, "")
+        .trim();
+    }
+
+    function moneyAR(n) {
+      const v = Number(n);
+      return `$${(Number.isFinite(v) ? v : 0).toLocaleString("es-AR")}`;
+    }
+
     function parseUSMoney(raw) {
       if (raw == null) return 0;
-      let cleaned = String(raw).replace(/\$/g, "").trim();
-      cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
+      const cleaned = String(raw).replace(/\$/g, "").replace(/,/g, "").trim();
       const n = parseFloat(cleaned);
       return Number.isFinite(n) ? n : 0;
     }
 
-    function moneyAR(val) {
-      return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(val);
+    function toNumber(raw) {
+      const n = parseFloat(String(raw || "").replace(/[^\d.-]/g, ""));
+      return Number.isFinite(n) ? n : 0;
     }
 
-    // Cargar Catálogo
-    async function cargarCatalogo() {
-      try {
-        const response = await fetch(SHEET_URL);
-        const data = await response.text();
-        
-        // Parse simple de CSV
-        const lines = data.split('\n').map(l => l.split(','));
-        const items = [];
-
-        for (let i = 1; i < lines.length; i++) {
-          const row = lines[i];
-          if (!row || row.length < 4) continue;
-
-          const marca = row[0]?.trim() || 'VARIOS';
-          const nombre = row[1]?.trim() || '';
-          const ml = row[2]?.trim() || '';
-          const stock = parseInt(row[3]) || 0;
-          
-          const p10 = parseUSMoney(row[4]);
-          const p5 = parseUSMoney(row[5]);
-          const p3 = parseUSMoney(row[6]);
-
-          // Filtrar items sin precio válido o con precio 900
-          if (p10 === 900 || p5 === 900 || p3 === 900) continue;
-          if (p10 <= 0 && p3 <= 0) continue;
-
-          items.push({
-            id: `prod_${i}`,
-            marca,
-            nombre,
-            ml,
-            stock,
-            precio10U: p10,
-            precio5U: p5,
-            precio3U: p3,
-            img: `../fotos/${nombre.toLowerCase().replace(/\s+/g, '')}.jpg`
-          });
-        }
-
-        ALL_PRODUCTS = items;
-        renderCatalog();
-      } catch (e) {
-        console.error("Error al cargar catálogo:", e);
-        document.getElementById('catalogContainer').innerHTML = `<p style="text-align:center; color:red;">Error al cargar los productos.</p>`;
-      }
+    function imgPath(p) {
+      if (!p) return "";
+      if (/^https?:\/\//i.test(p)) return p;
+      return "../" + p.replace(/^\/+/, "");
     }
 
-    // Renderizar HTML
-    function renderCatalog() {
-      const container = document.getElementById('catalogContainer');
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      
-      container.innerHTML = '';
+    // ------------------------------------------------------
+    // Parser genérico del CSV mayorista (varios bloques repetidos)
+    // ------------------------------------------------------
+    function parseWholesaleBlocks(csvText) {
+      const parsed = Papa.parse(csvText, { header: false, skipEmptyLines: "greedy" });
+      const rows = parsed.data;
+      const items = [];
 
-      let filtered = ALL_PRODUCTS.filter(p => {
-        const matchesSearch = p.marca.toLowerCase().includes(search) || p.nombre.toLowerCase().includes(search);
-        const matchesStock = filterOnlyStock ? p.stock > 0 : true;
-        return matchesSearch && matchesStock;
-      });
+      for (let r = 0; r < rows.length; r++) {
+        const row = rows[r];
+        for (let c = 0; c < row.length; c++) {
+          if (
+            normKey(row[c]) === "marca" &&
+            normKey(row[c + 1]) === "perfume" &&
+            normKey(row[c + 2]) === "precio"
+          ) {
+            let rr = r + 1;
+            while (rr < rows.length) {
+              const rowr = rows[rr] || [];
+              const marca = (rowr[c] || "").trim();
+              const nombre = (rowr[c + 1] || "").trim();
+              if (!marca && !nombre) break;
 
-      if (filtered.length === 0) {
-        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); margin-top:30px;">No se encontraron productos.</p>`;
-        return;
-      }
-
-      // Agrupar por Marca
-      const grouped = {};
-      filtered.forEach(p => {
-        if (!grouped[p.marca]) grouped[p.marca] = [];
-        grouped[p.marca].push(p);
-      });
-
-      Object.keys(grouped).sort().forEach(marca => {
-        const brandSec = document.createElement('div');
-        brandSec.className = 'brand-section';
-        
-        let html = `<h2 class="brand-title">${marca}</h2><div class="products-grid">`;
-
-        grouped[marca].forEach(item => {
-          const price = item[`precio${currentTier}`] || item.precio10U;
-          const qty = cart[item.id] || 0;
-
-          html += `
-            <div class="product-card">
-              <img src="${item.img}" class="product-img" onerror="this.src='https://via.placeholder.com/100?text=Decantcias'" />
-              <div class="product-name">${item.nombre}</div>
-              <div class="product-details">${item.ml} ml - Stock: ${item.stock}</div>
-              <div class="product-price">${moneyAR(price)}</div>
-              <div class="quantity-control">
-                <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
-                <input type="text" class="qty-input" value="${qty}" readonly />
-                <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
-              </div>
-            </div>
-          `;
-        });
-
-        html += `</div>`;
-        brandSec.innerHTML = html;
-        container.appendChild(brandSec);
-      });
-
-      updateCartBar();
-    }
-
-    function setPriceTier(tier) {
-      currentTier = tier;
-      document.querySelectorAll('.tier-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tier === tier);
-      });
-      renderCatalog();
-    }
-
-    function toggleStockFilter() {
-      filterOnlyStock = !filterOnlyStock;
-      const btn = document.getElementById('onlyStockBtn');
-      btn.classList.toggle('active', filterOnlyStock);
-      renderCatalog();
-    }
-
-    function updateQty(id, change) {
-      const current = cart[id] || 0;
-      const updated = Math.max(0, current + change);
-      if (updated === 0) {
-        delete cart[id];
-      } else {
-        cart[id] = updated;
-      }
-      renderCatalog();
-    }
-
-    function updateCartBar() {
-      let count = 0;
-      let total = 0;
-
-      Object.keys(cart).forEach(id => {
-        const item = ALL_PRODUCTS.find(p => p.id === id);
-        if (item) {
-          const qty = cart[id];
-          const price = item[`precio${currentTier}`] || item.precio10U;
-          count += qty;
-          total += price * qty;
-        }
-      });
-
-      document.getElementById('cartCountLabel').textContent = `Productos seleccionados: ${count}`;
-      document.getElementById('cartTotalLabel').textContent = moneyAR(total);
-      
-      const btn = document.getElementById('generatePdfBtn');
-      btn.disabled = count === 0;
-    }
-
-    document.getElementById('searchInput').addEventListener('input', renderCatalog);
-
-    // Helper para imagen base64
-    function imageToDataURL(url) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL('image/png'));
-        };
-        img.onerror = () => resolve(null);
-        img.src = url;
-      });
-    }
-
-    // ==========================================
-    // 1. DESCARGAR PDF COMPLETO (3 PRECIOS)
-    // ==========================================
-    document.getElementById("downloadFullCatalogPdfBtn").addEventListener("click", async () => {
-      const btn = document.getElementById("downloadFullCatalogPdfBtn");
-      btn.disabled = true;
-      btn.textContent = "Generando...";
-
-      try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: "mm", format: "a4" });
-
-        const marginX = 12;
-        const pageHeight = 297;
-        const pageWidth = 210;
-        let y = 15;
-
-        // Logo
-        const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
-        if (logoDataUrl) {
-          doc.addImage(logoDataUrl, "PNG", (pageWidth - 24) / 2, y, 24, 18);
-          y += 22;
-        }
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(15);
-        doc.text("Catálogo Completo — Decantcias Mayorista", pageWidth / 2, y, { align: "center" });
-        y += 6;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        const fecha = new Date().toLocaleDateString("es-AR", { year: 'numeric', month: 'long', day: 'numeric' });
-        doc.text(`Lista actualizada al: ${fecha}`, pageWidth / 2, y, { align: "center" });
-        y += 8;
-
-        const printHeader = () => {
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(8.5);
-          doc.setFillColor(230, 230, 230);
-          doc.rect(marginX, y, pageWidth - (marginX * 2), 6.5, "F");
-
-          doc.text("Producto / Detalle", marginX + 3, y + 4.5);
-          doc.text("Precio 10+ U", marginX + 110, y + 4.5, { align: "right" });
-          doc.text("Precio 5+ U", marginX + 145, y + 4.5, { align: "right" });
-          doc.text("Precio 3+ U", marginX + 180, y + 4.5, { align: "right" });
-          y += 9;
-        };
-
-        printHeader();
-
-        ALL_PRODUCTS.forEach((item) => {
-          if (y > pageHeight - 15) {
-            doc.addPage();
-            y = 15;
-            printHeader();
+              if (marca && nombre) {
+                const precio = parseUSMoney(rowr[c + 2]);
+                const stock = toNumber(rowr[c + 3]);
+                const ml = toNumber(rowr[c + 4]);
+                items.push({ marca, nombre, precio, stock, ml });
+              }
+              rr++;
+            }
           }
+        }
+      }
+      return items;
+    }
 
-          const itemText = `${item.marca} - ${item.nombre} (${item.ml}ml)`;
-          const truncatedText = doc.splitTextToSize(itemText, 90)[0];
+    // ------------------------------------------------------
+    // Carga principal
+    // ------------------------------------------------------
+    let WHOLESALE_ITEMS = [];
+    let IMAGE_MAP = {}; // key: "marca|nombre" normalizado -> primera imagen
 
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(8);
-          doc.text(truncatedText, marginX + 3, y);
-          doc.text(moneyAR(item.precio10U), marginX + 110, y, { align: "right" });
-          doc.text(moneyAR(item.precio5U), marginX + 145, y, { align: "right" });
-          doc.text(moneyAR(item.precio3U), marginX + 180, y, { align: "right" });
+    async function cargarTodo() {
+      const statusEl = document.getElementById("status");
+      try {
+        // 1) Catálogo principal (para las fotos)
+        const catRes = await fetch(CATALOG_CSV, { cache: "no-store" });
+        const catText = await catRes.text();
+        const catParsed = Papa.parse(catText, { header: true, skipEmptyLines: true });
 
-          y += 3.5;
-          doc.setLineWidth(0.05);
-          doc.setDrawColor(220, 220, 220);
-          doc.line(marginX + 3, y, pageWidth - marginX, y);
-          y += 3.8;
+        catParsed.data.forEach((row) => {
+          const clean = {};
+          for (const k in row) {
+            const kk = (k || "").replace(/^\uFEFF/, "").trim();
+            clean[kk] = (row[k] ?? "").toString().trim();
+          }
+          const marca = clean.marca || clean.Marca || "";
+          const nombre = clean.nombre || clean.Nombre || "";
+          const imagenRaw = clean.imagenURL || clean.imagenUrl || clean.imagen || "";
+          const firstImg = String(imagenRaw).split("|")[0].trim();
+          if (marca && nombre && firstImg) {
+            const key = normKey(marca) + "|" + normKey(nombre);
+            IMAGE_MAP[key] = firstImg;
+          }
         });
 
-        doc.save(`catalogo-completo-decantcias.pdf`);
+        // 2) Hoja mayorista
+        const wRes = await fetch(WHOLESALE_CSV, { cache: "no-store" });
+        const wText = await wRes.text();
+        let items = parseWholesaleBlocks(wText);
+
+        // Ocultar productos "no trabajados" (precio placeholder $900)
+        items = items.filter((it) => Math.abs(it.precio - 900) > 0.01 && it.precio > 0);
+
+          // Cruzar con imagen (solo coincidencia exacta, para evitar fotos equivocadas)
+        items = items.map((it) => {
+          const key = normKey(it.marca) + "|" + normKey(it.nombre);
+          const img = IMAGE_MAP[key];
+          return { ...it, img: img ? imgPath(img) : "" };
+        });
+
+        WHOLESALE_ITEMS = items;
+        renderBrands(items);
+        statusEl.style.display = "none";
       } catch (e) {
         console.error(e);
-        alert("Error al generar el PDF del catálogo completo.");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Descargar PDF";
+        statusEl.textContent = "No se pudo cargar la información mayorista.";
       }
-    });
+    }
 
-    // ==========================================
-    // 2. DESCARGAR PRESUPUESTO DEL CARRITO
-    // ==========================================
-    document.getElementById("generatePdfBtn").addEventListener("click", async () => {
-      const btn = document.getElementById("generatePdfBtn");
+    function renderBrands(items) {
+      const container = document.getElementById("brandsContainer");
+      container.innerHTML = "";
+
+      const byBrand = {};
+      items.forEach((it) => {
+        const key = it.marca.trim();
+        byBrand[key] = byBrand[key] || [];
+        byBrand[key].push(it);
+      });
+
+      const brandNames = Object.keys(byBrand).sort((a, b) =>
+        a.localeCompare(b, "es", { sensitivity: "base" })
+      );
+
+      brandNames.forEach((brand) => {
+        const block = document.createElement("div");
+        block.className = "brand-block";
+
+        const list = byBrand[brand].sort((a, b) =>
+          a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+        );
+
+        block.innerHTML = `
+          <h2>${brand}</h2>
+          <div class="items-grid">
+            ${list
+              .map(
+                (it) => `
+              <div class="item-card">
+                ${
+                  it.img
+                    ? `<img src="${it.img}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'noimg',textContent:'Sin foto'}))">`
+                    : `<div class="noimg">Sin foto</div>`
+                }
+              <div class="info">
+                  <p class="name">${it.nombre}</p>
+                  <p class="price">${moneyAR(it.precio)}</p>
+                  <p class="meta">Stock: ${it.stock} · ${it.ml} ml</p>
+                </div>
+              </div>
+            `
+              )
+              .join("")}
+          </div>
+        `;
+        container.appendChild(block);
+      });
+    }
+
+    // ------------------------------------------------------
+    // Descargar PDF completo
+    // ------------------------------------------------------
+    async function imageToDataURL(url) {
+      try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        return await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("downloadPdfBtn");
       btn.disabled = true;
+      const textoOriginal = btn.textContent;
+      btn.textContent = "Generando PDF...";
 
       try {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ unit: "mm", format: "a4" });
 
         const marginX = 15;
+        const pageHeight = 297;
         const pageWidth = 210;
-        let y = 15;
+        let y = 20;
 
-        // Logo
+        // Logo arriba de todo
         const logoDataUrl = await imageToDataURL("../fotos/logodecant.png");
         if (logoDataUrl) {
-          doc.addImage(logoDataUrl, "PNG", (pageWidth - 26) / 2, y, 26, 20);
-          y += 24;
+          const logoWidth = 30;
+          const logoX = (pageWidth - logoWidth) / 2;
+          try {
+            doc.addImage(logoDataUrl, "PNG", logoX, y, logoWidth, logoWidth * 0.75);
+          } catch (e) {}
+          y += logoWidth * 0.75 + 8;
         }
 
         doc.setFont("helvetica", "bold");
         doc.setFontSize(16);
-        doc.text("Presupuesto de Compra — Decantcias", pageWidth / 2, y, { align: "center" });
-        y += 6;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.text(`Escala seleccionada: ${currentTier}`, pageWidth / 2, y, { align: "center" });
+        doc.text("Decantcias — Lista Mayorista", pageWidth / 2, y, { align: "center" });
         y += 10;
 
-        // Encabezado
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9);
-        doc.setFillColor(240, 240, 240);
-        doc.rect(marginX, y, pageWidth - (marginX * 2), 7, "F");
-
-        doc.text("Producto", marginX + 3, y + 5);
-        doc.text("Cant.", marginX + 110, y + 5, { align: "center" });
-        doc.text("P. Unit", marginX + 145, y + 5, { align: "right" });
-        doc.text("Subtotal", marginX + 180, y + 5, { align: "right" });
-        y += 10;
-
-        let grandTotal = 0;
-
-        Object.keys(cart).forEach((id) => {
-          const item = ALL_PRODUCTS.find((p) => p.id === id);
-          if (!item) return;
-
-          const qty = cart[id];
-          const unitPrice = item[`precio${currentTier}`] || item.precio10U;
-          const subtotal = unitPrice * qty;
-          grandTotal += subtotal;
-
-          const itemText = `${item.marca} - ${item.nombre} (${item.ml}ml)`;
-
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(8.5);
-          doc.text(doc.splitTextToSize(itemText, 90)[0], marginX + 3, y);
-          doc.text(String(qty), marginX + 110, y, { align: "center" });
-          doc.text(moneyAR(unitPrice), marginX + 145, y, { align: "right" });
-          doc.text(moneyAR(subtotal), marginX + 180, y, { align: "right" });
-
-          y += 4;
-          doc.setLineWidth(0.08);
-          doc.setDrawColor(220, 220, 220);
-          doc.line(marginX + 3, y, pageWidth - marginX, y);
-          y += 5;
+        const byBrand = {};
+        WHOLESALE_ITEMS.forEach((it) => {
+          byBrand[it.marca] = byBrand[it.marca] || [];
+          byBrand[it.marca].push(it);
         });
 
-        // Total
-        y += 5;
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-        doc.text(`TOTAL ESTIMADO: ${moneyAR(grandTotal)}`, pageWidth - marginX, y, { align: "right" });
+        const brandNames = Object.keys(byBrand).sort((a, b) =>
+          a.localeCompare(b, "es", { sensitivity: "base" })
+        );
 
-        doc.save(`presupuesto-decantcias-${Date.now()}.pdf`);
+        for (const brand of brandNames) {
+          if (y > pageHeight - 20) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(13);
+          doc.text(brand, marginX, y);
+          y += 7;
+
+          const list = byBrand[brand].sort((a, b) =>
+            a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+          );
+
+          for (const it of list) {
+            if (y > pageHeight - 25) {
+              doc.addPage();
+              y = 20;
+            }
+
+            let dataUrl = null;
+            if (it.img) {
+              dataUrl = await imageToDataURL(it.img);
+            }
+
+            if (dataUrl) {
+              try {
+                doc.addImage(dataUrl, "JPEG", marginX, y - 4, 18, 18);
+              } catch (e) {
+                try {
+                  doc.addImage(dataUrl, "PNG", marginX, y - 4, 18, 18);
+                } catch (e2) {}
+              }
+            }
+
+          doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+            doc.text(it.nombre, marginX + 24, y);
+            doc.setFont("helvetica", "bold");
+            doc.text(moneyAR(it.precio), marginX + 24, y + 6);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text(`Stock: ${it.stock}  ·  ${it.ml} ml`, marginX + 24, y + 12);
+
+            y += 26;
+          }
+
+          y += 4;
+        }
+
+        // Mensaje final
+        if (y > pageHeight - 30) {
+          doc.addPage();
+          y = 20;
+        } else {
+          y += 10;
+        }
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(10);
+        const mensajeFinal = doc.splitTextToSize(
+          "Recordá que si buscás algún perfume en específico, lo buscamos, te lo cotizamos y en 5 días hábiles te lo entregamos.",
+          pageWidth - marginX * 2
+        );
+        doc.text(mensajeFinal, marginX, y);
+
+        doc.save("decantcias-mayorista.pdf");
       } catch (e) {
         console.error(e);
-        alert("Error al generar el presupuesto.");
+        alert("Hubo un error generando el PDF. Revisá la consola.");
       } finally {
         btn.disabled = false;
+        btn.textContent = textoOriginal;
       }
     });
-
-    // Iniciar carga
-    cargarCatalogo();
   </script>
 </body>
 </html>
