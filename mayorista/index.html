@@ -145,7 +145,7 @@
     text-transform: uppercase;
   }
 
-  /* Grilla 5 por linea */
+  /* Grilla 5 por línea */
   .items-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -528,7 +528,7 @@
     let IMAGE_MAP = {}; 
     let CART = {};
     let ONLY_STOCK = false;
-    let CURRENT_TIER = "10U"; // '10U', '5U' o '3U'
+    let CURRENT_TIER = "10U";
 
     function normKey(s) {
       return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[()]/g, "").replace(/\s+/g, "").trim();
@@ -647,7 +647,13 @@
         const text = await res.text();
         let items = parseWholesaleBlocks(text);
 
-        items = items.filter((it) => Math.abs(it.precio10U - 900) > 0.01 && (it.precio10U > 0 || it.precio3U > 0));
+        // Excluir de forma absoluta todos los ítems cuyo precio base sea 900 o 0
+        items = items.filter((it) => 
+          it.precio10U !== 900 && 
+          it.precio5U !== 900 && 
+          it.precio3U !== 900 && 
+          (it.precio10U > 0 || it.precio3U > 0)
+        );
 
         items = items.map((it) => {
           const key = normKey(it.marca) + "|" + normKey(it.nombre);
@@ -943,7 +949,7 @@
       }
     }
 
-    // Generar PDF con desglose de 10u, 5u y 3u por cada producto
+    // Generar PDF
     document.getElementById("generatePdfBtn").addEventListener("click", async () => {
       const btn = document.getElementById("generatePdfBtn");
       btn.disabled = true;
@@ -996,7 +1002,6 @@
 
           totalUnidades += qty;
 
-          // Espacio necesario para el bloque del producto (nombre + 3 precios = ~20mm)
           if (y > pageHeight - 35) {
             doc.addPage();
             y = 20;
@@ -1005,14 +1010,12 @@
           const itemText = item.isCustom ? `${item.marca} ${item.nombre}` : `${item.nombre}`;
           const truncatedText = doc.splitTextToSize(itemText, 110)[0];
 
-          // Título del Producto
           doc.setFont("helvetica", "bold");
           doc.setFontSize(10);
           doc.text(truncatedText, marginX + 3, y);
           doc.text(String(qty), marginX + 130, y, { align: "center" });
           y += 5;
 
-          // Desglose de Precios (10+ U, 5+ U, 3+ U)
           doc.setFont("helvetica", "normal");
           doc.setFontSize(9);
 
