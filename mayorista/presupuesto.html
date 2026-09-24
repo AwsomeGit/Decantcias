@@ -567,11 +567,15 @@
     }
 
     function parseUSMoney(raw) {
-      if (raw == null) return 0;
-      const cleaned = String(raw).replace(/\$/g, "").replace(/\./g, "").replace(/,/g, ".").replace(/[^0-9.]/g, "").trim();
-      const n = parseFloat(cleaned);
-      return Number.isFinite(n) ? n : 0;
-    }
+  if (raw == null) return 0;
+  const cleaned = String(raw)
+    .replace(/\$/g, "")
+    .replace(/[.,]/g, "")   // quita puntos y comas: nunca hay decimales reales
+    .replace(/[^0-9]/g, "")
+    .trim();
+  const n = parseInt(cleaned, 10);
+  return Number.isFinite(n) ? n : 0;
+}
 
     function toNumber(raw) {
       const n = parseFloat(String(raw || "").replace(/[^\d.-]/g, ""));
